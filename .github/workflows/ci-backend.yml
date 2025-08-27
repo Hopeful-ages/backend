@@ -1,0 +1,38 @@
+name: CI - Backend Build & Test
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  ci-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 23
+          cache: maven
+
+      - name: Build and Test
+        shell: bash
+        run: |
+          # entra na pasta correta se existir backend/
+          if [ -f "backend/pom.xml" ]; then
+            cd backend
+          fi
+
+          # garante permissão do wrapper se existir
+          if [ -f "./mvnw" ]; then
+            chmod +x ./mvnw
+            ./mvnw -B clean verify
+          else
+            mvn -B clean verify
+          fi
