@@ -1,3 +1,5 @@
 spring:
     application:
             name: hopeful
+    flyway:
+        ignore-unsupported-database: true
