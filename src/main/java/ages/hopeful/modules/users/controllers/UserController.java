@@ -11,7 +11,10 @@ import ages.hopeful.modules.users.services.UserService;
 @RequestMapping("/api/users")
 public class UserController {
   private final UserService service;
-  public UserController(UserService service){ this.service = service; }
+  
+  public UserController(UserService service) { 
+    this.service = service; 
+  }
 
   @PostMapping
   public ResponseEntity<UserResponseDTO> createUser(@RequestBody @Valid UserCreateDTO userCreateDTO) {

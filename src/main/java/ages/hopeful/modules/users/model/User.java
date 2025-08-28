@@ -1,4 +1,4 @@
-package ages.hopeful.modules.users.entity;
+package ages.hopeful.modules.users.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.util.UUID;
          @UniqueConstraint(name = "uk_usuario_email", columnNames = "email"),
          @UniqueConstraint(name = "uk_usuario_cpf", columnNames = "cpf")
        })
-public class UserEntity {
+public class User {
 
     @Id
     @Column(columnDefinition = "uuid")
@@ -36,8 +36,8 @@ public class UserEntity {
     private String senhaHash;
 
     @Column(name = "servico_id", columnDefinition = "uuid")
-    private UUID servicoId;   // relação opcional (0..1)
+    private UUID servicoId;   
 
     @Column(name = "cidade_id", columnDefinition = "uuid")
-    private UUID cidadeId;    // relação opcional (0..1)
+    private UUID cidadeId;    
 }

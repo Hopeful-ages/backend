@@ -1,11 +1,11 @@
 package ages.hopeful.modules.users.mapper;
 
 import ages.hopeful.modules.users.dto.*;
-import ages.hopeful.modules.users.entity.UserEntity;
+import ages.hopeful.modules.users.model.User;
 
 public class UserMapper {
-  public static UserEntity toEntity(UserCreateDTO dto, String passwordHash) {
-    UserEntity entity = new UserEntity();
+  public static User toEntity(UserCreateDTO dto, String passwordHash) {
+    User entity = new User();
 
     entity.setNome(dto.getNome().trim());
     entity.setCpf(dto.getCpf().replaceAll("[^0-9]", ""));
@@ -18,7 +18,7 @@ public class UserMapper {
     return entity;
   }
 
-  public static UserResponseDTO toResponse(UserEntity entity) {
+  public static UserResponseDTO toResponse(User entity) {
     return UserResponseDTO.builder()
         .id(entity.getId())
         .nome(entity.getNome())
