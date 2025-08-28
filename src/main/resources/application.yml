@@ -1,3 +1,33 @@
+# Configurações padrão (para produção/desenvolvimento)
 spring:
-    application:
-            name: hopeful
+  application:
+    name: hopeful
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+ 
+    baseline-on-migrate: true
+    locations: classpath:db/migration 
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: none 
+
+--- # Separador de documentos de perfil
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    show-sql: true
+  flyway:
+    enabled: true # Garante que o Flyway também execute para o banco em memória H2
