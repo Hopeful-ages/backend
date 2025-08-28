@@ -23,7 +23,7 @@ Recomendação de ferramentas para instalar:
 
 Execute o comando abaixo na raiz do repositório local:
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 Com este comando, realiza-se o build das imagens dos containers utilizados pela aplicação e se executa estes containers.
@@ -33,7 +33,7 @@ do projeto, sendo que esta já é configurada para se conectar com o banco de da
 Quando quiser parar a execução da aplicação e remover os recursos criados (containers e redes), basta executar o comando 
 oposto abaixo:
 ```bash
-docker-compose down
+docker compose down
 ```
 
 Por padrão, o comando acima não deleta os volumes do Docker utilizados pela aplicação, e para este projeto persistimos 
@@ -42,7 +42,7 @@ containers novamente via Docker Compose em sua máquina, os dados persistidos se
 
 No entanto, caso se queira remover também este volume, basta adicionar a opção `-v` conforme abaixo:
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 
 ### Opção 2 - Executando apenas banco de dados em container
@@ -50,5 +50,5 @@ docker-compose down -v
 Execute o comando abaixo na raiz do repositório local, para executar apenas o banco de dados PostgreSQL em um container 
 Docker (facilita a execução da aplicação durante o desenvolvimento):
 ```bash
-docker-compose up -d db
+docker compose up -d db
 ```
