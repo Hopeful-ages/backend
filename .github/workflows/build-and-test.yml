@@ -1,0 +1,29 @@
+name: Build e Teste da Aplicação Java
+
+on:
+
+  push:
+    branches: [ "**" ]
+    
+  pull_request:
+    branches: [ "development" ]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Compilar e Instalar Dependências
+        run: mvn clean install -DskipTests
+
+      - name: Executar Testes
+        run: mvn test
