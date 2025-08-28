@@ -1,4 +1,4 @@
-package ages.hopeful.users.entity;
+package ages.hopeful.modules.users.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

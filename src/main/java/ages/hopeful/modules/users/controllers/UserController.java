@@ -1,10 +1,11 @@
-package ages.hopeful.users.controllers;
+package ages.hopeful.modules.users.controllers;
 
-import ages.hopeful.users.dto.*;
-import ages.hopeful.users.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import ages.hopeful.modules.users.dto.*;
+import ages.hopeful.modules.users.services.UserService;
 
 @RestController
 @RequestMapping("/api/users")

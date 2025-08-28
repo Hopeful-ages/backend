@@ -1,9 +1,10 @@
-package ages.hopeful.users.services;
+package ages.hopeful.modules.users.services;
 
-import ages.hopeful.users.dto.*;
-import ages.hopeful.users.mapper.UserMapper;
-import ages.hopeful.users.repositoy.UserRepository;
 import ages.hopeful.exception.ConflictException;
+import ages.hopeful.modules.users.dto.*;
+import ages.hopeful.modules.users.mapper.UserMapper;
+import ages.hopeful.modules.users.repositoy.UserRepository;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

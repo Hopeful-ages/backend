@@ -1,4 +1,4 @@
-package ages.hopeful.users.dto;
+package ages.hopeful.modules.users.dto;
 
 import java.util.UUID;
 
