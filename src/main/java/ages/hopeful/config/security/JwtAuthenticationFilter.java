@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 if (jwtUtil.validateToken(token)) {
                     String username = jwtUtil.getUsernameFromToken(token);
-                    String role = jwtUtil.getRoleFromToken(token); // ex: "ROLE_ADMIN"
+                    String role = jwtUtil.getRoleFromToken(token); 
 
                     // Cria GrantedAuthority direto do token
                     List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
@@ -45,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e) {
-                logger.warn("Token JWT inválido: " + e.getMessage());
+                logger.warn("Invalid token JWT: " + e.getMessage());
             }
         }
 

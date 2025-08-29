@@ -41,7 +41,7 @@ public class AuthService {
 
             return new TokenResponse(token);
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Usuário ou senha inválidos");
+            throw new BadCredentialsException("username or password Invalid");
         }
     }
 }

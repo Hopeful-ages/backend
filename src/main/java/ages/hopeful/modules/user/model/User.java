@@ -30,7 +30,7 @@ public class User implements UserDetails {
     private UUID id = UUID.randomUUID();
 
     @Column(name = "nome", nullable = false, length = 255)
-    private String nome;
+    private String name;
 
     @Column(name = "cpf", nullable = false, length = 20)
     private String cpf;
@@ -39,16 +39,16 @@ public class User implements UserDetails {
     private String email;
 
     @Column(name = "telefone", length = 20)
-    private String telefone;
+    private String phone;
 
     @Column(name = "senha", nullable = false, length = 255)
-    private String senha;
+    private String password;
 
     @Column(name = "servico_id", columnDefinition = "uuid")
-    private UUID servicoId;
+    private UUID serviceId;
 
     @Column(name = "cidade_id", columnDefinition = "uuid")
-    private UUID cidadeId;
+    private UUID cityId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "papel_id", nullable = false)
@@ -62,7 +62,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.senha;
+        return this.password;
     }
 
     @Override
