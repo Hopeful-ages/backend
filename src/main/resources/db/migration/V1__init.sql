@@ -60,3 +60,15 @@ CREATE TABLE usuario (
     CONSTRAINT fk_usuario_servico FOREIGN KEY (servico_id) REFERENCES servicos (id),
     CONSTRAINT fk_usuario_cidade FOREIGN KEY (cidade_id) REFERENCES cidade (id)
 );
+
+INSERT INTO usuario (id, nome, cpf, email, telefone, senha, servico_id, cidade_id)
+VALUES (
+    '001',
+    'Abner',
+    '123.456.789-00',
+    'abner@naoinfomado.com',
+    '5511987654321',
+    'Senha',
+    '001',
+    '001'
+);
