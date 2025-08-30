@@ -6,7 +6,7 @@ import lombok.*;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class UserCreateDTO {
+public class UserUpdateDTO {
     @NotBlank @Size(max = 150)
     public String nome;
 

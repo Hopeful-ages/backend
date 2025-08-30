@@ -17,20 +17,24 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/users")
 @Tag(name = "Usuários", description = "Gerenciamento de usuários")
 public class UserController {
+
+
   private final UserService service;
   
   public UserController(UserService service) { 
     this.service = service; 
   }
 
-  @PostMapping
-  public ResponseEntity<UserResponseDTO> createUser(@RequestBody @Valid UserCreateDTO userCreateDTO) {
-    return ResponseEntity.ok(service.save(userCreateDTO));
+  @GetMapping("/{id}")
+  public ResponseEntity<UserResponseDTO> getUser(@PathVariable UUID id) {
+    return ResponseEntity.ok(service.getUserById(id));
   }
 
+
+  
   @PutMapping ("/{id}")
-    public ResponseEntity<String> editUser(@PathVariable UUID id, @RequestBody @Valid UserUpdateDTO userUpdateDTO){
-      return ResponseEntity.ok("User updated successfully");
+  public ResponseEntity<String> editUser(@PathVariable UUID id, @RequestBody @Valid UserUpdateDTO userUpdateDTO){
+      return ResponseEntity.ok(service.updateUser(id, userUpdateDTO));
   }
 }
 

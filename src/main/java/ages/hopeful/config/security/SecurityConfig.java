@@ -11,7 +11,7 @@ public class SecurityConfig {
     private static final String[] SWAGGER_WHITELIST = {
         "/swagger-ui/index.html",
         "/swagger-ui/**",
-        "/v3/**",
+        "/v3/api-docs/**",
         "/swagger-resources/**",
         "/swagger-resources",
         "/webjars/**",
@@ -22,7 +22,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(SWAGGER_WHITELIST).permitAll() 
+            .requestMatchers(SWAGGER_WHITELIST).permitAll() 
+                .requestMatchers("/api/users/**").permitAll()
                 .anyRequest().authenticated() 
             );
 
