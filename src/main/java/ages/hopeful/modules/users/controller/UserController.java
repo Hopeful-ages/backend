@@ -1,11 +1,17 @@
-package ages.hopeful.modules.users.controllers;
+package ages.hopeful.modules.users.controller;
 
 import jakarta.validation.Valid;
+
+import java.util.UUID;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+
 
 import ages.hopeful.modules.users.dto.*;
-import ages.hopeful.modules.users.services.UserService;
+import ages.hopeful.modules.users.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/users")
@@ -23,8 +29,8 @@ public class UserController {
   }
 
   @PutMapping ("/{id}")
-    public ResponseEntity<UserResponseDTO> editUser(@PathVariable UUID id, @RequestBody @Valid UserUpdateDTO userUpdateDTO){
-      return ResponseEntity.ok(service.save(userUpdateDTO));
+    public ResponseEntity<String> editUser(@PathVariable UUID id, @RequestBody @Valid UserUpdateDTO userUpdateDTO){
+      return ResponseEntity.ok("User updated successfully");
   }
 }
 

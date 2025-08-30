@@ -1,4 +1,4 @@
-package ages.hopeful.modules.users.services;
+package ages.hopeful.modules.users.service;
 
 import ages.hopeful.exception.ConflictException;
 import ages.hopeful.modules.users.dto.*;
@@ -36,5 +36,7 @@ public class UserService {
     
     return UserMapper.toResponse(saved);
   }
+
+ 
 }
 
