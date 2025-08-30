@@ -1,4 +1,4 @@
-package ages.hopeful.modules.users.dto;
+package ages.hopeful.modules.user.dto;
 
 import java.util.UUID;
 import jakarta.validation.constraints.*;

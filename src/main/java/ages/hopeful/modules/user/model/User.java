@@ -1,4 +1,4 @@
-package ages.hopeful.modules.users.model;
+package ages.hopeful.modules.user.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

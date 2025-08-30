@@ -1,7 +1,7 @@
-package ages.hopeful.modules.users.mapper;
+package ages.hopeful.modules.user.mapper;
 
-import ages.hopeful.modules.users.dto.*;
-import ages.hopeful.modules.users.model.User;
+import ages.hopeful.modules.user.dto.*;
+import ages.hopeful.modules.user.model.User;
 
 public class UserMapper {
   public static User toEntity(UserCreateDTO dto, String passwordHash) {

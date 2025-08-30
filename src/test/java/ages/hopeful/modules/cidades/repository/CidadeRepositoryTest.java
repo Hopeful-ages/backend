@@ -19,7 +19,7 @@ public class CidadeRepositoryTest {
     private CidadeRepository cidadeRepository;
 
     @Test
-    void testSalvarECidade() {
+    void testSaveCity() {
         UUID id = UUID.randomUUID();
         Cidade cidade = new Cidade(id, "Porto Alegre", "RS");
         cidadeRepository.save(cidade);

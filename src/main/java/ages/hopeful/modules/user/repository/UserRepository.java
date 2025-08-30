@@ -1,9 +1,9 @@
-package ages.hopeful.modules.users.repository;
+package ages.hopeful.modules.user.repository;
 
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import ages.hopeful.modules.users.model.User;
+import ages.hopeful.modules.user.model.User;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
   boolean existsByEmail(String email);
