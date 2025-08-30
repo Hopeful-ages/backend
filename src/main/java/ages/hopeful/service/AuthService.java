@@ -5,7 +5,7 @@ import ages.hopeful.dto.LoginRequest;
 import ages.hopeful.dto.TokenResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,19 +14,20 @@ public class AuthService {
 
     private final JdbcTemplate jdbcTemplate;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
     public TokenResponse login(LoginRequest loginRequest) {
-        String sql = "SELECT nome, senha FROM usuario WHERE nome = ?";
+        String sql = "SELECT nome, email, senha FROM usuario WHERE email = ?";
         try {
             var user = jdbcTemplate.queryForMap(sql, loginRequest.getUsername());
 
-            String hashedPassword = (String) user.get("senha");
+            String storedPassword = (String) user.get("senha");
 
-            if (!BCrypt.checkpw(loginRequest.getPassword(), hashedPassword)) {
+            if (!passwordEncoder.matches(loginRequest.getPassword(), storedPassword)) {
                 return null;
             }
 
-            String token = jwtUtil.generateToken((String) user.get("nome"));
+            String token = jwtUtil.generateToken((String) user.get("email"));
             return new TokenResponse(token);
 
         } catch (Exception e) {
