@@ -1,8 +1,9 @@
-package ages.hopeful.dto;
+package ages.hopeful.modules.auth.dto;
 
 import lombok.*;
 
-@Getter @Setter
+@Getter 
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequest {

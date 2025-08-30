@@ -1,4 +1,4 @@
-package ages.hopeful.config.security;
+package ages.hopeful.shared.config.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -43,4 +43,3 @@ public class JwtUtil {
         }
     }
 }
-

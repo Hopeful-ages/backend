@@ -1,4 +1,4 @@
-package ages.hopeful.util;
+package ages.hopeful.shared.util;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

@@ -1,4 +1,4 @@
-package ages.hopeful.config.security;
+package ages.hopeful.shared.config.security;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;

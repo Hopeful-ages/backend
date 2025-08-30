@@ -1,4 +1,4 @@
-package ages.hopeful.exception;
+package ages.hopeful.shared.exception;
 
 import org.springframework.http.HttpStatus;
 

@@ -91,7 +91,20 @@ VALUES (
     'abner@naoinfomado.com',
     '5511987654321',
     '$2a$10$cfFYnikRgfxgkq6I44oxeORd6Ud0PbK79OkLY2gv6URUEAdudGA9.', -- senha "Senha" com BCrypt
+    NULL, -- servico_id já existe
+    NULL,  -- cidade_id já existe
+    '550e8400-e29b-41d4-a716-446655440004'
+);
+
+INSERT INTO usuario (id, nome, cpf, email, telefone, senha, servico_id, cidade_id, funcao_id)
+VALUES (
+    '550e8400-e29b-41d4-a716-446655440001',    
+    'User Local',
+    '123.456.789-10',
+    'user@teste.com',
+    '5511987654321',
+    '$2a$10$cfFYnikRgfxgkq6I44oxeORd6Ud0PbK79OkLY2gv6URUEAdudGA9.', -- senha "Senha" com BCrypt
     '550e8400-e29b-41d4-a716-446655440001', -- servico_id já existe
     '550e8400-e29b-41d4-a716-446655440002',  -- cidade_id já existe
-    '550e8400-e29b-41d4-a716-446655440004'
+    '550e8400-e29b-41d4-a716-446655440003'
 );

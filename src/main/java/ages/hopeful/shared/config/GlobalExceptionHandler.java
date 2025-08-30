@@ -1,4 +1,4 @@
-package ages.hopeful.config;
+package ages.hopeful.shared.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import ages.hopeful.exception.HttpException;
+import ages.hopeful.shared.exception.HttpException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
 
-  // captura Illegal arguments exceptions, necessária para a validação do parse de ‘string’ → DTO
+  // captura Illegal arguments exceptions, necessária para a validação do parse de 'string' → DTO
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
     Map<String, Object> response = new HashMap<>();
