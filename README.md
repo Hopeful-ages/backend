@@ -30,6 +30,11 @@ Com este comando, realiza-se o build das imagens dos containers utilizados pela 
 No caso deste projeto, são criados dois containers: um para o banco de dados PostgreSQL; e outro para a API Spring Boot 
 do projeto, sendo que esta já é configurada para se conectar com o banco de dados.
 
+A aplicação Spring Boot estará disponível em ``http://localhost:8080``
+.
+O Swagger, que permite acessar a documentação e testar os endpoints, estará disponível em ``http://localhost:8080/swagger-ui/index.html`` 
+.
+
 Quando quiser parar a execução da aplicação e remover os recursos criados (containers e redes), basta executar o comando 
 oposto abaixo:
 ```bash
@@ -52,3 +57,6 @@ Docker (facilita a execução da aplicação durante o desenvolvimento):
 ```bash
 docker compose up -d db
 ```
+
+
+

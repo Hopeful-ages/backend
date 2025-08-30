@@ -15,6 +15,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+    enabled: true
+    url: /v3/api-docs
+    display-request-duration: true
+  packages-to-scan: ages.hopeful
 
 --- # Separador de documentos de perfil
 
