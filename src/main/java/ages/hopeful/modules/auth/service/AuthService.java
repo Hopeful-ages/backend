@@ -22,7 +22,7 @@ public class AuthService {
 
     public TokenResponse login(LoginRequest loginRequest) {
         try {
-            // autentica com o UserDetailsService + PasswordEncoder
+            
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(),
@@ -35,7 +35,7 @@ public class AuthService {
             String role = userDetails.getAuthorities().stream()
                          .findFirst()
                          .map(auth -> auth.getAuthority())
-                         .orElse("ROLE_USER"); // fallback seguro
+                         .orElse("ROLE_USER"); 
 
             String token = jwtUtil.generateToken(userDetails.getUsername(), role);
 

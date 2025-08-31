@@ -46,14 +46,12 @@ public class AuthController {
         }
     }
 
-    // Endpoint para usuários com ROLE_USER
     @GetMapping("/user-info")
     @Operation(summary = "Informações do usuário", description = "Retorna dados visíveis apenas para usuários comuns")
     public ResponseEntity<String> getUserInfo() {
         return ResponseEntity.ok("Informações acessíveis para ROLE_USER");
     }
 
-    // Endpoint para usuários com ROLE_ADMIN
     @GetMapping("/admin-info")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Informações do admin", description = "Retorna dados visíveis apenas para administradores")

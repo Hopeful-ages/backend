@@ -1,9 +1,8 @@
 package ages.hopeful.modules.auth.service;
 
-import ages.hopeful.modules.auth.entity.User;
-import ages.hopeful.modules.auth.repository.UserRepository;
+import ages.hopeful.modules.user.model.User;
+import ages.hopeful.modules.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

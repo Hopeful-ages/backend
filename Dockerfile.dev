@@ -1,0 +1,17 @@
+# Usa Maven + Amazon Corretto 21
+FROM maven:3.9.9-amazoncorretto-21-alpine
+
+WORKDIR /app
+
+# 1. Copia o pom.xml e baixa dependências (cache eficiente)
+COPY pom.xml ./
+RUN mvn dependency:go-offline -B
+
+# 2. Copia o código fonte
+COPY src ./src
+
+# 3. Define a porta da aplicação
+EXPOSE 8080
+
+RUN mvn clean package -DskipTests
+CMD ["java", "-jar", "target/hopeful-0.0.1-SNAPSHOT.jar", "--spring.profiles.active=dev"]
