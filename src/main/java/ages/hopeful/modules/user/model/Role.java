@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "role")
+@Table(name = "papel")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,6 +17,6 @@ public class Role {
     @Id
     private UUID id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "nome", nullable = false, unique = true)
     private String name; 
 }

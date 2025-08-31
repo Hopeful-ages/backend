@@ -8,8 +8,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.Collections;
+
 import java.util.UUID;
 
 @Entity
@@ -17,9 +19,9 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user", uniqueConstraints = {
-    @UniqueConstraint(name = "uk_user_email", columnNames = "email"),
-    @UniqueConstraint(name = "uk_user_cpf", columnNames = "cpf")
+@Table(name = "usuario", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_usuario_email", columnNames = "email"),
+        @UniqueConstraint(name = "uk_usuario_cpf", columnNames = "cpf")
 })
 public class User implements UserDetails {
 
@@ -27,34 +29,40 @@ public class User implements UserDetails {
     @Column(columnDefinition = "uuid")
     private UUID id = UUID.randomUUID();
 
-    @Column(name = "name", nullable = false, length = 150)
-    private String name;
+    @Column(name = "nome", nullable = false, length = 255)
+    private String nome;
 
-    @Column(name = "cpf", nullable = false, length = 14)
+    @Column(name = "cpf", nullable = false, length = 20)
     private String cpf;
 
-    @Column(name = "email", nullable = false, length = 160)
+    @Column(name = "email", nullable = false, length = 150)
     private String email;
 
-    @Column(name = "phone", length = 30)
-    private String phone;
+    @Column(name = "telefone", length = 20)
+    private String telefone;
 
-    @Column(name = "password", nullable = false, length = 120)
-    private String password;
+    @Column(name = "senha", nullable = false, length = 255)
+    private String senha;
 
-    @Column(name = "service_id", columnDefinition = "uuid")
-    private UUID serviceId;
+    @Column(name = "servico_id", columnDefinition = "uuid")
+    private UUID servicoId;
 
-    @Column(name = "city_id", columnDefinition = "uuid")
-    private UUID cityId;
+    @Column(name = "cidade_id", columnDefinition = "uuid")
+    private UUID cidadeId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
+    @JoinColumn(name = "papel_id", nullable = false)
     private Role role;
 
+    // Implementação de UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(role.getName()));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha;
     }
 
     @Override
@@ -62,13 +70,15 @@ public class User implements UserDetails {
         return this.email;
     }
 
-    // Métodos restantes de UserDetails
     @Override
     public boolean isAccountNonExpired() { return true; }
+
     @Override
     public boolean isAccountNonLocked() { return true; }
+
     @Override
     public boolean isCredentialsNonExpired() { return true; }
+
     @Override
     public boolean isEnabled() { return true; }
 }
