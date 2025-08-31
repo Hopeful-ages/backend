@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import ages.hopeful.modules.cidades.model.Cidade;
 import ages.hopeful.modules.cidades.repository.CidadeRepository;
@@ -13,8 +14,10 @@ import ages.hopeful.modules.cidades.repository.CidadeRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles("test") 
+@ActiveProfiles("test")
+@Transactional 
 public class CidadeRepositoryTest {
+
     @Autowired
     private CidadeRepository cidadeRepository;
 
