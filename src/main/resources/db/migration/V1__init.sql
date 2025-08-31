@@ -48,7 +48,7 @@ CREATE TABLE criticidades (
     CONSTRAINT fk_cenario_criticidade FOREIGN KEY (cenario_id) REFERENCES cenarios (id)
 );
 
-CREATE TABLE funcao (
+CREATE TABLE papel (
     id UUID PRIMARY KEY,
     nome VARCHAR(10)
 );
@@ -62,17 +62,17 @@ CREATE TABLE usuario (
     senha VARCHAR(255) NOT NULL,
     servico_id UUID,
     cidade_id UUID,
-    funcao_id UUID,
+    papel_id UUID,
     CONSTRAINT fk_usuario_servico FOREIGN KEY (servico_id) REFERENCES servicos (id),
     CONSTRAINT fk_usuario_cidade FOREIGN KEY (cidade_id) REFERENCES cidade (id),
-    CONSTRAINT fk_usuario_funcao FOREIGN KEY (funcao_id) REFERENCES funcao (id)
+    CONSTRAINT fk_usuario_papel FOREIGN KEY (papel_id) REFERENCES papel (id)
 );
 -- Inserir cidades
 INSERT INTO cidade (id, nome, estado)
 VALUES 
     ('550e8400-e29b-41d4-a716-446655440002', 'Cidade Exemplo', 'Estado Exemplo');
 
-INSERT INTO funcao (id, nome)
+INSERT INTO papel (id, nome)
 VALUES
     ('550e8400-e29b-41d4-a716-446655440003', 'USER'),
     ('550e8400-e29b-41d4-a716-446655440004', 'ADMIN');
@@ -82,8 +82,7 @@ INSERT INTO servicos (id, nome)
 VALUES 
     ('550e8400-e29b-41d4-a716-446655440001', 'Serviço Exemplo');
 
--- Agora insere o usuário
-INSERT INTO usuario (id, nome, cpf, email, telefone, senha, servico_id, cidade_id, funcao_id)
+INSERT INTO usuario (id, nome, cpf, email, telefone, senha, servico_id, cidade_id, papel_id)
 VALUES (
     '550e8400-e29b-41d4-a716-446655440000',    
     'Abner',
@@ -96,7 +95,7 @@ VALUES (
     '550e8400-e29b-41d4-a716-446655440004'
 );
 
-INSERT INTO usuario (id, nome, cpf, email, telefone, senha, servico_id, cidade_id, funcao_id)
+INSERT INTO usuario (id, nome, cpf, email, telefone, senha, servico_id, cidade_id, papel_id)
 VALUES (
     '550e8400-e29b-41d4-a716-446655440001',    
     'User Local',

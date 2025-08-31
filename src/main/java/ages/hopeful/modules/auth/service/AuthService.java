@@ -1,44 +1,47 @@
 package ages.hopeful.modules.auth.service;
 
+import ages.hopeful.config.security.JwtUtil;
 import ages.hopeful.modules.auth.dto.LoginRequest;
 import ages.hopeful.modules.auth.dto.TokenResponse;
-import ages.hopeful.modules.auth.entity.User;
-import ages.hopeful.modules.auth.repository.UserRepository;
-import ages.hopeful.shared.config.security.JwtUtil;
-import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
 
     public TokenResponse login(LoginRequest loginRequest) {
         try {
-            Optional<User> userOpt = userRepository.findByEmail(loginRequest.getUsername());
-            
-            if (userOpt.isEmpty()) {
-                return null;
-            }
-            
-            User user = userOpt.get();
-            
-            if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                return null;
-            }
+            // autentica com o UserDetailsService + PasswordEncoder
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    loginRequest.getUsername(),
+                    loginRequest.getPassword()
+                )
+            );
 
-            String token = jwtUtil.generateToken(user.getEmail());
-            
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            String role = userDetails.getAuthorities().stream()
+                         .findFirst()
+                         .map(auth -> auth.getAuthority())
+                         .orElse("ROLE_USER"); // fallback seguro
+
+            String token = jwtUtil.generateToken(userDetails.getUsername(), role);
+
             return new TokenResponse(token);
-
-        } catch (Exception e) {
-            return null;
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("Usuário ou senha inválidos");
         }
     }
 }

@@ -6,11 +6,13 @@ import ages.hopeful.modules.auth.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -43,4 +45,20 @@ public class AuthController {
                     .body("Credenciais inválidas.");
         }
     }
+
+    // Endpoint para usuários com ROLE_USER
+    @GetMapping("/user-info")
+    @Operation(summary = "Informações do usuário", description = "Retorna dados visíveis apenas para usuários comuns")
+    public ResponseEntity<String> getUserInfo() {
+        return ResponseEntity.ok("Informações acessíveis para ROLE_USER");
+    }
+
+    // Endpoint para usuários com ROLE_ADMIN
+    @GetMapping("/admin-info")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Informações do admin", description = "Retorna dados visíveis apenas para administradores")
+    public ResponseEntity<String> getAdminInfo() {
+        return ResponseEntity.ok("Informações acessíveis para ROLE_ADMIN");
+    }
+    
 }
