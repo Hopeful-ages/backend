@@ -1,21 +1,23 @@
-version: '3.8'
+version: "3.9"
 
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: hopeful_app_dev
+    container_name: spring_app_dev
     ports:
       - "8080:8080"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/hopefuldatabase
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
+      # Ativa reload automático do DevTools
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
     volumes:
-      - .:/app            # Monta o código para hot-reload
-      - ~/.m2:/root/.m2   # Cache local do Maven para acelerar builds
+      - ./src:/app/src
+      - ./pom.xml:/app/pom.xml
+      - ./target:/app/target
     depends_on:
       - db
 
