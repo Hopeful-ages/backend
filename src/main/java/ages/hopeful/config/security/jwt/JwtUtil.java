@@ -1,4 +1,4 @@
-package ages.hopeful.config.security;
+package ages.hopeful.config.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

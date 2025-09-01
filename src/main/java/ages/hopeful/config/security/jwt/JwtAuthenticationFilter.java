@@ -1,4 +1,4 @@
-package ages.hopeful.config.security;
+package ages.hopeful.config.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import ages.hopeful.common.exception.JwtAuthenticationException;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -20,6 +22,8 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -42,9 +46,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
-                 throw new RuntimeException("Invalid JWT token");
-            }
+            SecurityContextHolder.clearContext();
+
+            jwtAuthenticationEntryPoint.commence(request, response, 
+                    new JwtAuthenticationException("Invalid JWT token"));
+            return; 
         }
+    }
 
         filterChain.doFilter(request, response);
     }

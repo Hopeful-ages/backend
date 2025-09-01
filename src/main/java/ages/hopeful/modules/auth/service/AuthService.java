@@ -1,6 +1,6 @@
 package ages.hopeful.modules.auth.service;
 
-import ages.hopeful.config.security.JwtUtil;
+import ages.hopeful.config.security.jwt.JwtUtil;
 import ages.hopeful.modules.auth.dto.LoginRequest;
 import ages.hopeful.modules.auth.dto.TokenResponse;
 import lombok.RequiredArgsConstructor;
