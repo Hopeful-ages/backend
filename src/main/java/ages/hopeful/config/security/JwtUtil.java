@@ -3,15 +3,19 @@ package ages.hopeful.config.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Date;
-import javax.crypto.SecretKey;
 
 @Component
 public class JwtUtil {
 
-    private static final String SECRET_STRING = "minha_chave_super_secreta_para_jwt_token_seguro_123456";
-    private static final SecretKey SECRET = Keys.hmacShaKeyFor(SECRET_STRING.getBytes());
-    private static final long EXPIRATION = 86400000; // 24h
+    private static final KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
+    private static final PrivateKey PRIVATE_KEY = keyPair.getPrivate();
+    private static final PublicKey PUBLIC_KEY = keyPair.getPublic();
+    private static final long EXPIRATION = 86400000;
 
     public String generateToken(String username, String role) {
         return Jwts.builder()
@@ -19,37 +23,38 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SECRET)
+                .signWith(PRIVATE_KEY, SignatureAlgorithm.RS256)
                 .compact();
     }
 
     public String getUsernameFromToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET)
+                .setSigningKey(PUBLIC_KEY)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
+
     public String getRoleFromToken(String token) {
         return (String) Jwts.parserBuilder()
-                .setSigningKey(SECRET)
+                .setSigningKey(PUBLIC_KEY)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .get("role");
     }
 
-
-    public boolean validateToken(String token) {
+    public void validateToken(String token) throws Exception {
         try {
             Jwts.parserBuilder()
-                .setSigningKey(SECRET)
-                .build()
-                .parseClaimsJws(token);
-            return true;
+                    .setSigningKey(PUBLIC_KEY)
+                    .build()
+                    .parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            throw new Exception("Expired token");
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new Exception("Invalid token");
         }
     }
 }
