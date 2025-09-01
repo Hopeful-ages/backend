@@ -3,9 +3,11 @@ package ages.hopeful.modules.auth.service;
 import ages.hopeful.config.security.jwt.JwtUtil;
 import ages.hopeful.modules.auth.dto.LoginRequest;
 import ages.hopeful.modules.auth.dto.TokenResponse;
+import ages.hopeful.modules.user.model.User;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import java.util.UUID;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,21 +25,25 @@ public class AuthService {
     public TokenResponse login(LoginRequest loginRequest) {
         try {
             
-            Authentication authentication = authenticationManager.authenticate(
+           Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(),
                     loginRequest.getPassword()
                 )
             );
 
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            // cast para seu User
+            User userDetails =
+                    (User) authentication.getPrincipal();
 
             String role = userDetails.getAuthorities().stream()
-                         .findFirst()
-                         .map(auth -> auth.getAuthority())
-                         .orElse("ROLE_USER"); 
+                        .findFirst()
+                        .map(auth -> auth.getAuthority())
+                        .orElse("ROLE_USER");
 
-            String token = jwtUtil.generateToken(userDetails.getUsername(), role);
+            UUID userId = userDetails.getId(); // agora sim tem o UUID
+
+            String token = jwtUtil.generateToken(userDetails.getUsername(), role, userId);
 
             return new TokenResponse(token);
         } catch (BadCredentialsException e) {

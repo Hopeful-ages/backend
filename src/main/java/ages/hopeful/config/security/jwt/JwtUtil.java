@@ -8,6 +8,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtUtil {
@@ -17,10 +18,12 @@ public class JwtUtil {
     private static final PublicKey PUBLIC_KEY = keyPair.getPublic();
     private static final long EXPIRATION = 86400000;
 
-    public String generateToken(String username, String role) {
+    public String generateToken(String username, String role, UUID userId) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(userId.toString())
                 .claim("role", role)
+                .claim("email", username) // adiciona o email
+
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(PRIVATE_KEY, SignatureAlgorithm.RS256)
@@ -28,13 +31,13 @@ public class JwtUtil {
     }
 
     public String getUsernameFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(PUBLIC_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-    }
+    return (String) Jwts.parserBuilder()
+            .setSigningKey(PUBLIC_KEY)
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .get("email");
+}
 
     public String getRoleFromToken(String token) {
         return (String) Jwts.parserBuilder()
@@ -43,6 +46,15 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .get("role");
+    }
+    public UUID getUserIdFromToken(String token) {
+        String id = Jwts.parserBuilder()
+                .setSigningKey(PUBLIC_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+        return UUID.fromString(id);
     }
 
     public void validateToken(String token) throws Exception {
