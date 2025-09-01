@@ -6,12 +6,14 @@ import ages.hopeful.modules.auth.dto.TokenResponse;
 import ages.hopeful.modules.user.model.User;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -36,14 +38,18 @@ public class AuthService {
             User userDetails =
                     (User) authentication.getPrincipal();
 
-            String role = userDetails.getAuthorities().stream()
-                        .findFirst()
-                        .map(auth -> auth.getAuthority())
-                        .orElse("ROLE_USER");
+            List<String> roles = userDetails.getAuthorities()
+                                .stream()
+                                .map(auth -> {
+                                    String role = auth.getAuthority();
+                                    return role.startsWith("ROLE_") ? role : "ROLE_" + role;
+                                })
+                                .toList();
+
 
             UUID userId = userDetails.getId(); // agora sim tem o UUID
 
-            String token = jwtUtil.generateToken(userDetails.getUsername(), role, userId);
+            String token = jwtUtil.generateToken(userDetails.getUsername(), roles, userId);
 
             return new TokenResponse(token);
         } catch (BadCredentialsException e) {

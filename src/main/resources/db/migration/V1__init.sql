@@ -48,11 +48,6 @@ CREATE TABLE criticidades (
     CONSTRAINT fk_cenario_criticidade FOREIGN KEY (cenario_id) REFERENCES cenarios (id)
 );
 
-CREATE TABLE papel (
-    id UUID PRIMARY KEY,
-    nome VARCHAR(10)
-);
-
 CREATE TABLE usuario (
     id UUID PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
@@ -62,48 +57,6 @@ CREATE TABLE usuario (
     senha VARCHAR(255) NOT NULL,
     servico_id UUID,
     cidade_id UUID,
-    papel_id UUID,
     CONSTRAINT fk_usuario_servico FOREIGN KEY (servico_id) REFERENCES servicos (id),
-    CONSTRAINT fk_usuario_cidade FOREIGN KEY (cidade_id) REFERENCES cidade (id),
-    CONSTRAINT fk_usuario_papel FOREIGN KEY (papel_id) REFERENCES papel (id)
-);
--- Inserir cidades
-INSERT INTO cidade (id, nome, estado)
-VALUES 
-    ('550e8400-e29b-41d4-a716-446655440002', 'Cidade Exemplo', 'Estado Exemplo');
-
-INSERT INTO papel (id, nome)
-VALUES
-    ('550e8400-e29b-41d4-a716-446655440003', 'USER'),
-    ('550e8400-e29b-41d4-a716-446655440004', 'ADMIN');
-
--- Inserir serviços
-INSERT INTO servicos (id, nome)
-VALUES 
-    ('550e8400-e29b-41d4-a716-446655440001', 'Serviço Exemplo');
-
-INSERT INTO usuario (id, nome, cpf, email, telefone, senha, servico_id, cidade_id, papel_id)
-VALUES (
-    '550e8400-e29b-41d4-a716-446655440000',    
-    'Abner',
-    '123.456.789-00',
-    'abner@naoinfomado.com',
-    '5511987654321',
-    '$2a$10$cfFYnikRgfxgkq6I44oxeORd6Ud0PbK79OkLY2gv6URUEAdudGA9.', -- senha "Senha" com BCrypt
-    NULL, -- servico_id já existe
-    NULL,  -- cidade_id já existe
-    '550e8400-e29b-41d4-a716-446655440004'
-);
-
-INSERT INTO usuario (id, nome, cpf, email, telefone, senha, servico_id, cidade_id, papel_id)
-VALUES (
-    '550e8400-e29b-41d4-a716-446655440001',    
-    'User Local',
-    '123.456.789-10',
-    'user@teste.com',
-    '5511987654321',
-    '$2a$10$cfFYnikRgfxgkq6I44oxeORd6Ud0PbK79OkLY2gv6URUEAdudGA9.', -- senha "Senha" com BCrypt
-    '550e8400-e29b-41d4-a716-446655440001', -- servico_id já existe
-    '550e8400-e29b-41d4-a716-446655440002',  -- cidade_id já existe
-    '550e8400-e29b-41d4-a716-446655440003'
+    CONSTRAINT fk_usuario_cidade FOREIGN KEY (cidade_id) REFERENCES cidade (id)
 );

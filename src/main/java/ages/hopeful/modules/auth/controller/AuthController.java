@@ -47,8 +47,10 @@ public class AuthController {
     }
 
     @GetMapping("/user-info")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Informações do usuário", description = "Retorna dados visíveis apenas para usuários comuns")
     public ResponseEntity<String> getUserInfo() {
+        
         return ResponseEntity.ok("Informações acessíveis para ROLE_USER");
     }
 

@@ -8,6 +8,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -18,10 +19,10 @@ public class JwtUtil {
     private static final PublicKey PUBLIC_KEY = keyPair.getPublic();
     private static final long EXPIRATION = 86400000;
 
-    public String generateToken(String username, String role, UUID userId) {
+    public String generateToken(String username, List<String> roles, UUID userId) {
         return Jwts.builder()
                 .setSubject(userId.toString())
-                .claim("role", role)
+                .claim("roles", roles)
                 .claim("email", username) // adiciona o email
 
                 .setIssuedAt(new Date())
@@ -39,13 +40,14 @@ public class JwtUtil {
             .get("email");
 }
 
-    public String getRoleFromToken(String token) {
-        return (String) Jwts.parserBuilder()
+    @SuppressWarnings("unchecked")
+    public List<String> getRolesFromToken(String token) {
+        return (List<String>) Jwts.parserBuilder()
                 .setSigningKey(PUBLIC_KEY)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .get("role");
+                .get("roles"); // pega o claim "roles"
     }
     public UUID getUserIdFromToken(String token) {
         String id = Jwts.parserBuilder()
