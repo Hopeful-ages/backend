@@ -1,0 +1,19 @@
+# Use JDK Alpine para desenvolvimento
+FROM amazoncorretto:21-alpine3.21
+
+WORKDIR /app
+
+# Copia só o pom.xml primeiro para cache de dependências
+COPY pom.xml .
+
+# Baixa dependências
+RUN ./mvnw dependency:resolve || true
+
+# Copia todo o código fonte
+COPY . .
+
+# Expondo porta
+EXPOSE 8080
+
+# Rodar com DevTools
+CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.fork=false"]

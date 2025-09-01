@@ -18,7 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
     ),
     security = @SecurityRequirement(name = "bearerAuth"),
     tags = {
-        @Tag(name = "Auth", description = "Endpoints de login e registro"),
+        @Tag(name = "Auth", description = "Endpoints de login e registro")
     }
 )
 @SecurityScheme(

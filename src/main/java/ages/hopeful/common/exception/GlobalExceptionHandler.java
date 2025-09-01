@@ -3,13 +3,13 @@ package ages.hopeful.common.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import ages.hopeful.common.exception.HttpException;
-
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +21,20 @@ public class GlobalExceptionHandler {
   public ResponseEntity<?> handleHttpException(HttpException ex) {
     return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), ex.getStatus()), ex.getStatus());
   }
+
+  
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<?> handleBadCredentials(BadCredentialsException ex) {
+    return new ResponseEntity<>(
+        new ErrorResponse("Username or password is invalid", HttpStatus.UNAUTHORIZED),
+        HttpStatus.UNAUTHORIZED
+    );
+  }
+    @ExceptionHandler(AccessDeniedException.class)
+      public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+          return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                  .body("Você não tem permissão para acessar esta rota");
+      }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<?> handleException(Exception ex) {
