@@ -22,19 +22,17 @@ public class UsersService {
                     .build()));
 
     public List<UserResponse> list(String status) {
-        if (status == null) {
-            throw new IllegalArgumentException("Status filter cannot be null");
-        }
+        try{
+            if(!status.isEmpty()){
+            String s = status.trim().toLowerCase();
+            Boolean filter;
+            switch (s) {
+                case "ativo" -> filter = true;
+                case "inativo" -> filter = false;
+                default -> throw new IllegalArgumentException("Invalid status filter. Use 'ativo' or 'inativo'.");
+            }
 
-        String s = status.trim().toLowerCase(Locale.ROOT);
-        Boolean filter;
-        switch (s) {
-            case "ativo" -> filter = true;
-            case "inativo" -> filter = false;
-            default -> throw new IllegalArgumentException("Invalid status filter. Use 'ativo' or 'inativo'.");
-        }
-
-        return mockDb.stream()
+            return mockDb.stream()
                 .filter(u -> u.isStatus() == filter)
                 .sorted(Comparator.comparing(User::getNome, String.CASE_INSENSITIVE_ORDER))
                 .map(u -> new UserResponse(
@@ -48,9 +46,24 @@ public class UsersService {
                         u.getServiço(),
                         u.isStatus()))
                 .toList();
-    }
+        }
 
-    public void clear() {
-        mockDb.clear();
+        return mockDb.stream()
+                .sorted(Comparator.comparing(User::getNome, String.CASE_INSENSITIVE_ORDER))
+                .map(u -> new UserResponse(
+                        u.getId(),
+                        u.getNome(),
+                        u.getCpf(),
+                        u.getEmail(),
+                        u.getTelefone(),
+                        u.getEstado(),
+                        u.getCidade(),
+                        u.getServiço(),
+                        u.isStatus()))
+                .toList();
+        }catch(Exception ex){
+            System.out.println(ex.getMessage());
+        }
+        return null; 
     }
 }

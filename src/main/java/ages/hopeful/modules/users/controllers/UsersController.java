@@ -18,10 +18,10 @@ import java.util.List;
 @Tag(name = "Users")
 public class UsersController {
 
-    private final UsersService service;
+    private final UsersService usersService;
 
-    public UsersController(UsersService service) {
-        this.service = service;
+    public UsersController(UsersService usersService) {
+        this.usersService = usersService;
     }
 
     @GetMapping
@@ -29,6 +29,9 @@ public class UsersController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponse>> list(
             @RequestParam(value = "status", required = false) String status) {
-        return ResponseEntity.ok(service.list(status));
+                if (!status.isEmpty() && !status.matches("^(ativo|inativo)$")) {
+                  return ResponseEntity.badRequest().build();
+                }
+                return ResponseEntity.ok(usersService.list(status));
     }
 }
