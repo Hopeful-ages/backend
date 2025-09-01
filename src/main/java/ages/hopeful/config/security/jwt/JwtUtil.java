@@ -23,7 +23,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .claim("roles", roles)
-                .claim("email", username) // adiciona o email
+                .claim("email", username) 
 
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
@@ -47,7 +47,7 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .get("roles"); // pega o claim "roles"
+                .get("roles"); 
     }
     public UUID getUserIdFromToken(String token) {
         String id = Jwts.parserBuilder()

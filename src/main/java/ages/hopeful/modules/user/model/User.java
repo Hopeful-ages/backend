@@ -54,7 +54,6 @@ public class User implements UserDetails {
     @JoinColumn(name = "papel_id", nullable = false)
     private Role role;
 
-    // Implementação de UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(role.getName()));

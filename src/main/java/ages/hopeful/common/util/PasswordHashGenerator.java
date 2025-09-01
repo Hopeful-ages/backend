@@ -11,7 +11,7 @@ public class PasswordHashGenerator {
     public static void main(String[] args) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         
-        // Exemplo: gera hash para a senha "Senha"
+        
         String password = "Senha";
         String hash = encoder.encode(password);
         
@@ -19,7 +19,6 @@ public class PasswordHashGenerator {
         System.out.println("Hash BCrypt: " + hash);
         System.out.println();
         
-        // Verifica se o hash está correto
         boolean matches = encoder.matches(password, hash);
         System.out.println("Verificação: " + matches);
     }

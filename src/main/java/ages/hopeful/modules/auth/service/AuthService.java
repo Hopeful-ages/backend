@@ -34,7 +34,6 @@ public class AuthService {
                 )
             );
 
-            // cast para seu User
             User userDetails =
                     (User) authentication.getPrincipal();
 
@@ -47,7 +46,7 @@ public class AuthService {
                                 .toList();
 
 
-            UUID userId = userDetails.getId(); // agora sim tem o UUID
+            UUID userId = userDetails.getId(); 
 
             String token = jwtUtil.generateToken(userDetails.getUsername(), roles, userId);
 
