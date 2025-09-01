@@ -17,15 +17,15 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Cidade {
+public class City {
 
     @Id
     private UUID id;
     
     @Column(name = "nome", nullable = false)
-    private String nome;
+    private String name;
 
     @Column(name = "estado", nullable = false, length = 100)
-    private String estado;
+    private String states;
     
 }

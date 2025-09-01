@@ -11,10 +11,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserResponseDTO {
   public UUID id;
-  public String nome;
+  public String name;
   public String cpf;
   public String email;
-  public String telefone;
-  public UUID servicoId;
-  public UUID cidadeId;
+  public String phone;
+  public UUID serviceId;
+  public UUID cityId;
 }

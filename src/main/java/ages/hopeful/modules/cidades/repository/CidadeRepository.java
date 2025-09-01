@@ -9,5 +9,5 @@ import java.util.UUID;
 
 
 @Repository
-public interface CidadeRepository extends JpaRepository<Cidade, UUID> {
+public interface CityRepository extends JpaRepository<City, UUID> {
 }

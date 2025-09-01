@@ -21,7 +21,7 @@ public class User {
     private UUID id = UUID.randomUUID();
 
     @Column(name = "nome", nullable = false, length = 150)
-    private String nome;
+    private String name;
 
     @Column(name = "cpf", nullable = false, length = 14)
     private String cpf;
@@ -30,14 +30,14 @@ public class User {
     private String email;
 
     @Column(name = "telefone", length = 30)
-    private String telefone;
+    private String phone;
 
     @Column(name = "senha", nullable = false, length = 120)
-    private String senhaHash;
+    private String passwordHash;
 
     @Column(name = "servico_id", columnDefinition = "uuid")
-    private UUID servicoId;   
+    private UUID serviceId;
 
     @Column(name = "cidade_id", columnDefinition = "uuid")
-    private UUID cidadeId;    
+    private UUID cityId;
 }

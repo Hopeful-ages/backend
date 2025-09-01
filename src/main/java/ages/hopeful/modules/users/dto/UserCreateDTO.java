@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor @AllArgsConstructor
 public class UserCreateDTO {
   @NotBlank @Size(max = 150) 
-  public String nome;
+  public String name;
 
   @NotBlank @Pattern(regexp = "^[0-9.\\-]{11,14}$") 
   public String cpf;
@@ -17,12 +17,12 @@ public class UserCreateDTO {
   public String email;
 
   @Size(max = 30) public 
-  String telefone;
+  String phone;
 
   @NotBlank @Size(min = 6, max = 100) 
-  public String senha;
+  public String password;
 
-  public UUID servicoId;
+  public UUID serviceId;
   
-  public UUID cidadeId;
+  public UUID cityId;
 }
