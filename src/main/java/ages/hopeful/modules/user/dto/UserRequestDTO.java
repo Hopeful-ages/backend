@@ -2,12 +2,11 @@ package ages.hopeful.modules.user.dto;
 
 import java.util.UUID;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class UserCreateDTO {
+public class UserRequestDTO {
 
   @NotBlank @Size(max = 150) 
   public String name;

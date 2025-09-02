@@ -3,92 +3,88 @@ package ages.hopeful.common.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+
 import java.nio.file.AccessDeniedException;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(HttpException.class)
-  public ResponseEntity<?> handleHttpException(HttpException ex) {
-    return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), ex.getStatus()), ex.getStatus());
-  }
+    @ExceptionHandler(HttpException.class)
+    public ResponseEntity<ErrorResponse> handleHttpException(HttpException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getStatus().getReasonPhrase(), ex.getMessage()), ex.getStatus());
+    }
 
-  
-  @ExceptionHandler(BadCredentialsException.class)
-  public ResponseEntity<?> handleBadCredentials(BadCredentialsException ex) {
-    return new ResponseEntity<>(
-        new ErrorResponse("Username or password is invalid", HttpStatus.UNAUTHORIZED),
-        HttpStatus.UNAUTHORIZED
-    );
-  }
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
+        return new ResponseEntity<>(new ErrorResponse("Unauthorized", "Username or password is invalid"), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
-      public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
-          return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                  .body("Você não tem permissão para acessar esta rota");
-      }
-
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<?> handleException(Exception ex) {
-    return new ResponseEntity<>(new ErrorResponse("Internal Server Error",
-            HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
-  }
-
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-    Map<String, Object> response = new HashMap<>();
-    response.put("status", "BAD_REQUEST");
-
-    Map<String, String> errors = new HashMap<>();
-
-    for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
-      errors.put(fieldError.getField(), fieldError.getDefaultMessage());
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        return new ResponseEntity<>(new ErrorResponse("Forbidden", "Você não tem permissão para acessar esta rota"), HttpStatus.FORBIDDEN);
     }
 
-    response.put("errors", errors);
-    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-  }
-
-  @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
-    Map<String, Object> response = new HashMap<>();
-    response.put("status", "BAD_REQUEST");
-    response.put("error", ex.getMessage());
-
-    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-  }
-
-  public static class ErrorResponse {
-    private String message;
-    private HttpStatus status;
-
-    public ErrorResponse(String message, HttpStatus status) {
-      this.message = message;
-      this.status = status;
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        String message = "Malformed request";
+        if (ex.getCause() instanceof InvalidFormatException invalidFormat) {
+            Class<?> targetType = invalidFormat.getTargetType();
+            String field = invalidFormat.getPath().get(0).getFieldName();
+            if (targetType == java.util.UUID.class) {
+                message = "The field '" + field + "' must be a valid UUID";
+            }
+        }
+        return new ResponseEntity<>(new ErrorResponse("Bad Request", message), HttpStatus.BAD_REQUEST);
     }
 
-    public String getMessage() {
-      return message;
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        StringBuilder sb = new StringBuilder();
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            sb.append(fieldError.getField()).append(": ").append(fieldError.getDefaultMessage()).append("; ");
+        }
+        return new ResponseEntity<>(new ErrorResponse("Bad Request", sb.toString()), HttpStatus.BAD_REQUEST);
     }
 
-    public void setMessage(String message) {
-      this.message = message;
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+        log.error("Unhandled exception", ex);
+        return new ResponseEntity<>(new ErrorResponse("Internal Server Error", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public HttpStatus getStatus() {
-      return status;
-    }
+    // Classe ErrorResponse normal, com getters e setters
+    public static class ErrorResponse {
+        private String error;
+        private String message;
 
-    public void setStatus(HttpStatus status) {
-      this.status = status;
+        public ErrorResponse(String error, String message) {
+            this.error = error;
+            this.message = message;
+        }
+
+        public String getError() {
+            return error;
+        }
+
+        public void setError(String error) {
+            this.error = error;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
     }
-  }
 }

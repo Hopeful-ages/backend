@@ -24,7 +24,13 @@ springdoc:
     url: /v3/api-docs
     display-request-duration: true
   packages-to-scan: ages.hopeful
-  
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
 --- # Separador de documentos de perfil
 
 spring:

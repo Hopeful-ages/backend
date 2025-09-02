@@ -7,3 +7,4 @@ public class JwtAuthenticationException extends AuthenticationException {
         super(msg);
     }
 }
+
