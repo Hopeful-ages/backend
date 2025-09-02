@@ -4,10 +4,12 @@ import java.util.UUID;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
+
 @Getter 
 @Setter
 @Builder
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor 
+@AllArgsConstructor
 public class UserRequestDTO {
 
   @NotBlank @Size(max = 150) 
