@@ -25,8 +25,9 @@ import java.util.UUID;
 public class User implements UserDetails {
 
     @Id
-    @Column(columnDefinition = "uuid")
-    private UUID id = UUID.randomUUID();
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+    private UUID id;
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;

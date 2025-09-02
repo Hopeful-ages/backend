@@ -5,9 +5,11 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor // necessário para MapStruct ou ModelMapper
 @AllArgsConstructor
 public class UserResponseDTO {
   public UUID id;
@@ -17,4 +19,5 @@ public class UserResponseDTO {
   public String phone;
   public UUID serviceId;
   public UUID cityId;
+ 
 }
