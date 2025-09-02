@@ -7,8 +7,8 @@ services:
       dockerfile: Dockerfile.dev
     container_name: spring_app
     volumes:
-      - .:/app           # monta o código local
-      - ~/.m2:/root/.m2  # cache do Maven local → builds mais rápidos
+      - .:/app
+      - ~/.m2:/root/.m2
     ports:
       - "8080:8080"
     depends_on:
@@ -17,6 +17,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
       SPRING_DATASOURCE_USERNAME: myuser
       SPRING_DATASOURCE_PASSWORD: mypass
+    command: mvn spring-boot:run  # garante que sempre rode o código atualizado
 
   db:
     image: postgres:16
