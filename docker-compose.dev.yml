@@ -5,34 +5,31 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: spring_app_dev
+    container_name: spring_app
+    volumes:
+      - .:/app           # monta o código local
+      - ~/.m2:/root/.m2  # cache do Maven local → builds mais rápidos
     ports:
       - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/hopefuldatabase
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      # Ativa reload automático do DevTools
-      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
-    volumes:
-      - ./src:/app/src
-      - ./pom.xml:/app/pom.xml
-      - ./target:/app/target
     depends_on:
       - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: mypass
 
   db:
-    image: postgres:15
-    container_name: postgres_db_dev
+    image: postgres:16
+    container_name: spring_db
     restart: always
     environment:
-      POSTGRES_DB: hopefuldatabase
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypass
+      POSTGRES_DB: mydb
     ports:
       - "5432:5432"
     volumes:
-      - pgdata_dev:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
 
 volumes:
-  pgdata_dev:
+  db_data:
