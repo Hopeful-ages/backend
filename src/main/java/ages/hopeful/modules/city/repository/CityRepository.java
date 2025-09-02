@@ -1,6 +1,5 @@
 package ages.hopeful.modules.city.repository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +10,4 @@ import ages.hopeful.modules.city.model.City;
 
 @Repository
 public interface CityRepository extends JpaRepository<City, UUID> {
-    Optional<City> findById(UUID id);
 }
