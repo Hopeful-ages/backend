@@ -1,6 +1,7 @@
 package ages.hopeful.modules.user.service;
 
 import ages.hopeful.common.exception.ConflictException;
+import ages.hopeful.common.exception.NotFoundException;
 import ages.hopeful.modules.city.repository.CityRepository;
 import ages.hopeful.modules.services.repository.ServiceRepository;
 import ages.hopeful.modules.user.dto.*;
@@ -40,14 +41,14 @@ public class UserService {
             throw new ConflictException("CPF already exists");
         }
         if(serviceRepository.findById(dto.getServiceId()).isEmpty()){
-            throw new EntityNotFoundException("Service not found");
+            throw new NotFoundException("Service not found");
         }
         if (cityRepository.findById(dto.getCityId()).isEmpty()) {
-            throw new EntityNotFoundException("City not found");
+            throw new NotFoundException("City not found");
         }
 
         Role role = roleRepository.findByName("USER")
-                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
+                .orElseThrow(() -> new NotFoundException("Role not found"));
         User user = modelMapper.map(dto, User.class);
         user.setAccountStatus(true);
         user.setRole(role);

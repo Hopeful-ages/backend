@@ -4,7 +4,9 @@ import java.util.UUID;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
-@Getter @Setter
+@Getter 
+@Setter
+@Builder
 @NoArgsConstructor @AllArgsConstructor
 public class UserRequestDTO {
 
