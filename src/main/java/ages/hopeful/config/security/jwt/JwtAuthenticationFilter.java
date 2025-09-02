@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String username = jwtUtil.getUsernameFromToken(token);
                 List<String> roles = jwtUtil.getRolesFromToken(token);
                  List<SimpleGrantedAuthority> authorities = roles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.replace("ROLE_", "")))
+                    .map(SimpleGrantedAuthority::new)
                     .toList();
 
                 UsernamePasswordAuthenticationToken authentication =
