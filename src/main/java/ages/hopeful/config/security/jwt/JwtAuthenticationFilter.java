@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 jwtUtil.validateToken(token); 
                 String username = jwtUtil.getUsernameFromToken(token);
                 List<String> roles = jwtUtil.getRolesFromToken(token);
-                 List<SimpleGrantedAuthority> authorities = roles.stream()
+                List<SimpleGrantedAuthority> authorities = roles.stream()
                     .map(SimpleGrantedAuthority::new)
                     .toList();
 
@@ -48,12 +48,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
-            SecurityContextHolder.clearContext();
-
-            jwtAuthenticationEntryPoint.commence(request, response, 
-                    new JwtAuthenticationException("Invalid JWT token"));
-            return; 
-        }
+                SecurityContextHolder.clearContext();
+                jwtAuthenticationEntryPoint.commence(request, response,
+                        new JwtAuthenticationException("Invalid JWT token"));
+                return;
+            }
     }
 
         filterChain.doFilter(request, response);
