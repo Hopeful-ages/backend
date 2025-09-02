@@ -1,0 +1,1 @@
+ALTER TABLE users RENAME COLUMN papel_id TO role_id;
