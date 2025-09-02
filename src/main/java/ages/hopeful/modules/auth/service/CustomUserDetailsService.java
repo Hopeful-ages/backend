@@ -1,6 +1,5 @@
 package ages.hopeful.modules.auth.service;
 
-import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

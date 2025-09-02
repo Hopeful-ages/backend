@@ -12,7 +12,6 @@ import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.RoleRepository;
 import ages.hopeful.modules.user.repository.UserRepository;
-import ages.hopeful.modules.user.service.UserService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -61,7 +59,6 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Configuração de dados de teste
         UUID serviceId = UUID.randomUUID();
         UUID cityId = UUID.randomUUID();
 
@@ -102,10 +99,8 @@ public class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
 
-        // Execução
         UserResponseDTO response = userService.createUser(userRequestDTO);
 
-        // Verificação
         assertNotNull(response);
         assertEquals(userResponseDTO.id, response.id);
         assertEquals("Test User", response.name);
