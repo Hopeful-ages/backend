@@ -3,7 +3,7 @@ CREATE TABLE papel (
     nome VARCHAR(10)
 );
 
-ALTER TABLE usuario ADD COLUMN papel_id UUID;
+--ALTER TABLE usuario ADD COLUMN papel_id UUID;
 
 -- Criar FK
 ALTER TABLE usuario
