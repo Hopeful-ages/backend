@@ -9,12 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-<<<<<<< HEAD:src/main/java/ages/hopeful/config/GlobalExceptionHandler.java
 import ages.hopeful.exception.HttpException;
 
-=======
-import java.nio.file.AccessDeniedException;
->>>>>>> development:src/main/java/ages/hopeful/common/exception/GlobalExceptionHandler.java
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,24 +24,7 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), ex.getStatus()), ex.getStatus());
   }
 
-<<<<<<< HEAD:src/main/java/ages/hopeful/config/GlobalExceptionHandler.java
   // Captura exceções genéricas
-=======
-  
-  @ExceptionHandler(BadCredentialsException.class)
-  public ResponseEntity<?> handleBadCredentials(BadCredentialsException ex) {
-    return new ResponseEntity<>(
-        new ErrorResponse("Username or password is invalid", HttpStatus.UNAUTHORIZED),
-        HttpStatus.UNAUTHORIZED
-    );
-  }
-    @ExceptionHandler(AccessDeniedException.class)
-      public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
-          return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                  .body("Você não tem permissão para acessar esta rota");
-      }
-
->>>>>>> development:src/main/java/ages/hopeful/common/exception/GlobalExceptionHandler.java
   @ExceptionHandler(Exception.class)
   public ResponseEntity<?> handleException(Exception ex) {
     return new ResponseEntity<>(new ErrorResponse("Erro interno do servidor",

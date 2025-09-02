@@ -1,4 +1,4 @@
-package ages.hopeful.common.exception;
+package ages.hopeful.exception;
 
 import org.springframework.security.core.AuthenticationException;
 

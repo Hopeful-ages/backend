@@ -23,7 +23,6 @@ import ages.hopeful.config.security.jwt.JwtAuthenticationFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-<<<<<<< HEAD
     private static final String[] SWAGGER_WHITELIST = {
         "/swagger-ui/index.html",
         "/swagger-ui/**",
@@ -31,22 +30,9 @@ public class SecurityConfig {
         "/swagger-resources/**",
         "/swagger-resources",
         "/webjars/**",
-=======
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
-    private static final String[] AUTH_WHITELIST = {
-            "/swagger-ui/index.html",
-            "/swagger-ui/**",
-            "/v3/**",
-            "/swagger-resources/**",
-            "/swagger-resources",
-            "/webjars/**",
-            "/api/auth/login"
->>>>>>> development
     };
 
+    /* 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -64,6 +50,7 @@ public class SecurityConfig {
 
         return http.build(); 
     }
+    */
 
     @Bean
     public PasswordEncoder passwordEncoder() {

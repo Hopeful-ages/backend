@@ -1,6 +1,5 @@
 package ages.hopeful.modules.user.service;
 
-import ages.hopeful.common.exception.ConflictException;
 import ages.hopeful.modules.user.dto.*;
 import ages.hopeful.modules.user.repository.UserRepository;
 

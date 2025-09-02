@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import ages.hopeful.common.exception.JwtAuthenticationException;
+//import ages.hopeful.common.exception.JwtAuthenticationException;
 
 import java.io.IOException;
 import java.util.List;
@@ -50,8 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (Exception e) {
             SecurityContextHolder.clearContext();
 
-            jwtAuthenticationEntryPoint.commence(request, response, 
-                    new JwtAuthenticationException("Invalid JWT token"));
+            //jwtAuthenticationEntryPoint.commence(request, response, 
+                   //new JwtAuthenticationException("Invalid JWT token"));
             return; 
         }
     }
