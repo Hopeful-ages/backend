@@ -1,6 +1,5 @@
-package ages.hopeful.modules.users.dto;
+package ages.hopeful.modules.user.dto;
 
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
 import java.util.UUID;
 import lombok.*;
@@ -9,7 +8,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdateDTO {
+public class UserCreateDTO {
 
     @NotBlank
     @Size(max = 150)
@@ -24,12 +23,11 @@ public class UserUpdateDTO {
     @Size(max = 160)
     public String email;
 
-    @NotBlank
     @Size(max = 30)
     public String phone;
 
-    @Nullable
-    @Size(min = 8, max = 100)
+    @NotBlank
+    @Size(min = 6, max = 100)
     public String password;
 
     public UUID serviceId;

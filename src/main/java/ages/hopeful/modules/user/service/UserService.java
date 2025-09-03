@@ -1,9 +1,9 @@
-package ages.hopeful.modules.users.service;
+package ages.hopeful.modules.user.service;
 
 import ages.hopeful.exception.ConflictException;
-import ages.hopeful.modules.users.dto.*;
-import ages.hopeful.modules.users.mapper.UserMapper;
-import ages.hopeful.modules.users.repository.UserRepository;
+import ages.hopeful.modules.user.dto.*;
+import ages.hopeful.modules.user.mapper.UserMapper;
+import ages.hopeful.modules.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

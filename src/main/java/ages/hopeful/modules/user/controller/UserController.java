@@ -1,7 +1,7 @@
-package ages.hopeful.modules.users.controller;
+package ages.hopeful.modules.user.controller;
 
-import ages.hopeful.modules.users.dto.*;
-import ages.hopeful.modules.users.service.UserService;
+import ages.hopeful.modules.user.dto.*;
+import ages.hopeful.modules.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
