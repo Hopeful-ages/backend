@@ -2,19 +2,19 @@ package ages.hopeful.modules.user.dto;
 
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
-@Getter
+@Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class UserResponseDTO {
-  public UUID id;
-  public String name;
-  public String cpf;
-  public String email;
-  public String phone;
-  public UUID serviceId;
-  public UUID cityId;
+  private UUID id;
+  private String name;
+  private String cpf;
+  private String email;
+  private String phone;
+  private UUID serviceId;
+  private UUID cityId;
+  private boolean status; // active (true) | inactive (false)
 }
