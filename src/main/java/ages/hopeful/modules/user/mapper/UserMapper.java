@@ -12,7 +12,7 @@ public class UserMapper {
         entity.setCpf(dto.getCpf().replaceAll("[^0-9]", ""));
         entity.setEmail(dto.getEmail().toLowerCase());
         entity.setPhone(dto.getPhone());
-        // entity.setPasswordHash(dto.getPasswordHash());
+        // entity.setPassword(dto.getPassword());
         entity.setServiceId(dto.getServiceId());
         entity.setCityId(dto.getCityId());
 
@@ -40,7 +40,7 @@ public class UserMapper {
         entity.setCityId(dto.getCityId());
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            entity.setPasswordHash(dto.getPassword()); // Proteger password com hash
+            entity.setPassword(dto.getPassword()); // Proteger password com hash
         }
     }
 }

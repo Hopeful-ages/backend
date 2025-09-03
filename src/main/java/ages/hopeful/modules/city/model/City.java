@@ -1,28 +1,25 @@
 package ages.hopeful.modules.city.model;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "cidade")
+@Table(name = "city")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class City {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "nome", nullable = false)
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
-
-    @Column(name = "estado", nullable = false, length = 100)
-    private String states;
 }
