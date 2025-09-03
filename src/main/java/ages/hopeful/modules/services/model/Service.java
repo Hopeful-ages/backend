@@ -14,7 +14,7 @@ import lombok.Data;
 @Entity
 @Table(name = "services")
 @Data
-public class ServiceEntity {
+public class Service {
      @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
