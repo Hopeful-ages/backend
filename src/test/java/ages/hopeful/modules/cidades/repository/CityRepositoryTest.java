@@ -2,8 +2,8 @@ package ages.hopeful.modules.cidades.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import ages.hopeful.modules.cidades.model.City;
-import ages.hopeful.modules.cidades.repository.CityRepository;
+import ages.hopeful.modules.city.model.City;
+import ages.hopeful.modules.city.repository.CityRepository;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

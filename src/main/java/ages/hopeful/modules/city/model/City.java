@@ -1,4 +1,4 @@
-package ages.hopeful.modules.cidades.model;
+package ages.hopeful.modules.city.model;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
