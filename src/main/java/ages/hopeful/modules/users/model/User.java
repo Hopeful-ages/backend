@@ -1,19 +1,20 @@
 package ages.hopeful.modules.users.model;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Entity
-@Getter 
+@Getter
 @Setter
-@Table(name = "usuario",
-       uniqueConstraints = {
-         @UniqueConstraint(name = "uk_usuario_email", columnNames = "email"),
-         @UniqueConstraint(name = "uk_usuario_cpf", columnNames = "cpf")
-       })
+@Table(
+    name = "usuario",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_usuario_email", columnNames = "email"),
+        @UniqueConstraint(name = "uk_usuario_cpf", columnNames = "cpf"),
+    }
+)
 public class User {
 
     @Id

@@ -1,7 +1,6 @@
 package ages.hopeful.modules.users.dto;
 
 import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,11 +9,12 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class UserResponseDTO {
-  public UUID id;
-  public String name;
-  public String cpf;
-  public String email;
-  public String phone;
-  public UUID serviceId;
-  public UUID cityId;
+
+    public UUID id;
+    public String name;
+    public String cpf;
+    public String email;
+    public String phone;
+    public UUID serviceId;
+    public UUID cityId;
 }
