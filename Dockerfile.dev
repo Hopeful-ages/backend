@@ -1,0 +1,10 @@
+FROM maven:3.9.6-eclipse-temurin-21
+
+WORKDIR /app
+
+# Copia o pom.xml e baixa dependências (cache)
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Monta o código como volume (não copia aqui pra facilitar dev)
+CMD ["mvn", "spring-boot:run"]

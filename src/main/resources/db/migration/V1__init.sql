@@ -60,19 +60,3 @@ CREATE TABLE usuario (
     CONSTRAINT fk_usuario_servico FOREIGN KEY (servico_id) REFERENCES servicos (id),
     CONSTRAINT fk_usuario_cidade FOREIGN KEY (cidade_id) REFERENCES cidade (id)
 );
--- Inserir cidades
-INSERT INTO cidade (id, nome, estado)
-VALUES
-    ('550e8400-e29b-41d4-a716-446655440002', 'Cidade Exemplo', 'Estado Exemplo');
-
--- Inserir serviços
-INSERT INTO servicos (id, nome)
-VALUES
-    ('550e8400-e29b-41d4-a716-446655440001', 'Serviço Exemplo');
-
--- Inserir usuários
-INSERT INTO usuario (id, nome, cpf, email, telefone, senha, servico_id, cidade_id)
-VALUES
-    ('550e8400-e29b-41d4-a716-446655440010', 'Abner Silva', '123.456.789-00', 'abner@exemplo.com', '5511987654321', 'Senha123', '550e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440002'),
-    ('550e8400-e29b-41d4-a716-446655440011', 'Camila Souza', '987.654.321-00', 'camila@exemplo.com', '5511976543210', 'Senha123', '550e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440002'),
-    ('550e8400-e29b-41d4-a716-446655440012', 'Felipe Costa', '111.222.333-44', 'felipe@exemplo.com', '5511965432109', 'Senha123', '550e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440002');

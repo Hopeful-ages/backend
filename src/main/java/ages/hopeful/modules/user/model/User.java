@@ -1,44 +1,98 @@
 package ages.hopeful.modules.user.model;
 
 import jakarta.persistence.*;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(
-    name = "usuario",
+    name = "users",
     uniqueConstraints = {
-        @UniqueConstraint(name = "uk_usuario_email", columnNames = "email"),
-        @UniqueConstraint(name = "uk_usuario_cpf", columnNames = "cpf"),
+        @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
+        @UniqueConstraint(name = "uk_users_cpf", columnNames = "cpf"),
     }
 )
-public class User {
+public class User implements UserDetails {
 
     @Id
-    @Column(columnDefinition = "uuid")
-    private UUID id = UUID.randomUUID();
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+    private UUID id;
 
-    @Column(name = "nome", nullable = false, length = 150)
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
 
-    @Column(name = "cpf", nullable = false, length = 14)
+    @Column(name = "cpf", nullable = false, length = 20)
     private String cpf;
 
-    @Column(name = "email", nullable = false, length = 160)
+    @Column(name = "email", nullable = false, length = 150)
     private String email;
 
-    @Column(name = "telefone", length = 30)
+    @Column(name = "phone", length = 20)
     private String phone;
 
-    @Column(name = "senha", nullable = false, length = 120)
-    private String passwordHash;
+    @Column(name = "password", nullable = false, length = 255)
+    private String password;
 
-    @Column(name = "servico_id", columnDefinition = "uuid")
+    @Column(name = "service_id", columnDefinition = "uuid")
     private UUID serviceId;
 
-    @Column(name = "cidade_id", columnDefinition = "uuid")
+    @Column(name = "city_id", columnDefinition = "uuid")
     private UUID cityId;
+
+    @Column(name = "account_status", nullable = false)
+    private Boolean accountStatus = true;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(
+            new SimpleGrantedAuthority(role.getName())
+        );
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return accountStatus; // agora respeita o status da conta
+    }
 }

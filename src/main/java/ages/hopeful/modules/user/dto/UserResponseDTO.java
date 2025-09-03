@@ -3,10 +3,12 @@ package ages.hopeful.modules.user.dto;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @Builder
+@NoArgsConstructor // necessário para MapStruct ou ModelMapper
 @AllArgsConstructor
 public class UserResponseDTO {
 
