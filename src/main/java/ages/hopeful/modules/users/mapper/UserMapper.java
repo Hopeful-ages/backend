@@ -35,10 +35,12 @@ public class UserMapper {
         entity.setName(dto.getName().trim());
         entity.setCpf(dto.getCpf().replaceAll("[^0-9]", ""));
         entity.setEmail(dto.getEmail().toLowerCase());
-        //entity.setPasswordHash(dto.getPasswordHash());
-        //Proteger password com hash
         entity.setPhone(dto.getPhone());
         entity.setServiceId(dto.getServiceId());
         entity.setCityId(dto.getCityId());
+
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            entity.setPasswordHash(dto.getPassword()); // Proteger password com hash
+        }
     }
 }

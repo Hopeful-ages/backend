@@ -1,5 +1,6 @@
 package ages.hopeful.modules.users.dto;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
 import java.util.UUID;
 import lombok.*;
@@ -27,7 +28,7 @@ public class UserUpdateDTO {
     @Size(max = 30)
     public String phone;
 
-    @NotBlank
+    @Nullable
     @Size(min = 8, max = 100)
     public String password;
 
