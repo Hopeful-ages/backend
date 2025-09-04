@@ -227,36 +227,46 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
-        lenient()
-            .when(serviceRepository.findById(any(UUID.class)))
-            .thenReturn(Optional.of(service));
-        lenient()
-            .when(cityRepository.findById(any(UUID.class)))
-            .thenReturn(Optional.of(city));
+        when(userRepository.save(any(User.class))).thenReturn(user);
 
-        String response = userService.updateUser(userId, userUpdateDTO);
+        // Mock modelMapper para atualizar a entidade
+        doAnswer(invocation -> {
+            UserUpdateDTO dto = invocation.getArgument(0);
+            User entity = invocation.getArgument(1);
+            if (dto.getName() != null) entity.setName(dto.getName());
+            if (dto.getEmail() != null) entity.setEmail(dto.getEmail());
+            if (dto.getCpf() != null) entity.setCpf(dto.getCpf());
+            if (dto.getPassword() != null) entity.setPassword(
+                dto.getPassword()
+            );
+            return null;
+        })
+            .when(modelMapper)
+            .map(any(UserUpdateDTO.class), any(User.class));
+
+        // Mock modelMapper para mapear User → UserResponseDTO
+        when(
+            modelMapper.map(any(User.class), eq(UserResponseDTO.class))
+        ).thenAnswer(invocation -> {
+                User u = invocation.getArgument(0);
+                UserResponseDTO dto = new UserResponseDTO();
+                dto.setName(u.getName());
+                dto.setEmail(u.getEmail());
+                dto.setCpf(u.getCpf());
+                return dto;
+            });
+
+        UserResponseDTO response = userService.updateUser(
+            userId,
+            userUpdateDTO
+        );
 
         assertNotNull(response);
-        assertEquals("Usuário atualizado com sucesso", response);
+        assertEquals(user.getName(), response.getName());
+        assertEquals(user.getEmail(), response.getEmail());
+        assertEquals(user.getCpf(), response.getCpf());
+
         verify(userRepository, times(1)).save(user);
-    }
-
-    @Test
-    @DisplayName(
-        "Should throw IllegalArgumentException when required fields are missing"
-    )
-    void shouldThrowValidationExceptionWhenRequiredFieldsMissing() {
-        UserUpdateDTO invalidRequest = new UserUpdateDTO();
-        invalidRequest.setName(null); // nome obrigatório faltando
-        invalidRequest.setCpf("12345678900");
-        invalidRequest.setEmail("valid@example.com");
-
-        UUID userId = user.getId();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        assertThrows(IllegalArgumentException.class, () ->
-            userService.updateUser(userId, invalidRequest)
-        );
     }
 
     @Test
@@ -321,4 +331,24 @@ public class UserServiceTest {
             userService.updateUser(invalidId, userUpdateDTO)
         );
     }
+    /*
+        @Test
+        @DisplayName(
+            "Should throw IllegalArgumentException when required fields are missing"
+        )
+        void shouldThrowValidationExceptionWhenRequiredFieldsMissing() {
+            UserUpdateDTO invalidRequest = new UserUpdateDTO();
+            invalidRequest.setName(null); // nome obrigatório faltando
+            invalidRequest.setCpf("12345678900");
+            invalidRequest.setEmail("valid@example.com");
+
+            UUID userId = user.getId();
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+            assertThrows(IllegalArgumentException.class, () ->
+                userService.updateUser(userId, invalidRequest)
+            );
+        }
+    */
+    /* Teste não funcional para PATCH */
 }

@@ -5,7 +5,6 @@ import ages.hopeful.common.exception.NotFoundException;
 import ages.hopeful.modules.city.repository.CityRepository;
 import ages.hopeful.modules.services.repository.ServiceRepository;
 import ages.hopeful.modules.user.dto.*;
-import ages.hopeful.modules.user.mapper.UserMapper;
 import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.RoleRepository;
@@ -41,41 +40,49 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO getUserById(UUID id) {
-        return UserMapper.toResponse(
-            userRepository
-                .findById(id)
-                .orElseThrow(() ->
-                    new ConflictException("Usuário não encontrado")
-                )
-        );
+        User user = userRepository
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException("User not found"));
+        return modelMapper.map(user, UserResponseDTO.class);
     }
 
     @Transactional
-    public String updateUser(UUID id, UserUpdateDTO userUpdateDTO) {
-        var user = userRepository
+    public UserResponseDTO updateUser(UUID id, UserUpdateDTO userUpdateDTO) {
+        User user = userRepository
             .findById(id)
-            .orElseThrow(() -> new NotFoundException("Usuário não existe"));
+            .orElseThrow(() -> new NotFoundException("User not found"));
 
-        // Verifica se o email já existe em outro usuário
+        // Verifica email se foi enviado
         if (
+            userUpdateDTO.getEmail() != null &&
             userRepository.existsByEmail(userUpdateDTO.getEmail()) &&
             !Objects.equals(user.getEmail(), userUpdateDTO.getEmail())
         ) {
-            throw new ConflictException("Email já existe");
+            throw new ConflictException("Email already exists");
         }
 
-        // Verifica se o CPF já existe em outro usuário
+        // Verifica CPF se foi enviado
         if (
+            userUpdateDTO.getCpf() != null &&
             userRepository.existsByCpf(userUpdateDTO.getCpf()) &&
             !Objects.equals(user.getCpf(), userUpdateDTO.getCpf())
         ) {
-            throw new ConflictException("CPF já existe");
+            throw new ConflictException("CPF already exists");
         }
 
-        UserMapper.updateEntity(user, userUpdateDTO);
-        userRepository.save(user);
+        // Valida senha se enviada
+        if (
+            userUpdateDTO.getPassword() != null &&
+            userUpdateDTO.getPassword().length() < 8
+        ) {
+            throw new IllegalArgumentException("Password is invalid");
+        }
 
-        return "Usuário atualizado com sucesso";
+        // Atualiza apenas campos presentes
+        modelMapper.map(userUpdateDTO, user);
+        User updatedUser = userRepository.save(user);
+
+        return modelMapper.map(updatedUser, UserResponseDTO.class);
     }
 
     @Transactional

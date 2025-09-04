@@ -27,8 +27,8 @@ public class UserController {
         return ResponseEntity.ok(service.getUserById(id));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> editUser(
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> editUser(
         @PathVariable UUID id,
         @RequestBody @Valid UserUpdateDTO userUpdateDTO
     ) {

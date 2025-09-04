@@ -13,20 +13,20 @@ import lombok.*;
 @AllArgsConstructor
 public class UserUpdateDTO {
 
-    @NotBlank
+    @Nullable
     @Size(max = 150)
     public String name;
 
-    @NotBlank
+    @Nullable
     @Pattern(regexp = "^[0-9.\\-]{11,14}$")
     public String cpf;
 
-    @NotBlank
+    @Nullable
     @Email
     @Size(max = 160)
     public String email;
 
-    @NotBlank
+    @Nullable
     @Size(max = 30)
     public String phone;
 
@@ -34,7 +34,9 @@ public class UserUpdateDTO {
     @Size(min = 8, max = 100)
     public String password;
 
+    @Nullable
     public UUID serviceId;
 
+    @Nullable
     public UUID cityId;
 }
