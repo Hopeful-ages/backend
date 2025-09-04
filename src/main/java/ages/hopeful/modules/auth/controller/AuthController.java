@@ -45,20 +45,5 @@ public class AuthController {
                     .body("Invalid Credentials");
         }
     }
-
-    @GetMapping("/user-info")
-    @PreAuthorize("hasRole('USER')")
-    @Operation(summary = "Informações do usuário", description = "Retorna dados visíveis apenas para usuários comuns")
-    public ResponseEntity<String> getUserInfo() {
-        
-        return ResponseEntity.ok("Informações acessíveis para ROLE_USER");
-    }
-
-    @GetMapping("/admin-info")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Informações do admin", description = "Retorna dados visíveis apenas para administradores")
-    public ResponseEntity<String> getAdminInfo() {
-        return ResponseEntity.ok("Informações acessíveis para ROLE_ADMIN");
-    }
     
 }
