@@ -97,4 +97,30 @@ public class UserService {
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserResponseDTO.class);
     }
+
+    @Transactional(readOnly = true)
+    public java.util.List<UserResponseDTO> getAllUsers(String status) {
+        java.util.List<User> users;
+        if (status == null || status.isBlank()) {
+            users = userRepository.findAllByOrderByNameAsc();
+        } else {
+        String s = status.trim().toLowerCase(java.util.Locale.ROOT);
+        Boolean filter;
+        switch (s) {
+            case "active" -> filter = Boolean.TRUE;
+            case "inactive" -> filter = Boolean.FALSE;
+            default -> filter = null;
+        }
+        if (filter == null) {
+            users = java.util.List.of();
+        } else {
+            users = userRepository.findByAccountStatusOrderByNameAsc(filter);
+        }
+        }
+
+        return users.stream()
+            .map(u -> modelMapper.map(u, UserResponseDTO.class))
+            .toList();
+    }
+
 }

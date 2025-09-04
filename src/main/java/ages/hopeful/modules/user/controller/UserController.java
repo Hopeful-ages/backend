@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -57,5 +59,13 @@ public class UserController {
     ) {
         UserResponseDTO response = service.createUser(dto);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    @Operation(summary = "List users", description = "List users with optional status filter: active/inactive")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserResponseDTO>> list(
+            @RequestParam(value = "status", required = false) String status) {
+        return ResponseEntity.ok(service.getAllUsers(status));
     }
 }
