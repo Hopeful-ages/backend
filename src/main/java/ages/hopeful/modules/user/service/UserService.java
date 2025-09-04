@@ -9,6 +9,8 @@ import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.RoleRepository;
 import ages.hopeful.modules.user.repository.UserRepository;
+import lombok.AllArgsConstructor;
+
 import java.util.Objects;
 import java.util.UUID;
 import org.modelmapper.ModelMapper;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
@@ -24,19 +27,6 @@ public class UserService {
     private final ServiceRepository serviceRepository;
     private final CityRepository cityRepository;
 
-    public UserService(
-        UserRepository userRepository,
-        RoleRepository roleRepository,
-        ModelMapper modelMapper,
-        ServiceRepository serviceRepository,
-        CityRepository cityRepository
-    ) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.modelMapper = modelMapper;
-        this.serviceRepository = serviceRepository;
-        this.cityRepository = cityRepository;
-    }
 
     @Transactional
     public UserResponseDTO getUserById(UUID id) {
@@ -52,7 +42,6 @@ public class UserService {
             .findById(id)
             .orElseThrow(() -> new NotFoundException("User not found"));
 
-        // Verifica email se foi enviado
         if (
             userUpdateDTO.getEmail() != null &&
             userRepository.existsByEmail(userUpdateDTO.getEmail()) &&
@@ -61,7 +50,6 @@ public class UserService {
             throw new ConflictException("Email already exists");
         }
 
-        // Verifica CPF se foi enviado
         if (
             userUpdateDTO.getCpf() != null &&
             userRepository.existsByCpf(userUpdateDTO.getCpf()) &&
@@ -70,7 +58,6 @@ public class UserService {
             throw new ConflictException("CPF already exists");
         }
 
-        // Valida senha se enviada
         if (
             userUpdateDTO.getPassword() != null &&
             userUpdateDTO.getPassword().length() < 8
@@ -78,7 +65,6 @@ public class UserService {
             throw new IllegalArgumentException("Password is invalid");
         }
 
-        // Atualiza apenas campos presentes
         modelMapper.map(userUpdateDTO, user);
         User updatedUser = userRepository.save(user);
 

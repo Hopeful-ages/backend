@@ -23,11 +23,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> getUser(@PathVariable UUID id) {
         return ResponseEntity.ok(service.getUserById(id));
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> editUser(
         @PathVariable UUID id,
         @RequestBody @Valid UserUpdateDTO userUpdateDTO
