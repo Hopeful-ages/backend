@@ -10,6 +10,7 @@ import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.RoleRepository;
 import ages.hopeful.modules.user.repository.UserRepository;
+import java.util.Objects;
 import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,23 @@ public class UserService {
     public String updateUser(UUID id, UserUpdateDTO userUpdateDTO) {
         var user = userRepository
             .findById(id)
-            .orElseThrow(() -> new ConflictException("Usuário não existe"));
+            .orElseThrow(() -> new NotFoundException("Usuário não existe"));
+
+        // Verifica se o email já existe em outro usuário
+        if (
+            userRepository.existsByEmail(userUpdateDTO.getEmail()) &&
+            !Objects.equals(user.getEmail(), userUpdateDTO.getEmail())
+        ) {
+            throw new ConflictException("Email já existe");
+        }
+
+        // Verifica se o CPF já existe em outro usuário
+        if (
+            userRepository.existsByCpf(userUpdateDTO.getCpf()) &&
+            !Objects.equals(user.getCpf(), userUpdateDTO.getCpf())
+        ) {
+            throw new ConflictException("CPF já existe");
+        }
 
         UserMapper.updateEntity(user, userUpdateDTO);
         userRepository.save(user);

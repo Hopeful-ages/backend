@@ -32,6 +32,17 @@ public class UserMapper {
     }
 
     public static void updateEntity(User entity, UserUpdateDTO dto) {
+        // Validação de campos obrigatórios
+        if (dto.getName() == null || dto.getName().isBlank()) {
+            throw new IllegalArgumentException("Nome é obrigatório");
+        }
+        if (dto.getCpf() == null || dto.getCpf().isBlank()) {
+            throw new IllegalArgumentException("CPF é obrigatório");
+        }
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email é obrigatório");
+        }
+
         entity.setName(dto.getName().trim());
         entity.setCpf(dto.getCpf().replaceAll("[^0-9]", ""));
         entity.setEmail(dto.getEmail().toLowerCase());
@@ -39,8 +50,14 @@ public class UserMapper {
         entity.setServiceId(dto.getServiceId());
         entity.setCityId(dto.getCityId());
 
+        // Validação de senha
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            entity.setPassword(dto.getPassword()); // Proteger password com hash
+            if (dto.getPassword().length() < 6) {
+                throw new IllegalArgumentException(
+                    "Senha deve ter no mínimo 6 caracteres"
+                );
+            }
+            entity.setPassword(dto.getPassword()); // Ideal: hash aqui
         }
     }
 }
