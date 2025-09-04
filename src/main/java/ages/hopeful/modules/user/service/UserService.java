@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -28,7 +29,51 @@ public class UserService {
   private final CityRepository cityRepository;
   private final JwtUtil jwtUtil;
 
-  @Transactional
+
+    @Transactional
+    public UserResponseDTO getUserById(UUID id) {
+        User user = userRepository
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException("User not found"));
+        return modelMapper.map(user, UserResponseDTO.class);
+    }
+
+    @Transactional
+    public UserResponseDTO updateUser(UUID id, UserUpdateDTO userUpdateDTO) {
+        User user = userRepository
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException("User not found"));
+
+        if (
+            userUpdateDTO.getEmail() != null &&
+            userRepository.existsByEmail(userUpdateDTO.getEmail()) &&
+            !Objects.equals(user.getEmail(), userUpdateDTO.getEmail())
+        ) {
+            throw new ConflictException("Email already exists");
+        }
+
+        if (
+            userUpdateDTO.getCpf() != null &&
+            userRepository.existsByCpf(userUpdateDTO.getCpf()) &&
+            !Objects.equals(user.getCpf(), userUpdateDTO.getCpf())
+        ) {
+            throw new ConflictException("CPF already exists");
+        }
+
+        if (
+            userUpdateDTO.getPassword() != null &&
+            userUpdateDTO.getPassword().length() < 8
+        ) {
+            throw new IllegalArgumentException("Password is invalid");
+        }
+
+        modelMapper.map(userUpdateDTO, user);
+        User updatedUser = userRepository.save(user);
+
+        return modelMapper.map(updatedUser, UserResponseDTO.class);
+    }
+
+    @Transactional
     public UserResponseDTO createUser(UserRequestDTO dto) {
 
         if (userRepository.existsByEmail(dto.getEmail())) {
@@ -58,11 +103,6 @@ public class UserService {
     public UserResponseDTO getUserByToken(String token){
         UUID userId = jwtUtil.getUserIdFromToken(token);
         return getUserById(userId);
-    }
-
-    public UserResponseDTO getUserById(UUID userId){
-        User user = userRepository.getReferenceById(userId);
-        return UserResponseDTO.UserModelToResponse(user);
     }
 
     @Transactional

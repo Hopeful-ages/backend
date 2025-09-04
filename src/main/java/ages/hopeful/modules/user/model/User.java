@@ -3,27 +3,29 @@ package ages.hopeful.modules.user.model;
 import ages.hopeful.modules.city.model.City;
 import ages.hopeful.modules.services.model.Service;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users", uniqueConstraints = {
+@Table(
+    name = "users",
+    uniqueConstraints = {
         @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
-        @UniqueConstraint(name = "uk_users_cpf", columnNames = "cpf")
-})
+        @UniqueConstraint(name = "uk_users_cpf", columnNames = "cpf"),
+    }
+)
 public class User implements UserDetails {
 
     @Id
@@ -63,7 +65,9 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(role.getName()));
+        return Collections.singletonList(
+            new SimpleGrantedAuthority(role.getName())
+        );
     }
 
     @Override
