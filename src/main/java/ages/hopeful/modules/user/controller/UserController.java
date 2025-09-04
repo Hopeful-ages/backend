@@ -10,6 +10,8 @@ import ages.hopeful.modules.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/users")
 
@@ -30,5 +32,35 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO dto) {
         UserResponseDTO response = userService.createUser(dto);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/token")
+    @Operation(summary = "Get User info by token",
+            description = "Get User info by token")
+    @ApiResponse(responseCode = "200", description = "User returned successfully")
+    @ApiResponse(responseCode = "400", description = "User not found")
+    public ResponseEntity<UserResponseDTO> getUserByToken( @RequestParam String token) {
+        UserResponseDTO response = userService.getUserByToken(token);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/id")
+    @Operation(summary = "Get User info by id",
+            description = "Get User info by id")
+    @ApiResponse(responseCode = "200", description = "User returned successfully")
+    @ApiResponse(responseCode = "400", description = "User not found")
+    public ResponseEntity<UserResponseDTO> getUserById( @RequestParam UUID id) {
+        UserResponseDTO response = userService.getUserById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/disable")
+    @Operation(summary = "Disable User by id",
+            description = "Disable User by id")
+    @ApiResponse(responseCode = "200", description = "User disable successfully")
+    @ApiResponse(responseCode = "400", description = "User not found")
+    public ResponseEntity<Void> disableUserById( @RequestParam UUID id) {
+        userService.DisableUser(id);
+        return ResponseEntity.ok().build();
     }
 }
