@@ -1,5 +1,8 @@
 package ages.hopeful.config.security;
 
+import ages.hopeful.config.security.jwt.JwtAccessDeniedHandler;
+import ages.hopeful.config.security.jwt.JwtAuthenticationEntryPoint;
+import ages.hopeful.config.security.jwt.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import ages.hopeful.config.security.jwt.JwtAccessDeniedHandler;
-import ages.hopeful.config.security.jwt.JwtAuthenticationEntryPoint;
-import ages.hopeful.config.security.jwt.JwtAuthenticationFilter;
-
 @Configuration
 @AllArgsConstructor
 @EnableMethodSecurity
@@ -27,40 +26,52 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     private static final String[] AUTH_WHITELIST = {
-            "/swagger-ui/index.html",
-            "/swagger-ui/**",
-            "/v3/**",
-            "/swagger-resources/**",
-            "/swagger-resources",
-            "/webjars/**",
-            "/api/auth/login"
+        "/swagger-ui/index.html",
+        "/swagger-ui/**",
+        "/v3/**",
+        "/swagger-resources/**",
+        "/swagger-resources",
+        "/webjars/**",
+        "/api/auth/login",
     };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+        throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) 
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .exceptionHandling(exception -> exception
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler)         
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(AUTH_WHITELIST).permitAll()
-                .anyRequest().authenticated() 
+            .exceptionHandling(exception ->
+                exception
+                    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                    .accessDeniedHandler(jwtAccessDeniedHandler)
             )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            .authorizeHttpRequests(auth ->
+                auth
+                    .requestMatchers(AUTH_WHITELIST)
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated()
+            )
+            .addFilterBefore(
+                jwtAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter.class
+            );
 
-        return http.build(); 
+        return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+    public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration authConfig
+    ) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
 }
