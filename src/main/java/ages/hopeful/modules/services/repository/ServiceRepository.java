@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import ages.hopeful.modules.services.model.ServiceEntity;
+import ages.hopeful.modules.services.model.Service;
 
 @Repository
-public interface ServiceRepository extends JpaRepository<ServiceEntity, UUID> {
+public interface ServiceRepository extends JpaRepository<Service, UUID> {
 }

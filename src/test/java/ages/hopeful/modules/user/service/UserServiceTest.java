@@ -7,7 +7,7 @@ import ages.hopeful.common.exception.ConflictException;
 import ages.hopeful.common.exception.NotFoundException;
 import ages.hopeful.modules.city.model.City;
 import ages.hopeful.modules.city.repository.CityRepository;
-import ages.hopeful.modules.services.model.ServiceEntity;
+import ages.hopeful.modules.services.model.Service;
 import ages.hopeful.modules.services.repository.ServiceRepository;
 import ages.hopeful.modules.user.dto.UserRequestDTO;
 import ages.hopeful.modules.user.dto.UserResponseDTO;
@@ -54,7 +54,7 @@ public class UserServiceTest {
     private UserResponseDTO userResponseDTO;
     private UserUpdateDTO userUpdateDTO;
     private Role role;
-    private ServiceEntity service;
+    private Service service;
     private City city;
 
     @BeforeEach
@@ -92,7 +92,7 @@ public class UserServiceTest {
         userResponseDTO.email = user.getEmail();
 
         role = new Role(UUID.randomUUID(), "USER");
-        service = new ServiceEntity();
+        service = new Service();
         city = new City();
     }
 
