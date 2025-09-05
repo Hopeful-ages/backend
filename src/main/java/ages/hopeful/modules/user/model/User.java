@@ -49,11 +49,11 @@ public class User implements UserDetails {
     private String password;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "service_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "service_id", referencedColumnName = "id")
     private Service service;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "city_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "city_id", referencedColumnName = "id")
     private City city;
 
     @Column(name = "account_status", nullable = false)
@@ -97,6 +97,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return accountStatus; // agora respeita o status da conta
+        return accountStatus;
     }
 }
