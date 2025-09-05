@@ -1,9 +1,7 @@
 package ages.hopeful.config.security;
 
-import ages.hopeful.config.security.jwt.JwtAccessDeniedHandler;
-import ages.hopeful.config.security.jwt.JwtAuthenticationEntryPoint;
-import ages.hopeful.config.security.jwt.JwtAuthenticationFilter;
-import lombok.AllArgsConstructor;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import ages.hopeful.config.security.jwt.JwtAccessDeniedHandler;
+import ages.hopeful.config.security.jwt.JwtAuthenticationEntryPoint;
+import ages.hopeful.config.security.jwt.JwtAuthenticationFilter;
+import lombok.AllArgsConstructor;
 
 @Configuration
 @AllArgsConstructor
@@ -35,30 +38,28 @@ public class SecurityConfig {
         "/api/auth/login",
     };
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-        throws Exception {
+   @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> cors.configurationSource(request -> {
+                var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+                corsConfig.setAllowedOrigins(List.of("http://localhost:3000")); 
+                corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                corsConfig.setAllowedHeaders(List.of("*"));
+                corsConfig.setAllowCredentials(true); // para enviar cookies/token
+                return corsConfig;
+            }))
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
             )
-            .exceptionHandling(exception ->
-                exception
-                    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                    .accessDeniedHandler(jwtAccessDeniedHandler)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(AUTH_WHITELIST).permitAll()
+                .anyRequest().authenticated()
             )
-            .authorizeHttpRequests(auth ->
-                auth
-                    .requestMatchers(AUTH_WHITELIST)
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated()
-            )
-            .addFilterBefore(
-                jwtAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class
-            );
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
