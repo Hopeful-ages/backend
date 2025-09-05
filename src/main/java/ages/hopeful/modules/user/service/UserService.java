@@ -32,6 +32,7 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO getUserById(UUID id) {
+        
         User user = userRepository
             .findById(id)
             .orElseThrow(() -> new NotFoundException("User not found"));
@@ -89,11 +90,20 @@ public class UserService {
             throw new NotFoundException("City not found");
         }
 
+        var service = serviceRepository.findById(dto.getServiceId())
+            .orElseThrow(() -> new NotFoundException("Service not found"));
+
+        var city = cityRepository.findById(dto.getCityId())
+            .orElseThrow(() -> new NotFoundException("City not found"));
+
         Role role = roleRepository.findByName("USER")
                 .orElseThrow(() -> new NotFoundException("Role not found"));
         User user = modelMapper.map(dto, User.class);
         user.setAccountStatus(true);
         user.setRole(role);
+        user.setService(service); 
+        user.setCity(city);       
+
         user.setPassword(dto.getPassword());
 
         User savedUser = userRepository.save(user);

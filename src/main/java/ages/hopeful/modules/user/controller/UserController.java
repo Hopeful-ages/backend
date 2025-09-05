@@ -61,7 +61,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{token}")
+    @GetMapping("/by-token/{token}")
     @Operation(summary = "Get User info by token",
             description = "Get User info by token")
     @ApiResponse(responseCode = "200", description = "User returned successfully")
