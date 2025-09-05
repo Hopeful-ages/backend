@@ -244,7 +244,6 @@ public class UserServiceTest {
             .when(modelMapper)
             .map(any(UserUpdateDTO.class), any(User.class));
 
-        // Mock modelMapper para mapear User → UserResponseDTO
         when(
             modelMapper.map(any(User.class), eq(UserResponseDTO.class))
         ).thenAnswer(invocation -> {

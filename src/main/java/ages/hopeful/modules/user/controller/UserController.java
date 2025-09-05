@@ -13,9 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/users")
-@Tag(name = "Usuários", description = "Gerenciamento de usuários")
+@Tag(name = "Users", description = "User management endpoints")
 public class UserController {
 
     private final UserService service;
@@ -64,8 +66,38 @@ public class UserController {
     @GetMapping
     @Operation(summary = "List users", description = "List users with optional status filter: active/inactive")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponseDTO>> list(
-            @RequestParam(value = "status", required = false) String status) {
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers(
+            @RequestParam(required = false) String status) {
         return ResponseEntity.ok(service.getAllUsers(status));
+    }
+
+    @GetMapping("/by-token/{token}")
+    @Operation(summary = "Get User info by token",
+            description = "Get User info by token")
+    @ApiResponse(responseCode = "200", description = "User returned successfully")
+    @ApiResponse(responseCode = "400", description = "User not found")
+    public ResponseEntity<UserResponseDTO> getUserByToken( @PathVariable String token) {
+        UserResponseDTO response = service.getUserByToken(token);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/disable/{id}")
+    @Operation(summary = "Disable User by id",
+            description = "Disable User by id")
+    @ApiResponse(responseCode = "200", description = "User disable successfully")
+    @ApiResponse(responseCode = "400", description = "User not found")
+    public ResponseEntity<Void> disableUserById( @PathVariable UUID id) {
+        service.disableUser(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/enable/{id}")
+    @Operation(summary = "Enable User by id",
+            description = "Enable User by id")
+    @ApiResponse(responseCode = "200", description = "User enabled successfully")
+    @ApiResponse(responseCode = "400", description = "User not found")
+    public ResponseEntity<Void> enableUserById(@PathVariable UUID id) {
+        service.enableUser(id);
+        return ResponseEntity.ok().build();
     }
 }

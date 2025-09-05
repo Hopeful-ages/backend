@@ -1,5 +1,7 @@
 package ages.hopeful.modules.user.model;
 
+import ages.hopeful.modules.city.model.City;
+import ages.hopeful.modules.services.model.Service;
 import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,11 +48,13 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "service_id", columnDefinition = "uuid")
-    private UUID serviceId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "service_id", referencedColumnName = "id")
+    private Service service;
 
-    @Column(name = "city_id", columnDefinition = "uuid")
-    private UUID cityId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "city_id", referencedColumnName = "id")
+    private City city;
 
     @Column(name = "account_status", nullable = false)
     private Boolean accountStatus = true;
@@ -93,6 +97,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return accountStatus; // agora respeita o status da conta
+        return accountStatus;
     }
 }
