@@ -83,12 +83,6 @@ public class UserService {
         if (userRepository.existsByCpf(dto.getCpf())) {
             throw new ConflictException("CPF already exists");
         }
-        if(serviceRepository.findById(dto.getServiceId()).isEmpty()){
-            throw new NotFoundException("Service not found");
-        }
-        if (cityRepository.findById(dto.getCityId()).isEmpty()) {
-            throw new NotFoundException("City not found");
-        }
 
         var service = serviceRepository.findById(dto.getServiceId())
             .orElseThrow(() -> new NotFoundException("Service not found"));
@@ -98,17 +92,18 @@ public class UserService {
 
         Role role = roleRepository.findByName("USER")
                 .orElseThrow(() -> new NotFoundException("Role not found"));
+
         User user = modelMapper.map(dto, User.class);
         user.setAccountStatus(true);
         user.setRole(role);
-        user.setService(service); 
-        user.setCity(city);       
-
+        user.setService(service);
+        user.setCity(city);
         user.setPassword(dto.getPassword());
 
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserResponseDTO.class);
     }
+
 
     public UserResponseDTO getUserByToken(String token){
         UUID userId = jwtUtil.getUserIdFromToken(token);
