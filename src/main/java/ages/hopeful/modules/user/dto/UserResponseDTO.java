@@ -22,6 +22,7 @@ public class UserResponseDTO {
   public String phone;
   public Service service;
   public City city;
+  public Boolean accountStatus;
 
   public static UserResponseDTO UserModelToResponse(User user){
       return UserResponseDTO.builder()
@@ -32,6 +33,7 @@ public class UserResponseDTO {
               .phone(user.getPhone())
               .service(user.getService())
               .city(user.getCity())
+              .accountStatus(user.getAccountStatus())
               .build();
   }
  

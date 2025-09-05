@@ -116,9 +116,13 @@ public class UserService {
     }
 
     @Transactional
-    public void DisableUser (UUID userId){
+    public void disableUser (UUID userId){
       userRepository.disableUserById(userId);
 
+    }
+    @Transactional
+    public void enableUser(UUID userId){
+        userRepository.enableUserById(userId);
     }
 
 }

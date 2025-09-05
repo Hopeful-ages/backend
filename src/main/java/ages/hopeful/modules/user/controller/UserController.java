@@ -77,7 +77,17 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "User disable successfully")
     @ApiResponse(responseCode = "400", description = "User not found")
     public ResponseEntity<Void> disableUserById( @PathVariable UUID id) {
-        service.DisableUser(id);
+        service.disableUser(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/enable/{id}")
+    @Operation(summary = "Enable User by id",
+            description = "Enable User by id")
+    @ApiResponse(responseCode = "200", description = "User enabled successfully")
+    @ApiResponse(responseCode = "400", description = "User not found")
+    public ResponseEntity<Void> enableUserById(@PathVariable UUID id) {
+        service.enableUser(id);
         return ResponseEntity.ok().build();
     }
 }
