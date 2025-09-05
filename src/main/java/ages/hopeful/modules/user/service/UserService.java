@@ -10,12 +10,15 @@ import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.RoleRepository;
 import ages.hopeful.modules.user.repository.UserRepository;
+import java.util.Locale;
+
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -104,7 +107,32 @@ public class UserService {
         return modelMapper.map(savedUser, UserResponseDTO.class);
     }
 
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> getAllUsers(String status) {
+        List<User> users;
+        if (status == null || status.isBlank()) {
+            users = userRepository.findAllByOrderByNameAsc();
+        } else {
+            String s = status.trim().toLowerCase(Locale.ROOT);
+            Boolean filter;
+            switch (s) {
+                case "active" -> filter = Boolean.TRUE;
+                case "inactive" -> filter = Boolean.FALSE;
+                default -> filter = null;
+            }
+            if (filter == null) {
+                users = List.of();
+            } else {
+                users = userRepository.findByAccountStatusOrderByNameAsc(filter);
+            }
+        }
 
+        return users.stream()
+            .map(u -> modelMapper.map(u, UserResponseDTO.class))
+            .toList();
+    }
+
+    
     public UserResponseDTO getUserByToken(String token){
         UUID userId = jwtUtil.getUserIdFromToken(token);
         return getUserById(userId);
