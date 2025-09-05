@@ -22,4 +22,7 @@ public class City {
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
+
+    @Column(name = "state", nullable = false, length = 255)
+    private String state;
 }
