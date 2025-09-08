@@ -72,6 +72,8 @@ public class UserService {
         }
 
         modelMapper.map(userUpdateDTO, user);
+        enrichUser(user, userUpdateDTO);
+
         User updatedUser = userRepository.save(user);
 
         return modelMapper.map(updatedUser, UserResponseDTO.class);
@@ -146,6 +148,19 @@ public class UserService {
     @Transactional
     public void enableUser(UUID userId){
         userRepository.enableUserById(userId);
+    }
+
+    private void enrichUser(User user, UserUpdateDTO dto) {
+        if (dto.getServiceId() != null) {
+            var service = serviceRepository.findById(dto.getServiceId())
+                .orElseThrow(() -> new NotFoundException("Service not found"));
+            user.setService(service);
+        }
+        if (dto.getCityId() != null) {
+            var city = cityRepository.findById(dto.getCityId())
+                .orElseThrow(() -> new NotFoundException("City not found"));
+            user.setCity(city);
+        }
     }
 
 }

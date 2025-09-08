@@ -1,6 +1,9 @@
 package ages.hopeful.modules.user.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import ages.hopeful.common.exception.ConflictException;
@@ -236,17 +239,12 @@ public class UserServiceTest {
             if (dto.getName() != null) entity.setName(dto.getName());
             if (dto.getEmail() != null) entity.setEmail(dto.getEmail());
             if (dto.getCpf() != null) entity.setCpf(dto.getCpf());
-            if (dto.getPassword() != null) entity.setPassword(
-                dto.getPassword()
-            );
+            if (dto.getPassword() != null) entity.setPassword(dto.getPassword());
             return null;
-        })
-            .when(modelMapper)
-            .map(any(UserUpdateDTO.class), any(User.class));
+        }).when(modelMapper).map(any(UserUpdateDTO.class), any(User.class));
 
-        when(
-            modelMapper.map(any(User.class), eq(UserResponseDTO.class))
-        ).thenAnswer(invocation -> {
+        when(modelMapper.map(any(User.class), eq(UserResponseDTO.class)))
+            .thenAnswer(invocation -> {
                 User u = invocation.getArgument(0);
                 UserResponseDTO dto = new UserResponseDTO();
                 dto.setName(u.getName());
@@ -255,15 +253,20 @@ public class UserServiceTest {
                 return dto;
             });
 
-        UserResponseDTO response = userService.updateUser(
-            userId,
-            userUpdateDTO
-        );
+        when(serviceRepository.findById(userUpdateDTO.getServiceId()))
+            .thenReturn(Optional.of(service));
+
+        when(cityRepository.findById(userUpdateDTO.getCityId()))
+            .thenReturn(Optional.of(city));
+
+        UserResponseDTO response = userService.updateUser(userId, userUpdateDTO);
 
         assertNotNull(response);
         assertEquals(user.getName(), response.getName());
         assertEquals(user.getEmail(), response.getEmail());
         assertEquals(user.getCpf(), response.getCpf());
+        assertEquals(service, user.getService());
+        assertEquals(city, user.getCity());
 
         verify(userRepository, times(1)).save(user);
     }
