@@ -3,11 +3,10 @@ spring:
   application:
     name: hopeful
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:postgresql://shuttle.proxy.rlwy.net:57777/railway
+    username: postgres
+    password: bismaFnZkPioqPdusVaiinCUNxONPZLI
     driver-class-name: org.postgresql.Driver
-
 
   flyway:
  
