@@ -3,7 +3,7 @@ spring:
   application:
     name: hopeful
   datasource:
-    url: jdbc:postgresql://postgres:LXraYmbJZgezowZqTLFGQrOkoaocICkt@interchange.proxy.rlwy.net:20024/railway
+    url: jdbc:postgresql://interchange.proxy.rlwy.net:20024/railway
     username: postgres
     password: LXraYmbJZgezowZqTLFGQrOkoaocICkt
     driver-class-name: org.postgresql.Driver
