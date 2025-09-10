@@ -3,9 +3,9 @@ spring:
   application:
     name: hopeful
   datasource:
-    url: jdbc:postgresql://shuttle.proxy.rlwy.net:57777/railway
+    url: jdbc:postgresql://postgres:LXraYmbJZgezowZqTLFGQrOkoaocICkt@interchange.proxy.rlwy.net:20024/railway
     username: postgres
-    password: bismaFnZkPioqPdusVaiinCUNxONPZLI
+    password: LXraYmbJZgezowZqTLFGQrOkoaocICkt
     driver-class-name: org.postgresql.Driver
 
   flyway:
