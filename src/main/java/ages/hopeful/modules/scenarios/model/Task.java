@@ -26,8 +26,8 @@ public class Task {
     @Column(name = "description", nullable = false, length = 255)
     private String description;
 
-    @Column(name = "fase", nullable = false, length = 255)
-    private String fase;
+    @Column(name = "phase", nullable = false, length = 255)
+    private String phase;
 
     @Column(name = "date")
     private Date lastUpdateDate;

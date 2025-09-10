@@ -27,7 +27,7 @@ public class Cobrade {
     @Column(name = "description", nullable = false, length = 255)
     private String description;
 
-    @Column(name = "group", nullable = false, length = 255)
+    @Column(name = "group_name", nullable = false, length = 255)
     private String group;
 
     @Column(name = "subgroup", nullable = false, length = 255)

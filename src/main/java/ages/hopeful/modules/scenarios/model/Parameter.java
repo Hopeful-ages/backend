@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Parameters")
+@Table(name = "Parameter")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = {"scenario"})
 public class Parameter {
@@ -26,8 +26,8 @@ public class Parameter {
     @Column(name = "action", nullable = false, length = 255)
     private String action;
 
-    @Column(name = "fase", nullable = false, length = 255)
-    private String fase;
+    @Column(name = "phase", nullable = false, length = 255)
+    private String phase;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "scenario_id", nullable = false)
