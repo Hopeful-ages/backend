@@ -1,6 +1,7 @@
 package ages.hopeful.modules.user.dto;
 
 import java.util.UUID;
+import org.hibernate.validator.constraints.br.CPF;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -15,7 +16,7 @@ public class UserRequestDTO {
   @NotBlank @Size(max = 150) 
   public String name;
 
-  @NotBlank @Pattern(regexp = "^[0-9.\\-]{11,14}$")
+  @NotBlank @CPF @Pattern(regexp = "^[0-9.\\-]{11,14}$")
   public String cpf;
 
   @NotBlank @Email @Size(max = 160)
