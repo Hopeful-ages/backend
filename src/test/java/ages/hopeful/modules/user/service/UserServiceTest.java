@@ -333,24 +333,5 @@ public class UserServiceTest {
             userService.updateUser(invalidId, userUpdateDTO)
         );
     }
-    /*
-        @Test
-        @DisplayName(
-            "Should throw IllegalArgumentException when required fields are missing"
-        )
-        void shouldThrowValidationExceptionWhenRequiredFieldsMissing() {
-            UserUpdateDTO invalidRequest = new UserUpdateDTO();
-            invalidRequest.setName(null); // nome obrigatório faltando
-            invalidRequest.setCpf("12345678900");
-            invalidRequest.setEmail("valid@example.com");
-
-            UUID userId = user.getId();
-            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-            assertThrows(IllegalArgumentException.class, () ->
-                userService.updateUser(userId, invalidRequest)
-            );
-        }
-    */
-    /* Teste não funcional para PATCH */
+    
 }
