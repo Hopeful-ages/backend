@@ -35,7 +35,6 @@ public class V7__populate_cidade_from_ibge extends BaseJavaMigration {
         String sql = """
             INSERT INTO city (id, name, state)
             VALUES (?, ?, ?)
-            ON CONFLICT (name, state) DO NOTHING
             """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
