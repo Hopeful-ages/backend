@@ -144,14 +144,20 @@ public class UserService {
         return getUserById(userId);
     }
 
-    @Transactional
-    public void disableUser (UUID userId){
-      userRepository.disableUserById(userId);
-
+   @Transactional
+    public void disableUser(UUID userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found")); // lança exceção
+        user.setAccountStatus(false);
+        userRepository.save(user);
     }
+
     @Transactional
     public void enableUser(UUID userId){
-        userRepository.enableUserById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        user.setAccountStatus(true);
+        userRepository.save(user);
     }
 
     private void enrichUser(User user, UserUpdateDTO dto) {
