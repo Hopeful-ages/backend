@@ -29,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests for the user service")
@@ -51,6 +52,9 @@ public class UserServiceTest {
 
     @Mock
     private CityRepository cityRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
 
     private UserRequestDTO userRequestDTO;
     private User user;
