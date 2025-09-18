@@ -31,10 +31,13 @@ public class V7__populate_cidade_from_ibge extends BaseJavaMigration {
         JsonNode estados = getJson(URL_ESTADOS);
         System.out.println("[V7] UFs: " + estados.size());
 
-        // 2) INSERT preparado (gera UUID no Java, ignora duplicata pelo índice)
+        // 2) INSERT preparado (gera UUID no Java, evita duplicatas sem usar ON CONFLICT)
         String sql = """
             INSERT INTO city (id, name, state)
-            VALUES (?, ?, ?)
+            SELECT ?, ?, ?
+            WHERE NOT EXISTS (
+              SELECT 1 FROM city WHERE name = ? AND state = ?
+            )
             """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -48,9 +51,11 @@ public class V7__populate_cidade_from_ibge extends BaseJavaMigration {
                 for (JsonNode m : municipios) {
                     String cityName = m.get("nome").asText();
 
-                    ps.setObject(1, UUID.randomUUID());
-                    ps.setString(2, cityName);
-                    ps.setString(3, uf);  // salva a SIGLA da UF (ex.: RS, SP)
+                    ps.setObject(1, UUID.randomUUID()); // id
+                    ps.setString(2, cityName);          // name
+                    ps.setString(3, uf);                // state (sigla)
+                    ps.setString(4, cityName);          // where not exists -> name
+                    ps.setString(5, uf);                // where not exists -> state
                     ps.addBatch();
 
                     if (++pend % 1000 == 0) {

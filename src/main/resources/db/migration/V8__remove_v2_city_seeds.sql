@@ -1,64 +1,95 @@
--- Reaponta usuários para as cidades da V7 (IBGE) e remove os 5 seeds da V2.
-DO $$
-DECLARE
-    fk_col text;
+-- V8: Reaponta usuários para as cidades oficiais (V7/IBGE) e remove as 5 seeds da V2.
+-- Compatível com H2 e Postgres. Sem DO $$, sem plpgsql.
 
-    -- IDs seeds da V2
-    id_porto  uuid := '550e8400-e29b-41d4-a716-446655440010';
-    id_rio    uuid := '550e8400-e29b-41d4-a716-446655440011';
-    id_sp     uuid := '550e8400-e29b-41d4-a716-446655440012';
-    id_manaus uuid := '550e8400-e29b-41d4-a716-446655440013';
-    id_recife uuid := '550e8400-e29b-41d4-a716-446655440014';
+-- Porto Alegre (RS)
+UPDATE users u
+SET city_id = (
+  SELECT id
+  FROM city
+  WHERE name = 'Porto Alegre'
+    AND state IN ('RS','Rio Grande do Sul')
+  ORDER BY CASE WHEN state = 'RS' THEN 0 ELSE 1 END
+  LIMIT 1
+)
+WHERE u.city_id = '550e8400-e29b-41d4-a716-446655440010'
+  AND EXISTS (
+    SELECT 1 FROM city
+    WHERE name = 'Porto Alegre' AND state IN ('RS','Rio Grande do Sul')
+  );
 
-    -- IDs alvo (IBGE) a partir de name + UF
-    tgt_porto  uuid;
-    tgt_rio    uuid;
-    tgt_sp     uuid;
-    tgt_manaus uuid;
-    tgt_recife uuid;
+-- Rio de Janeiro (RJ)
+UPDATE users u
+SET city_id = (
+  SELECT id
+  FROM city
+  WHERE name = 'Rio de Janeiro'
+    AND state IN ('RJ','Rio de Janeiro')
+  ORDER BY CASE WHEN state = 'RJ' THEN 0 ELSE 1 END
+  LIMIT 1
+)
+WHERE u.city_id = '550e8400-e29b-41d4-a716-446655440011'
+  AND EXISTS (
+    SELECT 1 FROM city
+    WHERE name = 'Rio de Janeiro' AND state IN ('RJ','Rio de Janeiro')
+  );
 
-    has_city boolean := EXISTS (
-        SELECT 1 FROM information_schema.tables
-        WHERE table_schema='public' AND table_name='city'
-    );
-BEGIN
-    -- Qual é a coluna FK em users? city_id ou cidade_id?
-    SELECT column_name INTO fk_col
-    FROM information_schema.columns
-    WHERE table_schema='public' AND table_name='users'
-      AND column_name IN ('city_id','cidade_id')
-    LIMIT 1;
+-- São Paulo (SP)
+UPDATE users u
+SET city_id = (
+  SELECT id
+  FROM city
+  WHERE name = 'São Paulo'
+    AND state IN ('SP','São Paulo')
+  ORDER BY CASE WHEN state = 'SP' THEN 0 ELSE 1 END
+  LIMIT 1
+)
+WHERE u.city_id = '550e8400-e29b-41d4-a716-446655440012'
+  AND EXISTS (
+    SELECT 1 FROM city
+    WHERE name = 'São Paulo' AND state IN ('SP','São Paulo')
+  );
 
-    -- Descobre os IDs corretos nas tabelas atuais (city/cidade)
-    IF has_city THEN
-        SELECT id INTO tgt_porto  FROM public.city   WHERE name='Porto Alegre'   AND state='RS' LIMIT 1;
-        SELECT id INTO tgt_rio    FROM public.city   WHERE name='Rio de Janeiro' AND state='RJ' LIMIT 1;
-        SELECT id INTO tgt_sp     FROM public.city   WHERE name='São Paulo'      AND state='SP' LIMIT 1;
-        SELECT id INTO tgt_manaus FROM public.city   WHERE name='Manaus'         AND state='AM' LIMIT 1;
-        SELECT id INTO tgt_recife FROM public.city   WHERE name='Recife'         AND state='PE' LIMIT 1;
-    ELSE
-        SELECT id INTO tgt_porto  FROM public.cidade WHERE nome='Porto Alegre'   AND estado='RS' LIMIT 1;
-        SELECT id INTO tgt_rio    FROM public.cidade WHERE nome='Rio de Janeiro' AND estado='RJ' LIMIT 1;
-        SELECT id INTO tgt_sp     FROM public.cidade WHERE nome='São Paulo'      AND estado='SP' LIMIT 1;
-        SELECT id INTO tgt_manaus FROM public.cidade WHERE nome='Manaus'         AND estado='AM' LIMIT 1;
-        SELECT id INTO tgt_recife FROM public.cidade WHERE nome='Recife'         AND estado='PE' LIMIT 1;
-    END IF;
+-- Manaus (AM)
+UPDATE users u
+SET city_id = (
+  SELECT id
+  FROM city
+  WHERE name = 'Manaus'
+    AND state IN ('AM','Amazonas')
+  ORDER BY CASE WHEN state = 'AM' THEN 0 ELSE 1 END
+  LIMIT 1
+)
+WHERE u.city_id = '550e8400-e29b-41d4-a716-446655440013'
+  AND EXISTS (
+    SELECT 1 FROM city
+    WHERE name = 'Manaus' AND state IN ('AM','Amazonas')
+  );
 
-    -- Reaponta users -> novas cidades (se a coluna existir)
-    IF fk_col IS NOT NULL THEN
-        IF tgt_porto IS NOT NULL  THEN EXECUTE format('UPDATE public.users SET %I = $1 WHERE %I = $2', fk_col, fk_col) USING tgt_porto,  id_porto;  END IF;
-        IF tgt_rio IS NOT NULL    THEN EXECUTE format('UPDATE public.users SET %I = $1 WHERE %I = $2', fk_col, fk_col) USING tgt_rio,    id_rio;    END IF;
-        IF tgt_sp IS NOT NULL     THEN EXECUTE format('UPDATE public.users SET %I = $1 WHERE %I = $2', fk_col, fk_col) USING tgt_sp,     id_sp;     END IF;
-        IF tgt_manaus IS NOT NULL THEN EXECUTE format('UPDATE public.users SET %I = $1 WHERE %I = $2', fk_col, fk_col) USING tgt_manaus, id_manaus; END IF;
-        IF tgt_recife IS NOT NULL THEN EXECUTE format('UPDATE public.users SET %I = $1 WHERE %I = $2', fk_col, fk_col) USING tgt_recife, id_recife; END IF;
-    END IF;
+-- Recife (PE)
+UPDATE users u
+SET city_id = (
+  SELECT id
+  FROM city
+  WHERE name = 'Recife'
+    AND state IN ('PE','Pernambuco')
+  ORDER BY CASE WHEN state = 'PE' THEN 0 ELSE 1 END
+  LIMIT 1
+)
+WHERE u.city_id = '550e8400-e29b-41d4-a716-446655440014'
+  AND EXISTS (
+    SELECT 1 FROM city
+    WHERE name = 'Recife' AND state IN ('PE','Pernambuco')
+  );
 
-    -- Agora pode remover os seeds da V2
-    IF has_city THEN
-        DELETE FROM public.city
-        WHERE id IN (id_porto, id_rio, id_sp, id_manaus, id_recife);
-    ELSE
-        DELETE FROM public.cidade
-        WHERE id IN (id_porto, id_rio, id_sp, id_manaus, id_recife);
-    END IF;
-END $$;
+-- Remoção das 5 seeds V2 somente se não houver FK em users
+DELETE FROM city c
+WHERE c.id IN (
+  '550e8400-e29b-41d4-a716-446655440010',
+  '550e8400-e29b-41d4-a716-446655440011',
+  '550e8400-e29b-41d4-a716-446655440012',
+  '550e8400-e29b-41d4-a716-446655440013',
+  '550e8400-e29b-41d4-a716-446655440014'
+)
+AND NOT EXISTS (
+  SELECT 1 FROM users u WHERE u.city_id = c.id
+);
