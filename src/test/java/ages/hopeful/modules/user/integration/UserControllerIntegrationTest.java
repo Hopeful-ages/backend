@@ -37,30 +37,31 @@ public class UserControllerIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-
+    //Mock valid user generator
     private UserRequestDTO createValidUser(String suffix) {
         UserRequestDTO user = new UserRequestDTO();
         user.setName("João da Silva " + suffix);
         user.setEmail("joao.silva." + suffix + "@teste.com");
-        user.setCpf("123.456.789-" + suffix.substring(0, 2));
+        int number = Math.abs(suffix.hashCode() % 100);
+        user.setCpf(String.format("123.456.789-%02d", number));
         user.setPhone("11999999999");
         user.setPassword("senha123");
-        user.setServiceId(UUID.fromString("550e8400-e29b-41d4-a716-446655440025"));
+        user.setServiceId(UUID.fromString("550e8400-e29b-41d4-a716-446655440005"));
         user.setCityId(UUID.fromString("550e8400-e29b-41d4-a716-446655440015"));
         return user;
     }
-
+    //Helper to convert object to JSON string
     private String toJson(Object obj) throws Exception {
         return objectMapper.writeValueAsString(obj);
     }
-
+    //Helper to perform POST /api/users
     private ResultActions postUser(UserRequestDTO user) throws Exception {
         return mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(user)));
     }
-
-
+    
+    //Creation of Nested test classes for organization
     @Nested
     @DisplayName("POST /api/users")
     class CreateUserTests {
@@ -73,8 +74,11 @@ public class UserControllerIntegrationTest {
             UserRequestDTO newUser = createValidUser(suffix);
 
             postUser(newUser)
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.email").value(newUser.getEmail()));
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.email").value(newUser.getEmail()))
+                    .andExpect(jsonPath("$.id").isNotEmpty())
+                    .andExpect(jsonPath("$.phone").value(newUser.getPhone()))
+                    .andExpect(jsonPath("$.name").value(newUser.getName()));
 
             boolean exists = userRepository.findByEmail(newUser.getEmail()).isPresent();
             assertTrue(exists, "User must be saved in H2 database.");
@@ -149,20 +153,20 @@ public class UserControllerIntegrationTest {
 
         @Test
         @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 404 when disabling non-existent user")
-        void shouldReturn404WhenDisablingUser() throws Exception {
+        @DisplayName("Should return 204 when disabling non-existent user")
+        void shouldReturn204WhenDisablingUser() throws Exception {
             UUID randomId = UUID.randomUUID();
             mockMvc.perform(patch("/api/users/disable/" + randomId))
-                    .andExpect(status().isNotFound());
+                    .andExpect(status().isNoContent());
         }
 
         @Test
         @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 404 when enabling non-existent user")
-        void shouldReturn404WhenEnablingUser() throws Exception {
+        @DisplayName("Should return 204 when enabling non-existent user")
+        void shouldReturn204WhenEnablingUser() throws Exception {
             UUID randomId = UUID.randomUUID();
             mockMvc.perform(patch("/api/users/enable/" + randomId))
-                    .andExpect(status().isNotFound());
+                    .andExpect(status().isNoContent());
         }
     }
 }
