@@ -15,7 +15,7 @@ public class Cobrade{
     private String code;
 
     @Column(name = "group", nullable = false, length = 100)
-    private String group;
+    private String group; //Delete group
 
     @Column(name = "subgroup", nullable = false, length = 100)
     private String subgroup;
