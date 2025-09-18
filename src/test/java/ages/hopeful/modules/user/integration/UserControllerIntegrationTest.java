@@ -157,7 +157,7 @@ public class UserControllerIntegrationTest {
         void shouldReturn204WhenDisablingUser() throws Exception {
             UUID randomId = UUID.randomUUID();
             mockMvc.perform(patch("/api/users/disable/" + randomId))
-                    .andExpect(status().isNoContent());
+                    .andExpect(status().isNotFound());
         }
 
         @Test
@@ -166,6 +166,43 @@ public class UserControllerIntegrationTest {
         void shouldReturn204WhenEnablingUser() throws Exception {
             UUID randomId = UUID.randomUUID();
             mockMvc.perform(patch("/api/users/enable/" + randomId))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test 
+        @WithMockUser(roles = "ADMIN")
+        @DisplayName("Should return 204 when disabling existing user")
+        void shouldReturn204WhenDisablingExistingUser() throws Exception {
+            String suffix = UUID.randomUUID().toString().substring(0, 8);
+            UserRequestDTO newUser = createValidUser(suffix);
+
+            String response = postUser(newUser)
+                    .andExpect(status().isCreated())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
+
+            UUID userId = UUID.fromString(objectMapper.readTree(response).get("id").asText());
+
+            mockMvc.perform(patch("/api/users/disable/" + userId))
+                    .andExpect(status().isNoContent());
+        }
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        @DisplayName("Should return 204 when enabling existing user")
+        void shouldReturn204WhenEnablingExistingUser() throws Exception {
+            String suffix = UUID.randomUUID().toString().substring(0, 8);
+            UserRequestDTO newUser = createValidUser(suffix);
+
+            String response = postUser(newUser)
+                    .andExpect(status().isCreated())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
+
+            UUID userId = UUID.fromString(objectMapper.readTree(response).get("id").asText());
+
+            mockMvc.perform(patch("/api/users/enable/" + userId))
                     .andExpect(status().isNoContent());
         }
     }
