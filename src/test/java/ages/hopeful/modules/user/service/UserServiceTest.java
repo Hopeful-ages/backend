@@ -236,7 +236,6 @@ public class UserServiceTest {
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        // Mock modelMapper para atualizar a entidade
         doAnswer(invocation -> {
             UserUpdateDTO dto = invocation.getArgument(0);
             User entity = invocation.getArgument(1);
