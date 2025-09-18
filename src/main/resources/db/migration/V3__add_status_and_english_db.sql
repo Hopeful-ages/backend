@@ -43,7 +43,6 @@ ALTER TABLE users RENAME COLUMN telefone TO phone;
 ALTER TABLE users RENAME COLUMN senha TO password;
 ALTER TABLE users RENAME COLUMN servico_id TO service_id;
 ALTER TABLE users RENAME COLUMN cidade_id TO city_id;
-ALTER TABLE users RENAME COLUMN estado TO state;
 
 -- Add new column for account status
 ALTER TABLE users ADD COLUMN account_status BOOLEAN DEFAULT TRUE;

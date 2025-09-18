@@ -56,9 +56,6 @@ public class User implements UserDetails {
     @JoinColumn(name = "city_id", referencedColumnName = "id")
     private City city;
 
-    @Column(name = "state", length = 255)
-    private String state;
-
     @Column(name = "account_status", nullable = false)
     private Boolean accountStatus = true;
 

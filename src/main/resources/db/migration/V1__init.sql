@@ -58,6 +58,5 @@ CREATE TABLE usuario (
     servico_id UUID,
     cidade_id UUID,
     CONSTRAINT fk_usuario_servico FOREIGN KEY (servico_id) REFERENCES servicos (id),
-    CONSTRAINT fk_usuario_cidade FOREIGN KEY (cidade_id) REFERENCES cidade (id),
-    estado VARCHAR(100)
+    CONSTRAINT fk_usuario_cidade FOREIGN KEY (cidade_id) REFERENCES cidade (id)
 );

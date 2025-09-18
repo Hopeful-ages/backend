@@ -39,7 +39,4 @@ public class UserUpdateDTO {
 
     @Nullable
     public UUID cityId;
-
-    @Nullable
-    public String state;
 }

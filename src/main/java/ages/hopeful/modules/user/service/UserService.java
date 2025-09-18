@@ -103,7 +103,6 @@ public class UserService {
         user.setRole(role);
         user.setService(service);
         user.setCity(city);
-        user.setState(city.getState());
         user.setPassword(dto.getPassword());
 
         User savedUser = userRepository.save(user);
