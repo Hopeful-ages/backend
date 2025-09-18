@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,8 @@ public class UserService {
   private final ServiceRepository serviceRepository;
   private final CityRepository cityRepository;
   private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder; 
+
 
 
     @Transactional
@@ -73,6 +76,7 @@ public class UserService {
 
         modelMapper.map(userUpdateDTO, user);
         enrichUser(user, userUpdateDTO);
+        hashPassword(user, userUpdateDTO);
 
         User updatedUser = userRepository.save(user);
 
@@ -103,7 +107,7 @@ public class UserService {
         user.setRole(role);
         user.setService(service);
         user.setCity(city);
-        user.setPassword(dto.getPassword());
+        user.setPassword(passwordEncoder.encode(dto.getPassword())); 
 
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserResponseDTO.class);
@@ -140,14 +144,20 @@ public class UserService {
         return getUserById(userId);
     }
 
-    @Transactional
-    public void disableUser (UUID userId){
-      userRepository.disableUserById(userId);
-
+   @Transactional
+    public void disableUser(UUID userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found")); // lança exceção
+        user.setAccountStatus(false);
+        userRepository.save(user);
     }
+
     @Transactional
     public void enableUser(UUID userId){
-        userRepository.enableUserById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        user.setAccountStatus(true);
+        userRepository.save(user);
     }
 
     private void enrichUser(User user, UserUpdateDTO dto) {
@@ -160,6 +170,12 @@ public class UserService {
             var city = cityRepository.findById(dto.getCityId())
                 .orElseThrow(() -> new NotFoundException("City not found"));
             user.setCity(city);
+        }
+    }
+
+    private void hashPassword(User user, UserUpdateDTO dto) {
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
     }
 
