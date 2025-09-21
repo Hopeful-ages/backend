@@ -1,6 +1,8 @@
 -- Remover coluna group_name
 ALTER TABLE cobrade DROP COLUMN group_name;
 
+ALTER TABLE cobrade ALTER COLUMN description TYPE VARCHAR(1000);
+
 INSERT INTO cobrade (code, subgroup, type, subtype, description) VALUES
 -- DESASTRES NATURAIS 
 -- 1. GEOLÓGICO
