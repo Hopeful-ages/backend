@@ -1,0 +1,29 @@
+# Configuração específica para testes
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+  flyway:
+    enabled: true 
+    baseline-on-migrate: true
+    locations:
+    - classpath:db/migration
+
+logging:
+  level:
+    root: INFO
+    org.flywaydb: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.jdbc.core: DEBUG
+    org.springframework.jdbc.datasource.init.ScriptUtils: DEBUG
+    org.h2: DEBUG

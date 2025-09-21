@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,7 @@ public class UserController {
         @Valid @RequestBody UserRequestDTO dto
     ) {
         UserResponseDTO response = service.createUser(dto);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.created(URI.create("/api/users/" + response.getId())).body(response);
     }
 
     @GetMapping
@@ -88,7 +89,7 @@ public class UserController {
     @ApiResponse(responseCode = "400", description = "User not found")
     public ResponseEntity<Void> disableUserById( @PathVariable UUID id) {
         service.disableUser(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/enable/{id}")
@@ -98,6 +99,6 @@ public class UserController {
     @ApiResponse(responseCode = "400", description = "User not found")
     public ResponseEntity<Void> enableUserById(@PathVariable UUID id) {
         service.enableUser(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
