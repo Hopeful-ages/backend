@@ -18,7 +18,6 @@ public class CobradeResponseDTO {
     private UUID id;
     private String code;
     private String description;
-    private String group;
     private String subgroup;
     private String type;
     private String subType;
@@ -29,7 +28,6 @@ public class CobradeResponseDTO {
                 .id(cobrade.getId())
                 .code(cobrade.getCode())
                 .description(cobrade.getDescription())
-                .group(cobrade.getGroup())
                 .subgroup(cobrade.getSubgroup())
                 .type(cobrade.getType())
                 .subType(cobrade.getSubType())
