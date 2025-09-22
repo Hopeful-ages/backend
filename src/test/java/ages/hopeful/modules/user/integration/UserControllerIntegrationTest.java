@@ -42,7 +42,7 @@ public class UserControllerIntegrationTest {
         UserRequestDTO user = new UserRequestDTO();
         user.setName("João da Silva " + suffix);
         user.setEmail("joao.silva." + suffix + "@teste.com");
-        user.setCpf("390.533.447-05"); // CPF válido
+        user.setCpf("39053344705"); // CPF válido
         user.setPhone("11999999999");
         user.setPassword("senha123");
         user.setServiceId(UUID.fromString("550e8400-e29b-41d4-a716-446655440005"));
