@@ -11,7 +11,9 @@ import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.RoleRepository;
 import ages.hopeful.modules.user.repository.UserRepository;
 import java.util.Locale;
-
+import java.util.Set;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -25,49 +27,42 @@ import java.util.UUID;
 @AllArgsConstructor
 @Service
 public class UserService {
-  private final UserRepository userRepository;
-  private final RoleRepository roleRepository;
-  private final ModelMapper modelMapper;
-  private final ServiceRepository serviceRepository;
-  private final CityRepository cityRepository;
-  private final JwtUtil jwtUtil;
-
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final ModelMapper modelMapper;
+    private final ServiceRepository serviceRepository;
+    private final CityRepository cityRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public UserResponseDTO getUserById(UUID id) {
-        
+
         User user = userRepository
-            .findById(id)
-            .orElseThrow(() -> new NotFoundException("User not found"));
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found"));
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
     @Transactional
     public UserResponseDTO updateUser(UUID id, UserUpdateDTO userUpdateDTO) {
         User user = userRepository
-            .findById(id)
-            .orElseThrow(() -> new NotFoundException("User not found"));
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
-        if (
-            userUpdateDTO.getEmail() != null &&
-            userRepository.existsByEmail(userUpdateDTO.getEmail()) &&
-            !Objects.equals(user.getEmail(), userUpdateDTO.getEmail())
-        ) {
+        if (userUpdateDTO.getEmail() != null &&
+                userRepository.existsByEmail(userUpdateDTO.getEmail()) &&
+                !Objects.equals(user.getEmail(), userUpdateDTO.getEmail())) {
             throw new ConflictException("Email already exists");
         }
 
-        if (
-            userUpdateDTO.getCpf() != null &&
-            userRepository.existsByCpf(userUpdateDTO.getCpf()) &&
-            !Objects.equals(user.getCpf(), userUpdateDTO.getCpf())
-        ) {
+        if (userUpdateDTO.getCpf() != null &&
+                userRepository.existsByCpf(userUpdateDTO.getCpf()) &&
+                !Objects.equals(user.getCpf(), userUpdateDTO.getCpf())) {
             throw new ConflictException("CPF already exists");
         }
 
-        if (
-            userUpdateDTO.getPassword() != null &&
-            userUpdateDTO.getPassword().length() < 8
-        ) {
+        if (userUpdateDTO.getPassword() != null &&
+                userUpdateDTO.getPassword().length() < 8) {
             throw new IllegalArgumentException("Password is invalid");
         }
 
@@ -82,6 +77,12 @@ public class UserService {
     @Transactional
     public UserResponseDTO createUser(UserRequestDTO dto) {
 
+        var validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<UserRequestDTO>> violations = validator.validateProperty(dto, "cpf");
+        if (!violations.isEmpty()) {
+            throw new IllegalArgumentException("CPF is invalid");
+        }
+
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new ConflictException("Email already exists");
         }
@@ -90,10 +91,10 @@ public class UserService {
         }
 
         var service = serviceRepository.findById(dto.getServiceId())
-            .orElseThrow(() -> new NotFoundException("Service not found"));
+                .orElseThrow(() -> new NotFoundException("Service not found"));
 
         var city = cityRepository.findById(dto.getCityId())
-            .orElseThrow(() -> new NotFoundException("City not found"));
+                .orElseThrow(() -> new NotFoundException("City not found"));
 
         Role role = roleRepository.findByName("USER")
                 .orElseThrow(() -> new NotFoundException("Role not found"));
@@ -130,38 +131,36 @@ public class UserService {
         }
 
         return users.stream()
-            .map(u -> modelMapper.map(u, UserResponseDTO.class))
-            .toList();
+                .map(u -> modelMapper.map(u, UserResponseDTO.class))
+                .toList();
     }
 
-    
-    public UserResponseDTO getUserByToken(String token){
+    public UserResponseDTO getUserByToken(String token) {
         UUID userId = jwtUtil.getUserIdFromToken(token);
         return getUserById(userId);
     }
 
     @Transactional
-    public void disableUser (UUID userId){
-      userRepository.disableUserById(userId);
+    public void disableUser(UUID userId) {
+        userRepository.disableUserById(userId);
 
     }
     @Transactional
-    public void enableUser(UUID userId){
+    public void enableUser(UUID userId) {
         userRepository.enableUserById(userId);
     }
 
     private void enrichUser(User user, UserUpdateDTO dto) {
         if (dto.getServiceId() != null) {
             var service = serviceRepository.findById(dto.getServiceId())
-                .orElseThrow(() -> new NotFoundException("Service not found"));
+                    .orElseThrow(() -> new NotFoundException("Service not found"));
             user.setService(service);
         }
         if (dto.getCityId() != null) {
             var city = cityRepository.findById(dto.getCityId())
-                .orElseThrow(() -> new NotFoundException("City not found"));
+                    .orElseThrow(() -> new NotFoundException("City not found"));
             user.setCity(city);
         }
     }
 
 }
-
