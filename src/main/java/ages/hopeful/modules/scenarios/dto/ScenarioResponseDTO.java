@@ -1,6 +1,7 @@
 package ages.hopeful.modules.scenarios.dto;
 
 import ages.hopeful.modules.city.dto.CityResponseDTO;
+import ages.hopeful.modules.cobrades.dto.CobradeResponseDTO;
 import lombok.*;
 
 import java.util.List;

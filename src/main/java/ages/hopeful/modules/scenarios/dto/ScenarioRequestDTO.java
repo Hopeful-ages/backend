@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import ages.hopeful.modules.city.model.City;
-import ages.hopeful.modules.scenarios.model.Cobrade;
+import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.scenarios.model.Parameter;
 import ages.hopeful.modules.scenarios.model.Scenario;
 import ages.hopeful.modules.scenarios.model.Task;
@@ -36,6 +36,15 @@ public class ScenarioRequestDTO {
                 .parameters(parameters)
                 .build();
     }
+
+    public Scenario toModel(City city, Cobrade cobrade) {
+        return Scenario.builder()
+                .origin(this.getOrigin())
+                .city(city)
+                .cobrade(cobrade)
+                .build();
+    }
+
 }
 
 

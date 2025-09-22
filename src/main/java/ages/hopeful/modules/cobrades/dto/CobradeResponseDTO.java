@@ -1,7 +1,8 @@
-package ages.hopeful.modules.scenarios.dto;
+package ages.hopeful.modules.cobrades.dto;
 
 import java.util.UUID;
 
+import ages.hopeful.modules.cobrades.model.Cobrade;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class CobradeResponseDTO {
     private String type;
     private String subType;
 
-    public static CobradeResponseDTO fromModel(ages.hopeful.modules.scenarios.model.Cobrade cobrade) {
+    public static CobradeResponseDTO fromModel(Cobrade cobrade) {
         if (cobrade == null) return null;
         return CobradeResponseDTO.builder()
                 .id(cobrade.getId())

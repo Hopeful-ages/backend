@@ -1,6 +1,6 @@
 package ages.hopeful.modules.scenarios.repository;
 
-import ages.hopeful.modules.scenarios.model.Cobrade;
+import ages.hopeful.modules.cobrades.model.Cobrade;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

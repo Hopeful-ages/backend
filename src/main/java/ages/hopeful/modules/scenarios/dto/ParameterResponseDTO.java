@@ -14,7 +14,7 @@ public class ParameterResponseDTO {
     private UUID id;
     private String description;
     private String action;
-    private String fase;
+    private String phase;
 
     public static ParameterResponseDTO fromModel(Parameter parameter) {
         if (parameter == null) return null;
@@ -22,7 +22,7 @@ public class ParameterResponseDTO {
                 .id(parameter.getId())
                 .description(parameter.getDescription())
                 .action(parameter.getAction())
-                .fase(parameter.getPhase())
+                .phase(parameter.getPhase())
                 .build();
     }
 }

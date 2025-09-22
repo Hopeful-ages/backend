@@ -15,14 +15,14 @@ import java.util.UUID;
 @Builder
 public class TaskRequestDTO {
     private String description;
-    private String fase;
+    private String phase;
     private Date lastUpdateDate;
     private UUID serviceId;
 
     public Task toModel(Service service, Scenario scenario) {
         return Task.builder()
                 .description(this.getDescription())
-                .phase(this.getFase())
+                .phase(this.getPhase())
                 .lastUpdateDate(this.getLastUpdateDate())
                 .service(service)
                 .scenario(scenario)

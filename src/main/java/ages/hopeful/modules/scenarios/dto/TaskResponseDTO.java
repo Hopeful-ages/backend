@@ -14,7 +14,7 @@ import java.util.UUID;
 public class TaskResponseDTO {
     private UUID id;
     private String description;
-    private String fase;
+    private String phase;
     private Date lastUpdateDate;
     private ServiceResponseDTO service;
 
@@ -23,7 +23,7 @@ public class TaskResponseDTO {
         return TaskResponseDTO.builder()
                 .id(task.getId())
                 .description(task.getDescription())
-                .fase(task.getPhase())
+                .phase(task.getPhase())
                 .lastUpdateDate(task.getLastUpdateDate())
                 .service(ServiceResponseDTO.fromModel(task.getService()))
                 .build();

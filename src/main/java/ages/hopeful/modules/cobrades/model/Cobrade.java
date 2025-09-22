@@ -1,5 +1,6 @@
-package ages.hopeful.modules.scenarios.model;
+package ages.hopeful.modules.cobrades.model;
 
+import ages.hopeful.modules.scenarios.model.Scenario;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import ages.hopeful.modules.city.model.City;
+import ages.hopeful.modules.cobrades.model.Cobrade;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

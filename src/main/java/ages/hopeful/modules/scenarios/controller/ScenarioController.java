@@ -1,6 +1,6 @@
 package ages.hopeful.modules.scenarios.controller;
 
-import ages.hopeful.modules.scenarios.dto.ScenarioByUserRequestDTO;
+
 import ages.hopeful.modules.scenarios.dto.ScenarioRequestDTO;
 import ages.hopeful.modules.scenarios.dto.ScenarioResponseDTO;
 import ages.hopeful.modules.scenarios.service.ScenarioService;
@@ -41,10 +41,10 @@ public class ScenarioController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a Scenario by user",
-            description = "Creates a new scenario including tasks")
+    @Operation(summary = "Create a Scenario",
+            description = "Creates a new scenario including tasks and parameters")
     @ApiResponse(responseCode = "200", description = "Scenario created successfully")
-    public ResponseEntity<ScenarioResponseDTO> createScenarioByUser(@RequestBody ScenarioByUserRequestDTO request) {
+    public ResponseEntity<ScenarioResponseDTO> createScenario(@RequestBody ScenarioRequestDTO request) {
         return ResponseEntity.ok(scenarioService.createScenario(request));
     }
 
@@ -54,9 +54,10 @@ public class ScenarioController {
     @ApiResponse(responseCode = "200", description = "Scenario updated successfully")
     public ResponseEntity<ScenarioResponseDTO> updateScenario(
             @PathVariable UUID id,
-            @RequestBody ScenarioRequestDTO request
+            @RequestBody ScenarioRequestDTO request,
+            @RequestParam boolean isAdmin
     ) {
-        return ResponseEntity.ok(scenarioService.updateScenario(id, request));
+        return ResponseEntity.ok(scenarioService.updateScenario(id, request, isAdmin));
     }
 
     @DeleteMapping("/{id}")

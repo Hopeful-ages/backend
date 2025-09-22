@@ -11,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "Parameter")
+@Table(name = "Parameters")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = {"scenario"})
 public class Parameter {

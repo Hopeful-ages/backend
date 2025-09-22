@@ -1,20 +1,23 @@
 package ages.hopeful.modules.scenarios.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import ages.hopeful.modules.city.model.City;
 import ages.hopeful.modules.city.repository.CityRepository;
-import ages.hopeful.modules.scenarios.dto.ScenarioByUserRequestDTO;
-import ages.hopeful.modules.scenarios.dto.ScenarioRequestDTO;
-import ages.hopeful.modules.scenarios.dto.ScenarioResponseDTO;
-import ages.hopeful.modules.scenarios.model.Cobrade;
+import ages.hopeful.modules.city.service.CityService;
+import ages.hopeful.modules.cobrades.service.CobradeService;
+import ages.hopeful.modules.scenarios.dto.*;
+import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.scenarios.model.Parameter;
 import ages.hopeful.modules.scenarios.model.Scenario;
 import ages.hopeful.modules.scenarios.model.Task;
 import ages.hopeful.modules.scenarios.repository.ScenarioRepository;
 import ages.hopeful.modules.services.model.Service;
 import ages.hopeful.modules.services.repository.ServiceRepository;
+import ages.hopeful.modules.services.service.ServiceService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
@@ -23,9 +26,9 @@ import lombok.RequiredArgsConstructor;
 public class ScenarioService {
 
     private final ScenarioRepository scenarioRepository;
-    private final CityRepository cityRepository;
+    private final CityService cityService;
     private final CobradeService cobradeService;
-    private final ServiceRepository serviceRepository;
+    private final ServiceService serviceService;
 
     public List<ScenarioResponseDTO> getAllScenarios() {
         return scenarioRepository.findAll()
@@ -40,17 +43,35 @@ public class ScenarioService {
         return ScenarioResponseDTO.fromModel(scenario);
     }
 
-    public ScenarioResponseDTO createScenario(ScenarioByUserRequestDTO dto) {
-        Scenario scenario = buildScenarioByUserFromDTO(dto, null);
-        Scenario saved = scenarioRepository.save(scenario);
+    public ScenarioResponseDTO createScenario(ScenarioRequestDTO dto) {
+        Scenario scenario = buildScenarioFromDTO(dto, null);
+        if(scenarioExists(scenario)){
+            throw new RuntimeException("O cenário para esta cobrade já foi criado nesta cidade");
+        }
+        Scenario newScenario = scenarioRepository.save(scenario);
+        newScenario = enrichScenario(newScenario, dto);
+        Scenario saved = scenarioRepository.save(newScenario);
         return ScenarioResponseDTO.fromModel(saved);
     }
 
-    public ScenarioResponseDTO updateScenario(UUID id, ScenarioRequestDTO dto) {
+    private Scenario enrichScenario(Scenario saved, ScenarioRequestDTO dto) {
+        List<Task> tasks = new ArrayList<>(getTasksFromDTO(dto.getTasks(), saved));
+        List<Parameter> parameters = new ArrayList<>(getParametersFromDTO(dto.getParameters(), saved));
+
+        saved.setTasks(tasks);
+        saved.setParameters(parameters);
+
+        return saved;
+    }
+
+    public ScenarioResponseDTO updateScenario(UUID id, ScenarioRequestDTO dto, boolean isAdmin) {
         Scenario existing = scenarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Scenario não encontrado com id: " + id));
 
         Scenario scenario = buildScenarioFromDTO(dto, existing);
+        if(!isAdmin){
+            scenario.setParameters(existing.getParameters());
+        }
         scenario.setId(existing.getId());
         Scenario updated = scenarioRepository.save(scenario);
 
@@ -66,59 +87,44 @@ public class ScenarioService {
 
 
     private Scenario buildScenarioFromDTO(ScenarioRequestDTO dto, Scenario scenario) {
-        City city = cityRepository.findById(dto.getCityId())
-                .orElseThrow(() -> new EntityNotFoundException("Cidade não encontrada"));
-
+        City city = cityService.getCityById(dto.getCityId());
         Cobrade cobrade = cobradeService.getCobradeById(dto.getCobradeId());
 
-        List<Task> tasks = dto.getTasks() != null
-                ? dto.getTasks().stream().map(t -> {
-                    Service service = serviceRepository.findById(t.getServiceId())
-                            .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado"));
-                    return t.toModel(service, scenario);
-                }).toList()
-                : List.of();
-
-        List<Parameter> parameters = dto.getParameters() != null
-                ? dto.getParameters().stream().map(p -> p.toModel(scenario)).toList()
-                : List.of();
 
         if (scenario == null) {
-            return dto.toModel(city, cobrade, tasks, parameters);
+            return dto.toModel(city, cobrade);
         }
 
         scenario.setOrigin(dto.getOrigin());
         scenario.setCity(city);
         scenario.setCobrade(cobrade);
-        scenario.setTasks(tasks);
-        scenario.setParameters(parameters);
 
         return scenario;
     }
 
-    private Scenario buildScenarioByUserFromDTO(ScenarioByUserRequestDTO dto, Scenario scenario) {
-        City city = cityRepository.findById(dto.getCityId())
-                .orElseThrow(() -> new EntityNotFoundException("Cidade não encontrada"));
-
-        Cobrade cobrade = cobradeService.getCobradeById(dto.getCobradeId());
-
-        List<Task> tasks = dto.getTasks() != null
-                ? dto.getTasks().stream().map(t -> {
-                    Service service = serviceRepository.findById(t.getServiceId())
-                            .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado"));
-                    return t.toModel(service, scenario);
-                }).toList()
+    private List<Task> getTasksFromDTO(List<TaskRequestDTO> tasks, Scenario scenario){
+        return tasks != null
+                ? tasks.stream().map(task -> {
+            Service service = serviceService.getServiceById(task.getServiceId());
+            return task.toModel(service, scenario);
+        }).toList()
                 : List.of();
-
-        if (scenario == null) {
-            return dto.toModel(city, cobrade, tasks);
-        }
-
-        scenario.setOrigin(dto.getOrigin());
-        scenario.setCity(city);
-        scenario.setCobrade(cobrade);
-        scenario.setTasks(tasks);
-
-        return scenario;
     }
+
+    private List<Parameter> getParametersFromDTO(List<ParameterRequestDTO> parameters, Scenario scenario){
+        return parameters != null
+                ? parameters.stream().map(p -> p.toModel(scenario)).toList()
+                : List.of();
+    }
+
+    private boolean scenarioExists(Scenario scenario) {
+        Optional<Scenario> scenarioFromDatabase = scenarioRepository.findByCobradeIdAndCityId(scenario.getCobrade().getId(),
+                scenario.getCity().getId());
+        if(scenarioFromDatabase.isPresent()){
+            return true;
+        }
+        return false;
+    }
+
+
 }

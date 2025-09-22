@@ -1,7 +1,7 @@
-package ages.hopeful.modules.scenarios.service;
+package ages.hopeful.modules.cobrades.service;
 
-import ages.hopeful.modules.scenarios.dto.CobradeResponseDTO;
-import ages.hopeful.modules.scenarios.model.Cobrade;
+import ages.hopeful.modules.cobrades.dto.CobradeResponseDTO;
+import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.scenarios.repository.CobradeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;

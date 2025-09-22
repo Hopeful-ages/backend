@@ -16,13 +16,13 @@ import lombok.Setter;
 public class ParameterRequestDTO {
     private String description;
     private String action;
-    private String fase;
+    private String phase;
 
     public Parameter toModel(Scenario scenario) {
         return Parameter.builder()
                 .description(this.getDescription())
                 .action(this.getAction())
-                .phase(this.getFase())
+                .phase(this.getPhase())
                 .scenario(scenario)
                 .build();
     }
