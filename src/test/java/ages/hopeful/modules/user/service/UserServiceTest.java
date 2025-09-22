@@ -29,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests for the user service")
@@ -51,6 +52,9 @@ public class UserServiceTest {
 
     @Mock
     private CityRepository cityRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
 
     private UserRequestDTO userRequestDTO;
     private User user;
@@ -232,7 +236,6 @@ public class UserServiceTest {
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        // Mock modelMapper para atualizar a entidade
         doAnswer(invocation -> {
             UserUpdateDTO dto = invocation.getArgument(0);
             User entity = invocation.getArgument(1);
@@ -340,7 +343,7 @@ public class UserServiceTest {
         )
         void shouldThrowValidationExceptionWhenRequiredFieldsMissing() {
             UserUpdateDTO invalidRequest = new UserUpdateDTO();
-            invalidRequest.setName(null); // nome obrigatório faltando
+            invalidRequest.setName(null); // nome obrigatÃ³rio faltando
             invalidRequest.setCpf("12345678900");
             invalidRequest.setEmail("valid@example.com");
 
@@ -352,7 +355,7 @@ public class UserServiceTest {
             );
         }
     */
-    /* Teste não funcional para PATCH */
+    /* Teste nÃ£o funcional para PATCH */
 
     @Test
     @DisplayName("Should create user when CPF is valid")
