@@ -2,12 +2,12 @@
 -- Baseado na estrutura final após todas as migrações
 
 -- Inserir dados de teste para COBRADE (Códigos de Desastres)
-INSERT INTO cobrade (id, code, description, group_name, subgroup, type, subtype) VALUES
-    ('550e8400-e29b-41d4-a716-446655440020', '12200', 'Inundações', 'Hidrológico', 'Inundações', 'Graduais', 'Brusca'),
-    ('550e8400-e29b-41d4-a716-446655440021', '13200', 'Enxurradas', 'Hidrológico', 'Enxurradas', 'Súbitas', 'Urbana'),
-    ('550e8400-e29b-41d4-a716-446655440022', '14100', 'Alagamentos', 'Hidrológico', 'Alagamentos', 'Graduais', 'Urbano'),
-    ('550e8400-e29b-41d4-a716-446655440023', '11400', 'Vendaval', 'Meteorológico', 'Tempestades', 'Vendaval', 'Ciclônico'),
-    ('550e8400-e29b-41d4-a716-446655440024', '15300', 'Incêndio Florestal', 'Climatológico', 'Incêndios', 'Florestal', 'Natural');
+INSERT INTO cobrade (id, code, description, subgroup, type, subtype) VALUES
+    ('550e8400-e29b-41d4-a716-446655440020', '1.2.1.0.0', 'Submersão de áreas fora dos limites normais de um curso de água em zonas que normalmente não se encontram submersas. O transbordamento ocorre de modo gradual, geralmente ocasionado por chuvas prolongadas em áreas de planície.', 'Inundações', NULL, NULL),
+    ('550e8400-e29b-41d4-a716-446655440021', '1.2.2.0.0', 'Escoamento superficial de alta velocidade e energia, provocado por chuvas intensas e concentradas, normalmente em pequenas bacias de relevo acidentado. Caracterizada pela elevação súbita das vazões de determinada drenagem e transbordamento brusco da calha fluvial. Apresenta grande poder destrutivo.', 'Enxurradas', NULL, NULL),
+    ('550e8400-e29b-41d4-a716-446655440022', '1.2.3.0.0', 'Extrapolação da capacidade de escoamento de sistemas de drenagem urbana e consequente acúmulo de água em ruas, calçadas ou outras infraestruturas urbanas, em decorrência de precipitações intensas.', 'Alagamentos', NULL, NULL),
+    ('550e8400-e29b-41d4-a716-446655440023', '1.3.2.1.5', 'Forte deslocamento de uma massa de ar em uma região.', 'Tempestades', 'Tempestade local/Convectiva', 'Vendaval'),
+    ('550e8400-e29b-41d4-a716-446655440024', '1.4.1.3.2', 'Propagação de fogo sem controle em vegetação fora de áreas protegidas, afetando a qualidade do ar.', 'Incêndio florestal', 'Incêndios em áreas não protegidas', NULL);
 
 -- Inserir mais cidades para testes
 INSERT INTO city (id, name, state) VALUES
@@ -68,4 +68,3 @@ INSERT INTO users (id, name, cpf, email, phone, password, service_id, city_id, r
     
     -- Usuário sem serviço/cidade para testes edge case
     ('550e8400-e29b-41d4-a716-446655440054', 'Sofia Pendente', '888.999.000-11', 'sofia.pendente@teste.com', '31932109876', '$2a$10$cfFYnikRgfxgkq6I44oxeORd6Ud0PbK79OkLY2gv6URUEAdudGA9.', NULL, NULL, '550e8400-e29b-41d4-a716-446655440003', true);
-
