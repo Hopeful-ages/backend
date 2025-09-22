@@ -1,9 +1,12 @@
 -- Remove coluna group_name
 ALTER TABLE cobrade DROP COLUMN group_name;
 
-ALTER TABLE cobrade ALTER COLUMN id SET DEFAULT RANDOM_UUID();
+ALTER TABLE cobrade ALTER COLUMN id SET DEFAULT gen_random_uuid();
 
 ALTER TABLE cobrade ALTER COLUMN description TYPE VARCHAR(1000);
+ALTER TABLE cobrade ALTER COLUMN subgroup TYPE VARCHAR(250);
+ALTER TABLE cobrade ALTER COLUMN type TYPE VARCHAR(500);
+ALTER TABLE cobrade ALTER COLUMN subtype TYPE VARCHAR(500);
 
 INSERT INTO cobrade (code, subgroup, type, subtype, description) VALUES
 -- DESASTRES NATURAIS 
