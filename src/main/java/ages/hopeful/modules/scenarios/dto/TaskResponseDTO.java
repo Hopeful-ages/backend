@@ -17,4 +17,15 @@ public class TaskResponseDTO {
     private String fase;
     private Date lastUpdateDate;
     private ServiceResponseDTO service;
+
+    public static TaskResponseDTO fromModel(ages.hopeful.modules.scenarios.model.Task task) {
+        if (task == null) return null;
+        return TaskResponseDTO.builder()
+                .id(task.getId())
+                .description(task.getDescription())
+                .fase(task.getPhase())
+                .lastUpdateDate(task.getLastUpdateDate())
+                .service(ServiceResponseDTO.fromModel(task.getService()))
+                .build();
+    }
 }

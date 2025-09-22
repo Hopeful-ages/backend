@@ -1,20 +1,22 @@
 package ages.hopeful.modules.scenarios.service;
 
-import ages.hopeful.modules.city.dto.CityResponseDTO;
+import java.util.List;
+import java.util.UUID;
+
 import ages.hopeful.modules.city.model.City;
 import ages.hopeful.modules.city.repository.CityRepository;
-import ages.hopeful.modules.scenarios.dto.*;
-import ages.hopeful.modules.scenarios.model.*;
+import ages.hopeful.modules.scenarios.dto.ScenarioByUserRequestDTO;
+import ages.hopeful.modules.scenarios.dto.ScenarioRequestDTO;
+import ages.hopeful.modules.scenarios.dto.ScenarioResponseDTO;
+import ages.hopeful.modules.scenarios.model.Cobrade;
+import ages.hopeful.modules.scenarios.model.Parameter;
+import ages.hopeful.modules.scenarios.model.Scenario;
+import ages.hopeful.modules.scenarios.model.Task;
 import ages.hopeful.modules.scenarios.repository.ScenarioRepository;
-import ages.hopeful.modules.scenarios.repository.CobradeRepository;
-import ages.hopeful.modules.services.dto.ServiceResponseDTO;
 import ages.hopeful.modules.services.model.Service;
 import ages.hopeful.modules.services.repository.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-import java.util.UUID;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
@@ -22,26 +24,26 @@ public class ScenarioService {
 
     private final ScenarioRepository scenarioRepository;
     private final CityRepository cityRepository;
-    private final CobradeRepository cobradeRepository;
+    private final CobradeService cobradeService;
     private final ServiceRepository serviceRepository;
 
     public List<ScenarioResponseDTO> getAllScenarios() {
         return scenarioRepository.findAll()
                 .stream()
-                .map(this::toResponseDTO)
+                .map(ScenarioResponseDTO::fromModel)
                 .toList();
     }
 
     public ScenarioResponseDTO getScenarioById(UUID id) {
         Scenario scenario = scenarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Scenario não encontrado com id: " + id));
-        return toResponseDTO(scenario);
+        return ScenarioResponseDTO.fromModel(scenario);
     }
 
     public ScenarioResponseDTO createScenario(ScenarioByUserRequestDTO dto) {
         Scenario scenario = buildScenarioByUserFromDTO(dto, null);
         Scenario saved = scenarioRepository.save(scenario);
-        return toResponseDTO(saved);
+        return ScenarioResponseDTO.fromModel(saved);
     }
 
     public ScenarioResponseDTO updateScenario(UUID id, ScenarioRequestDTO dto) {
@@ -49,10 +51,10 @@ public class ScenarioService {
                 .orElseThrow(() -> new EntityNotFoundException("Scenario não encontrado com id: " + id));
 
         Scenario scenario = buildScenarioFromDTO(dto, existing);
-        scenario.setId(existing.getId()); // mantém o mesmo ID
+        scenario.setId(existing.getId());
         Scenario updated = scenarioRepository.save(scenario);
 
-        return toResponseDTO(updated);
+        return ScenarioResponseDTO.fromModel(updated);
     }
 
     public void deleteScenario(UUID id) {
@@ -62,125 +64,61 @@ public class ScenarioService {
         scenarioRepository.deleteById(id);
     }
 
-    // ===================== HELPERS =====================
 
     private Scenario buildScenarioFromDTO(ScenarioRequestDTO dto, Scenario scenario) {
-        if (scenario == null) {
-            scenario = new Scenario();
-        }
-
         City city = cityRepository.findById(dto.getCityId())
                 .orElseThrow(() -> new EntityNotFoundException("Cidade não encontrada"));
 
-        Cobrade cobrade = cobradeRepository.findById(dto.getCobradeId())
-                .orElseThrow(() -> new EntityNotFoundException("Cobrade não encontrado"));
+        Cobrade cobrade = cobradeService.getCobradeById(dto.getCobradeId());
 
-        scenario.setDescription(dto.getDescription());
+        List<Task> tasks = dto.getTasks() != null
+                ? dto.getTasks().stream().map(t -> {
+                    Service service = serviceRepository.findById(t.getServiceId())
+                            .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado"));
+                    return t.toModel(service, scenario);
+                }).toList()
+                : List.of();
+
+        List<Parameter> parameters = dto.getParameters() != null
+                ? dto.getParameters().stream().map(p -> p.toModel(scenario)).toList()
+                : List.of();
+
+        if (scenario == null) {
+            return dto.toModel(city, cobrade, tasks, parameters);
+        }
+
         scenario.setOrigin(dto.getOrigin());
         scenario.setCity(city);
         scenario.setCobrade(cobrade);
-
-        // Tasks
-        Scenario finalScenario1 = scenario;
-        List<Task> tasks = dto.getTasks() != null ? dto.getTasks().stream().map(t -> {
-            Service service = serviceRepository.findById(t.getServiceId())
-                    .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado"));
-            Task task = new Task();
-            task.setDescription(t.getDescription());
-            task.setPhase(t.getFase());
-            task.setLastUpdateDate(t.getLastUpdateDate());
-            task.setService(service);
-            task.setScenario(finalScenario1);
-            return task;
-        }).toList() : List.of();
         scenario.setTasks(tasks);
-
-        // Parameters
-        Scenario finalScenario = scenario;
-        List<Parameter> parameters = dto.getParameters() != null ? dto.getParameters().stream().map(p -> {
-            Parameter param = new Parameter();
-            param.setDescription(p.getDescription());
-            param.setAction(p.getAction());
-            param.setFase(p.getFase());
-            param.setScenario(finalScenario);
-            return param;
-        }).toList() : List.of();
         scenario.setParameters(parameters);
 
         return scenario;
     }
 
     private Scenario buildScenarioByUserFromDTO(ScenarioByUserRequestDTO dto, Scenario scenario) {
-        if (scenario == null) {
-            scenario = new Scenario();
-        }
-
         City city = cityRepository.findById(dto.getCityId())
                 .orElseThrow(() -> new EntityNotFoundException("Cidade não encontrada"));
 
-        Cobrade cobrade = cobradeRepository.findById(dto.getCobradeId())
-                .orElseThrow(() -> new EntityNotFoundException("Cobrade não encontrado"));
+        Cobrade cobrade = cobradeService.getCobradeById(dto.getCobradeId());
 
-        scenario.setDescription(dto.getDescription());
+        List<Task> tasks = dto.getTasks() != null
+                ? dto.getTasks().stream().map(t -> {
+                    Service service = serviceRepository.findById(t.getServiceId())
+                            .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado"));
+                    return t.toModel(service, scenario);
+                }).toList()
+                : List.of();
+
+        if (scenario == null) {
+            return dto.toModel(city, cobrade, tasks);
+        }
+
         scenario.setOrigin(dto.getOrigin());
         scenario.setCity(city);
         scenario.setCobrade(cobrade);
-
-        // Tasks
-        Scenario finalScenario1 = scenario;
-        List<Task> tasks = dto.getTasks() != null ? dto.getTasks().stream().map(t -> {
-            Service service = serviceRepository.findById(t.getServiceId())
-                    .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado"));
-            Task task = new Task();
-            task.setDescription(t.getDescription());
-            task.setPhase(t.getFase());
-            task.setLastUpdateDate(t.getLastUpdateDate());
-            task.setService(service);
-            task.setScenario(finalScenario1);
-            return task;
-        }).toList() : List.of();
         scenario.setTasks(tasks);
 
-        // Parameters
-        Scenario finalScenario = scenario;
         return scenario;
-    }
-
-    private ScenarioResponseDTO toResponseDTO(Scenario scenario) {
-        return ScenarioResponseDTO.builder()
-                .id(scenario.getId())
-                .description(scenario.getDescription())
-                .origin(scenario.getOrigin())
-                .city(new CityResponseDTO(
-                        scenario.getCity().getId(),
-                        scenario.getCity().getName(),
-                        scenario.getCity().getState()
-                ))
-                .cobrade(new CobradeResponseDTO(
-                        scenario.getCobrade().getId(),
-                        scenario.getCobrade().getCode(),
-                        scenario.getCobrade().getDescription(),
-                        scenario.getCobrade().getGroup(),
-                        scenario.getCobrade().getSubgroup(),
-                        scenario.getCobrade().getType(),
-                        scenario.getCobrade().getSubType()
-                ))
-                .tasks(scenario.getTasks().stream().map(t -> TaskResponseDTO.builder()
-                        .id(t.getId())
-                        .description(t.getDescription())
-                        .fase(t.getPhase())
-                        .lastUpdateDate(t.getLastUpdateDate())
-                        .service(new ServiceResponseDTO(
-                                t.getService().getId(),
-                                t.getService().getName()
-                        ))
-                        .build()).toList())
-                .parameters(scenario.getParameters().stream().map(p -> ParameterResponseDTO.builder()
-                        .id(p.getId())
-                        .description(p.getDescription())
-                        .action(p.getAction())
-                        .fase(p.getFase())
-                        .build()).toList())
-                .build();
     }
 }

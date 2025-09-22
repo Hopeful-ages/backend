@@ -10,6 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "Parameter")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = {"scenario"})

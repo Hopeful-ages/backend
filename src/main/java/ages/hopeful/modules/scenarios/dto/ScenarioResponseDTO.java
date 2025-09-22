@@ -6,6 +6,8 @@ import lombok.*;
 import java.util.List;
 import java.util.UUID;
 
+import ages.hopeful.modules.scenarios.model.Scenario;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,4 +21,20 @@ public class ScenarioResponseDTO {
     private CobradeResponseDTO cobrade;
     private List<TaskResponseDTO> tasks;
     private List<ParameterResponseDTO> parameters;
+
+    public static ScenarioResponseDTO fromModel(Scenario scenario) {
+        if (scenario == null) return null;
+        return ScenarioResponseDTO.builder()
+                .id(scenario.getId())
+                .origin(scenario.getOrigin())
+                .city(CityResponseDTO.fromModel(scenario.getCity()))
+                .cobrade(CobradeResponseDTO.fromModel(scenario.getCobrade()))
+                .tasks(scenario.getTasks().stream()
+                        .map(TaskResponseDTO::fromModel)
+                        .toList())
+                .parameters(scenario.getParameters().stream()
+                        .map(ParameterResponseDTO::fromModel)
+                        .toList())
+                .build();
+    }
 }
