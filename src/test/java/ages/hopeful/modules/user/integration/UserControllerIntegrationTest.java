@@ -42,14 +42,14 @@ public class UserControllerIntegrationTest {
         UserRequestDTO user = new UserRequestDTO();
         user.setName("João da Silva " + suffix);
         user.setEmail("joao.silva." + suffix + "@teste.com");
-        int number = Math.abs(suffix.hashCode() % 100);
-        user.setCpf(String.format("123.456.789-%02d", number));
+        user.setCpf("390.533.447-05"); // CPF válido
         user.setPhone("11999999999");
         user.setPassword("senha123");
         user.setServiceId(UUID.fromString("550e8400-e29b-41d4-a716-446655440005"));
         user.setCityId(UUID.fromString("550e8400-e29b-41d4-a716-446655440015"));
         return user;
     }
+    
     //Helper to convert object to JSON string
     private String toJson(Object obj) throws Exception {
         return objectMapper.writeValueAsString(obj);
@@ -169,39 +169,17 @@ public class UserControllerIntegrationTest {
                     .andExpect(status().isNotFound());
         }
 
-        @Test 
-        @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 204 when disabling existing user")
-        void shouldReturn204WhenDisablingExistingUser() throws Exception {
-            String suffix = UUID.randomUUID().toString().substring(0, 8);
-            UserRequestDTO newUser = createValidUser(suffix);
-
-            String response = postUser(newUser)
-                    .andExpect(status().isCreated())
-                    .andReturn()
-                    .getResponse()
-                    .getContentAsString();
-
-            UUID userId = UUID.fromString(objectMapper.readTree(response).get("id").asText());
-
-            mockMvc.perform(patch("/api/users/disable/" + userId))
-                    .andExpect(status().isNoContent());
-        }
         @Test
         @WithMockUser(roles = "ADMIN")
         @DisplayName("Should return 204 when enabling existing user")
         void shouldReturn204WhenEnablingExistingUser() throws Exception {
-            String suffix = UUID.randomUUID().toString().substring(0, 8);
-            UserRequestDTO newUser = createValidUser(suffix);
+            UUID userId = UUID.fromString("550e8400-e29b-41d4-a716-446655440049");
 
-            String response = postUser(newUser)
-                    .andExpect(status().isCreated())
-                    .andReturn()
-                    .getResponse()
-                    .getContentAsString();
+            // Primeiro desabilita
+            mockMvc.perform(patch("/api/users/disable/" + userId))
+                    .andExpect(status().isNoContent());
 
-            UUID userId = UUID.fromString(objectMapper.readTree(response).get("id").asText());
-
+            // Agora habilita
             mockMvc.perform(patch("/api/users/enable/" + userId))
                     .andExpect(status().isNoContent());
         }
