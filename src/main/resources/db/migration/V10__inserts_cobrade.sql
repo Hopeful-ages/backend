@@ -55,8 +55,8 @@ INSERT INTO cobrade (code, subgroup, type, subtype, description) VALUES
 
 -- 4. CLIMATOLÓGICO
 ('1.4.1.1.0', 'Seca', 'Estiagem', NULL, 'Período prolongado de baixa ou nenhuma pluviosidade, em que a perda de umidade do solo é superior à reposição.'),
-('1.4.1.2.0', 'Seca', 'Seca', NULL, 'Estiagem prolongada suficiente para causar desequilíbrio hidrológico.'),
-('1.4.1.3.1', 'Incêndio florestal', 'Incêndios em áreas protegidas', NULL, 'Propagação de fogo sem controle em áreas legalmente protegidas.'),
+('1.4.1.2.0', 'Seca', 'Seca', NULL, 'A seca é uma estiagem prolongada, durante o período de tempo suficiente para que a falta de precipitação provoque grave desequilíbrio hidrológico.'),
+('1.4.1.3.1', 'Incêndio florestal', 'Incêndios em áreas protegidas', NULL, 'Propagação de fogo sem controle, em qualquer tipo de vegetação situada em áreas legalmente protegidas.'),
 ('1.4.1.3.2', 'Incêndio florestal', 'Incêndios em áreas não protegidas', NULL, 'Propagação de fogo sem controle em vegetação fora de áreas protegidas, afetando a qualidade do ar.'),
 ('1.4.1.4.0', 'Climatológico', 'Baixa umidade do ar', NULL, 'Taxa de vapor de água suspensa na atmosfera cai para níveis abaixo de 20%.'),
 
@@ -66,9 +66,9 @@ INSERT INTO cobrade (code, subgroup, type, subtype, description) VALUES
 ('1.5.1.3.0', 'Epidemias', 'Doenças infecciosas parasíticas', NULL, 'Aumento brusco, significativo e transitório da ocorrência de doenças infecciosas geradas por parasitas.'),
 ('1.5.1.4.0', 'Epidemias', 'Doenças infecciosas fúngicas', NULL, 'Aumento brusco, significativo e transitório da ocorrência de doenças infecciosas geradas por fungos.'),
 ('1.5.2.1.0', 'Infestações/Pragas', 'Infestações de animais', NULL, 'Infestações por animais que alterem o equilíbrio ecológico de uma região.'),
-('1.5.2.2.1', 'Infestações/Pragas', 'Infestações de algas', 'Marés vermelhas', 'Aglomeração de microalgas em água doce ou salgada suficiente para causar alterações físicas, químicas ou biológicas.'),
-('1.5.2.2.2', 'Infestações/Pragas', 'Infestações de algas', 'Cianobactérias em reservatórios', 'Aglomeração de cianobactérias em reservatórios receptores de dejetos, provocando alterações nas propriedades da água.'),
-('1.5.2.3.0', 'Infestações/Pragas', 'Outras infestações', NULL, 'Infestações que alterem o equilíbrio ecológico de uma região.'),
+('1.5.2.2.1', 'Infestações/Pragas', 'Infestações de algas', 'Marés vermelhas', 'Aglomeração de microalgas em água doce ou salgada suficiente para causar alterações físicas, químicas ou biológicas em sua composição, caracterizada por uma mudança de cor, tornando-se amarela, laranja, vermelha ou marrom.'),
+('1.5.2.2.2', 'Infestações/Pragas', 'Infestações de algas', 'Cianobactérias em reservatórios', 'Aglomeração de cianobactérias em reservatórios receptores de dejetos de dejetos domésticos, industriais e/ou agrícolas, provocando alterações das propriedades físicas, químicas ou biológicas da água.'),
+('1.5.2.3.0', 'Infestações/Pragas', 'Outras infestações', NULL, 'Infestações que alterem o equilíbrio ecológico de uma região bacia hidrográfica ou bioma afetado por suas ações predatórias.'),
 
 
 
@@ -78,10 +78,18 @@ INSERT INTO cobrade (code, subgroup, type, subtype, description) VALUES
 
 
 -- 2. DESASTRES RELACIONADOS A PRODUTOS PERIGOSOS
-('2.2.1.1.0', 'Desastres em plantas e distritos industriais, parques e armazenamentos', 'Liberação de produtos químicos para a atmosfera causada por explosão ou incêndio', NULL, 'Liberação de produtos químicos diversos para o ambiente, provocada por explosão/incêndio em plantas industriais ou outros sítios.'),
+('2.2.1.1.0', 'Desastres em plantas e distritos industriais, parques e armazenamentos, parques com extravasamento de produtos perigosos', 'Liberação de produtos químicos para a atmosfera causada por explosão ou incêndio', NULL, 'Liberação de produtos químicos diversos para o ambiente, provocada por explosão/incêndio em plantas industriais ou outros sítios.'),
+
+
+('2.2.1.1.0', 'Desastres em plantas e distritos industriais, parques e armazenamentos, parques com extravasamento de produtos perigosos', 'Liberação de produtos químicos para a atmosfera causada por explosão ou incêndio', NULL, 'Liberação de produtos químicos diversos para o ambiente, provocada por explosão/incêndio em plantas industriais ou outros sítios.'),
 ('2.2.2.1.0', 'Desastres relacionados à contaminação da água', 'Liberação de produtos químicos nos sistemas de água potável', NULL, 'Derramamento de produtos químicos diversos em um sistema de abastecimento de água potável, que pode causar alterações nas qualidades físicas, químicas e biológicas.'),
 ('2.2.2.2.0', 'Desastres relacionados à contaminação da água', 'Derramamento de produtos químicos em ambiente lacustre, fluvial, marinho e aquifero', NULL, 'Derramamento de produtos químicos diversos em lagos, rios, mar e reservatórios subterrâneos de água, que pode causar alterações nas qualidades físicas, químicas e biológicas.'),
+
+
 ('2.2.3.1.0', 'Desastres relacionados a conflitos bélicos', 'Liberação de produtos químicos e contaminação COMO consequência de ações militares', NULL, 'Agente de natureza nuclear ou radiológica, química ou biológica, considerado como perigoso, e que pode ser utilizado intencionalmente por terroristas ou grupamentos militares em atentados ou em caso de guerra.'),
+
+
+
 ('2.2.4.1.0', 'Desastres relacionados a transporte de produtos perigosos', 'Transporte rodoviário', NULL, 'Extravasamento de produtos perigosos transportados no modal rodoviário.'),
 ('2.2.4.2.0', 'Desastres relacionados a transporte de produtos perigosos', 'Transporte ferroviário', NULL, 'Extravasamento de produtos perigosos transportados no modal ferroviário.'),
 ('2.2.4.3.0', 'Desastres relacionados a transporte de produtos perigosos', 'Transporte aéreo', NULL, 'Extravasamento de produtos perigosos transportados no modal aéreo.'),
