@@ -1,7 +1,7 @@
 -- Remover coluna group_name
 ALTER TABLE cobrade DROP COLUMN group_name;
 
-ALTER TABLE cobrade ALTER COLUMN id SET DEFAULT gen_random_uuid();
+ALTER TABLE cobrade ALTER COLUMN id SET DEFAULT RANDOM_UUID();
 
 ALTER TABLE cobrade ALTER COLUMN description TYPE VARCHAR(1000);
 
@@ -61,7 +61,6 @@ INSERT INTO cobrade (code, subgroup, type, subtype, description) VALUES
 ('1.4.1.4.0', 'Climatológico', 'Baixa umidade do ar', NULL, 'Taxa de vapor de água suspensa na atmosfera cai para níveis abaixo de 20%.'),
 
 
--- 5. BIOLÓGICO
 ('1.5.1.1.0', 'Epidemias', 'Doenças infecciosas virais', NULL, 'Aumento brusco, significativo e transitório da ocorrência de doenças infecciosas geradas por vírus.'),
 ('1.5.1.2.0', 'Epidemias', 'Doenças infecciosas bacterianas', NULL, 'Aumento brusco, significativo e transitório da ocorrência de doenças infecciosas geradas por bactérias.'),
 ('1.5.1.3.0', 'Epidemias', 'Doenças infecciosas parasíticas', NULL, 'Aumento brusco, significativo e transitório da ocorrência de doenças infecciosas geradas por parasitas.'),
@@ -69,4 +68,41 @@ INSERT INTO cobrade (code, subgroup, type, subtype, description) VALUES
 ('1.5.2.1.0', 'Infestações/Pragas', 'Infestações de animais', NULL, 'Infestações por animais que alterem o equilíbrio ecológico de uma região.'),
 ('1.5.2.2.1', 'Infestações/Pragas', 'Infestações de algas', 'Marés vermelhas', 'Aglomeração de microalgas em água doce ou salgada suficiente para causar alterações físicas, químicas ou biológicas.'),
 ('1.5.2.2.2', 'Infestações/Pragas', 'Infestações de algas', 'Cianobactérias em reservatórios', 'Aglomeração de cianobactérias em reservatórios receptores de dejetos, provocando alterações nas propriedades da água.'),
-('1.5.2.3.0', 'Infestações/Pragas', 'Outras infestações', NULL, 'Infestações que alterem o equilíbrio ecológico de uma região.');
+('1.5.2.3.0', 'Infestações/Pragas', 'Outras infestações', NULL, 'Infestações que alterem o equilíbrio ecológico de uma região.'),
+
+
+
+('2.1.1.1.0', 'Desastres siderais com riscos radioativos', 'Queda de satélite (radionuclideos)', NULL, 'Queda de satélites que possuem, na sua composição, motores ou corpos radioativos, podendo ocasionar a liberação deste material.'),
+('2.1.2.1.0', 'Desastres com substâncias e equipamentos radioativos de uso em pesquisas, indústrias e usinas nucleares', 'Fontes radioativas em processos de produção', NULL, 'Escapamento acidental de radiação que excede os níveis de segurança estabelecidos na norma NN 3.01/006:2011 da CNEN.'),
+('2.1.3.1.0', 'Desastres relacionados com riscos de intensa poluição ambiental provocada por residuos radioativos', 'Outras fontes de liberação de radionuclideos para o meio ambiente', NULL, 'Escapamento acidental ou não acidental de radiação originária de fontes radioativas diversas e que excede os níveis de segurança estabelecidos na norma NN 3.01/006:2011 e NN 3.01/011:2011 da CNEN.'),
+
+
+-- 2. DESASTRES RELACIONADOS A PRODUTOS PERIGOSOS
+('2.2.1.1.0', 'Desastres em plantas e distritos industriais, parques e armazenamentos', 'Liberação de produtos químicos para a atmosfera causada por explosão ou incêndio', NULL, 'Liberação de produtos químicos diversos para o ambiente, provocada por explosão/incêndio em plantas industriais ou outros sítios.'),
+('2.2.2.1.0', 'Desastres relacionados à contaminação da água', 'Liberação de produtos químicos nos sistemas de água potável', NULL, 'Derramamento de produtos químicos diversos em um sistema de abastecimento de água potável, que pode causar alterações nas qualidades físicas, químicas e biológicas.'),
+('2.2.2.2.0', 'Desastres relacionados à contaminação da água', 'Derramamento de produtos químicos em ambiente lacustre, fluvial, marinho e aquifero', NULL, 'Derramamento de produtos químicos diversos em lagos, rios, mar e reservatórios subterrâneos de água, que pode causar alterações nas qualidades físicas, químicas e biológicas.'),
+('2.2.3.1.0', 'Desastres relacionados a conflitos bélicos', 'Liberação de produtos químicos e contaminação COMO consequência de ações militares', NULL, 'Agente de natureza nuclear ou radiológica, química ou biológica, considerado como perigoso, e que pode ser utilizado intencionalmente por terroristas ou grupamentos militares em atentados ou em caso de guerra.'),
+('2.2.4.1.0', 'Desastres relacionados a transporte de produtos perigosos', 'Transporte rodoviário', NULL, 'Extravasamento de produtos perigosos transportados no modal rodoviário.'),
+('2.2.4.2.0', 'Desastres relacionados a transporte de produtos perigosos', 'Transporte ferroviário', NULL, 'Extravasamento de produtos perigosos transportados no modal ferroviário.'),
+('2.2.4.3.0', 'Desastres relacionados a transporte de produtos perigosos', 'Transporte aéreo', NULL, 'Extravasamento de produtos perigosos transportados no modal aéreo.'),
+('2.2.4.4.0', 'Desastres relacionados a transporte de produtos perigosos', 'Transporte dutoviário', NULL, 'Extravasamento de produtos perigosos transportados no modal dutoviário.'),
+('2.2.4.5.0', 'Desastres relacionados a transporte de produtos perigosos', 'Transporte marítimo', NULL, 'Extravasamento de produtos perigosos transportados no modal marítimo.'),
+('2.2.4.6.0', 'Desastres relacionados a transporte de produtos perigosos', 'Transporte aquaviário', NULL, 'Extravasamento de produtos perigosos transportados no modal aquaviário.'),
+
+
+-- 3. INCÊNDIOS URBANOS
+('2.3.1.1.0', 'Incêndios urbanos', 'Incêndios em plantas e distritos industriais, parques e depósitos', NULL, 'Propagação descontrolada do fogo em plantas e distritos industriais, parques e depósitos.'),
+('2.3.1.2.0', 'Incêndios urbanos', 'Incêndios em aglomerados residenciais', NULL, 'Propagação descontrolada do fogo em conjuntos habitacionais de grande densidade.'),
+
+
+-- 4. OBRAS CIVIS
+('2.4.1.0.0', 'Colapso de edificações', NULL, NULL, 'Queda de estrutura civil.'),
+('2.4.2.0.0', 'Rompimento / colapso de barragens', NULL, NULL, 'Rompimento ou colapso de barragens.'),
+
+
+-- 5. TRANSPORTE DE PASSAGEIROS E CARGAS NÃO PERIGOSAS
+('2.5.1.0.0', 'Transporte rodoviário', NULL, NULL, 'Acidente no modal rodoviário envolvendo o transporte de passageiros ou cargas não perigosas.'),
+('2.5.2.0.0', 'Transporte ferroviário', NULL, NULL, 'Acidente com a participação direta de veículo ferroviário de transporte de passageiros ou cargas não perigosas.'),
+('2.5.3.0.0', 'Transporte aéreo', NULL, NULL, 'Acidente no modal aéreo envolvendo o transporte de passageiros ou cargas não perigosas.'),
+('2.5.4.0.0', 'Transporte marítimo', NULL, NULL, 'Acidente com embarcações marítimas destinadas ao transporte de passageiros e cargas não perigosas.'),
+('2.5.5.0.0', 'Transporte aquaviário', NULL, NULL, 'Acidente com embarcações destinadas ao transporte de passageiros e cargas não perigosas.');
