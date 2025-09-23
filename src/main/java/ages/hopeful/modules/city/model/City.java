@@ -1,6 +1,7 @@
 package ages.hopeful.modules.city.model;
 
 import ages.hopeful.modules.scenarios.model.Scenario;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,5 +32,6 @@ public class City {
     private String state;
 
     @OneToMany(mappedBy = "city", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Scenario> scenarios = new ArrayList<>();
 }
