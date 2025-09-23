@@ -1,22 +1,27 @@
 package ages.hopeful.modules.city.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import ages.hopeful.modules.scenarios.model.Scenario;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "city")
-@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = "scenarios")
 public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Include
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
@@ -25,4 +30,8 @@ public class City {
 
     @Column(name = "state", nullable = false, length = 255)
     private String state;
+
+    @OneToMany(mappedBy = "city", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Scenario> scenarios = new ArrayList<>();
 }

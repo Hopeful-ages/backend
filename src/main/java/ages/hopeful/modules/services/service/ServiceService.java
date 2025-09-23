@@ -1,7 +1,9 @@
 package ages.hopeful.modules.services.service;
 
 import java.util.List;
+import java.util.UUID;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -23,5 +25,10 @@ public class ServiceService {
         return services.stream()
                 .map(service -> modelMapper.map(service, ServiceResponseDTO.class))
                 .toList();
+    }
+
+    public ages.hopeful.modules.services.model.Service getServiceById(UUID id){
+        return serviceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado"));
     }
 }
