@@ -18,6 +18,7 @@ import ages.hopeful.modules.scenarios.repository.ScenarioRepository;
 import ages.hopeful.modules.services.model.Service;
 import ages.hopeful.modules.services.repository.ServiceRepository;
 import ages.hopeful.modules.services.service.ServiceService;
+import ages.hopeful.common.exception.ConflictException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
