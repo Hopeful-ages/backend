@@ -46,7 +46,7 @@ public class ScenarioService {
     public ScenarioResponseDTO createScenario(ScenarioRequestDTO dto) {
         Scenario scenario = buildScenarioFromDTO(dto, null);
         if(scenarioExists(scenario)){
-            throw new RuntimeException("O cenário para esta cobrade já foi criado nesta cidade");
+            throw new ConflictException("O cenário para esta cobrade já foi criado nesta cidade");
         }
         Scenario newScenario = scenarioRepository.save(scenario);
         newScenario = enrichScenario(newScenario, dto);
