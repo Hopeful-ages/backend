@@ -41,9 +41,10 @@ public class CobradeService {
     public List<CobradeResponseDTO> allActive() {
         List<Cobrade> entities = cobradeRepository.findByActiveTrue();
 
-        return entities.stream()
-                .map(CobradeResponseDTO::fromEntity)
-                .collect(Collectors.toList());
+        return entities
+            .stream()
+            .map(CobradeResponseDTO::fromModel)
+            .collect(Collectors.toList());
     }
 
     //Filter COBRADE by codes

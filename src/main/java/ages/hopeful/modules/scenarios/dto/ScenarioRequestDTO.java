@@ -1,7 +1,7 @@
 package ages.hopeful.modules.scenarios.dto;
 
 import ages.hopeful.modules.city.model.City;
-import ages.hopeful.modules.cobradess.model.Cobrade;
+import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.scenarios.model.Parameter;
 import ages.hopeful.modules.scenarios.model.Scenario;
 import ages.hopeful.modules.scenarios.model.Task;
