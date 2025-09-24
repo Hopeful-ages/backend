@@ -32,6 +32,13 @@ public class CobradeController {
         return ResponseEntity.ok(service.findAllByType(type));
     }
 
+    @GetMapping("/subtype/{subtype}")
+    public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesBySubtype(
+        @PathVariable String subtype
+    ) {
+        return ResponseEntity.ok(service.findAllBySubtype(subtype));
+    }
+
     @GetMapping("/subgroup/{subgroup}")
     public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesBySubgroup(
         @PathVariable String subgroup

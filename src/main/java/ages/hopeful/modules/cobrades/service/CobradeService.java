@@ -1,7 +1,6 @@
 package ages.hopeful.modules.cobrades.service;
 
 import ages.hopeful.modules.cobrades.dto.CobradeResponseDTO;
-import ages.hopeful.modules.cobrades.dto.CobradeResponseDTO;
 import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.cobrades.repository.CobradeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -58,6 +57,19 @@ public class CobradeService {
                 cobrade ->
                     cobrade.getType() != null &&
                     cobrade.getType().equalsIgnoreCase(type)
+            )
+            .map(CobradeResponseDTO::fromModel)
+            .toList();
+    }
+
+    public List<CobradeResponseDTO> findAllBySubtype(String subtype) {
+        return cobradeRepository
+            .findAll()
+            .stream()
+            .filter(
+                cobrade ->
+                    cobrade.getSubType() != null &&
+                    cobrade.getSubType().equalsIgnoreCase(subtype)
             )
             .map(CobradeResponseDTO::fromModel)
             .toList();

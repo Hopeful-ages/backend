@@ -16,4 +16,6 @@ public interface CobradeRepository extends JpaRepository<Cobrade, UUID> {
     public List<CobradeResponseDTO> findAllByType(String type);
 
     public List<CobradeResponseDTO> findAllByCode(String code);
+
+    public List<CobradeResponseDTO> findAllBySubType(String subType);
 }
