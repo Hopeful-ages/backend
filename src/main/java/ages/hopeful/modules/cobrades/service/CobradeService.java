@@ -1,6 +1,6 @@
 package ages.hopeful.modules.cobrades.service;
 
-import ages.hopeful.modules.cobrades.dto.CobradeFilterDTO;
+import ages.hopeful.modules.cobrades.dto.CobradeResponseDTO;
 import ages.hopeful.modules.cobrades.dto.CobradeResponseDTO;
 import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.cobrades.repository.CobradeRepository;
