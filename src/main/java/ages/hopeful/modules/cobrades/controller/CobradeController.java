@@ -24,6 +24,27 @@ public class CobradeController {
     public ResponseEntity<List<CobradeResponseDTO>> getAllCobrades() {
         return ResponseEntity.ok(service.getAllCobrades());
     }
+
+    @GetMapping("/type/{type}")
+    public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesByType(
+        @PathVariable String type
+    ) {
+        return ResponseEntity.ok(service.findAllByType(type));
+    }
+
+    @GetMapping("/subgroup/{subgroup}")
+    public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesBySubgroup(
+        @PathVariable String subgroup
+    ) {
+        return ResponseEntity.ok(service.findAllBySubgroup(subgroup));
+    }
+
+    @GetMapping("/code/{code}")
+    public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesByCode(
+        @PathVariable String code
+    ) {
+        return ResponseEntity.ok(service.findAllByCode(code));
+    }
 }
 /*
     @GetMapping("/{id}")

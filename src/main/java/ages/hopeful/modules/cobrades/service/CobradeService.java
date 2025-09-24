@@ -36,6 +36,46 @@ public class CobradeService {
                 )
             );
     }
+
+    public List<CobradeResponseDTO> findAllBySubgroup(String subgroup) {
+        return cobradeRepository
+            .findAll()
+            .stream()
+            .filter(
+                cobrade ->
+                    cobrade.getSubgroup() != null &&
+                    cobrade.getSubgroup().equalsIgnoreCase(subgroup)
+            )
+            .map(CobradeResponseDTO::fromModel)
+            .toList();
+    }
+
+    public List<CobradeResponseDTO> findAllByType(String type) {
+        return cobradeRepository
+            .findAll()
+            .stream()
+            .filter(
+                cobrade ->
+                    cobrade.getType() != null &&
+                    cobrade.getType().equalsIgnoreCase(type)
+            )
+            .map(CobradeResponseDTO::fromModel)
+            .toList();
+    }
+
+    public List<CobradeResponseDTO> findAllByCode(String code) {
+        return cobradeRepository
+            .findAll()
+            .stream()
+            .filter(
+                cobrade ->
+                    cobrade.getCode() != null &&
+                    cobrade.getCode().equalsIgnoreCase(code)
+            )
+            .map(CobradeResponseDTO::fromModel)
+            .toList();
+    }
+
     /* Métodos possivelmentes desnecessários */
     /*
     public List<CobradeResponseDTO> allActive() {
