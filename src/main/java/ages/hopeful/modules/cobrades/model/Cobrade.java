@@ -2,10 +2,9 @@ package ages.hopeful.modules.cobrades.model;
 
 import ages.hopeful.modules.scenarios.model.Scenario;
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.List;
 import java.util.UUID;
+import lombok.*;
 
 @Getter
 @Setter
@@ -28,7 +27,6 @@ public class Cobrade {
     @Column(name = "description", nullable = false, length = 255)
     private String description;
 
-
     @Column(name = "subgroup", nullable = false, length = 255)
     private String subgroup;
 
@@ -38,6 +36,11 @@ public class Cobrade {
     @Column(name = "subtype", nullable = false, length = 255)
     private String subType;
 
-    @OneToMany(mappedBy = "cobrade", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+        mappedBy = "cobrade",
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
     private List<Scenario> scenarios;
 }
