@@ -2,6 +2,7 @@ package ages.hopeful.modules.cobrades.controller;
 
 import ages.hopeful.modules.cobrades.dto.CobradeResponseDTO;
 import ages.hopeful.modules.cobrades.service.CobradeService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +22,19 @@ public class CobradeController {
     }
 
     @GetMapping
+    @ApiResponse(
+        responseCode = "200",
+        description = "Cobrades retrieved successfully"
+    )
     public ResponseEntity<List<CobradeResponseDTO>> getAllCobrades() {
         return ResponseEntity.ok(service.getAllCobrades());
     }
 
     @GetMapping("/type/{type}")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Cobrades of type retrieved successfully"
+    )
     public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesByType(
         @PathVariable String type
     ) {
@@ -33,6 +42,10 @@ public class CobradeController {
     }
 
     @GetMapping("/subtype/{subtype}")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Cobrades of subtype retrieved successfully"
+    )
     public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesBySubtype(
         @PathVariable String subtype
     ) {
@@ -40,6 +53,10 @@ public class CobradeController {
     }
 
     @GetMapping("/subgroup/{subgroup}")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Cobrades of subgroup retrieved successfully"
+    )
     public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesBySubgroup(
         @PathVariable String subgroup
     ) {
@@ -47,6 +64,10 @@ public class CobradeController {
     }
 
     @GetMapping("/code/{code}")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Cobrades of code retrieved successfully"
+    )
     public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesByCode(
         @PathVariable String code
     ) {
