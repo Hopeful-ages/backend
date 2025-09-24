@@ -1,5 +1,6 @@
 package ages.hopeful.modules.cobrades.service;
 
+import ages.hopeful.common.exception.NotFoundException;
 import ages.hopeful.modules.cobrades.dto.CobradeResponseDTO;
 import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.cobrades.repository.CobradeRepository;
@@ -19,25 +20,28 @@ public class CobradeService {
 
     //Active COBRADE codes
     public List<CobradeResponseDTO> getAllCobrades() {
-        return cobradeRepository
+        List<CobradeResponseDTO> cobradeResponseDTOs = cobradeRepository
             .findAll()
             .stream()
             .map(CobradeResponseDTO::fromModel)
             .toList();
+
+        if (cobradeResponseDTOs.isEmpty()) {
+            throw new NotFoundException("Cobrade not found");
+        }
+        return cobradeResponseDTOs;
     }
 
     public Cobrade getCobradeById(UUID id) {
         return cobradeRepository
             .findById(id)
             .orElseThrow(() ->
-                new EntityNotFoundException(
-                    "Cobrade não encontrado com id: " + id
-                )
+                new EntityNotFoundException("Cobrade not found with id: " + id)
             );
     }
 
     public List<CobradeResponseDTO> findAllBySubgroup(String subgroup) {
-        return cobradeRepository
+        List<CobradeResponseDTO> cobradeResponseDTOs = cobradeRepository
             .findAll()
             .stream()
             .filter(
@@ -47,10 +51,17 @@ public class CobradeService {
             )
             .map(CobradeResponseDTO::fromModel)
             .toList();
+
+        if (cobradeResponseDTOs.isEmpty()) {
+            throw new NotFoundException(
+                "Cobrade with subgroup " + subgroup + " not found"
+            );
+        }
+        return cobradeResponseDTOs;
     }
 
     public List<CobradeResponseDTO> findAllByType(String type) {
-        return cobradeRepository
+        List<CobradeResponseDTO> cobradeResponseDTOs = cobradeRepository
             .findAll()
             .stream()
             .filter(
@@ -60,10 +71,17 @@ public class CobradeService {
             )
             .map(CobradeResponseDTO::fromModel)
             .toList();
+
+        if (cobradeResponseDTOs.isEmpty()) {
+            throw new NotFoundException(
+                "Cobrade with type " + type + " not found"
+            );
+        }
+        return cobradeResponseDTOs;
     }
 
     public List<CobradeResponseDTO> findAllBySubtype(String subtype) {
-        return cobradeRepository
+        List<CobradeResponseDTO> cobradeResponseDTOs = cobradeRepository
             .findAll()
             .stream()
             .filter(
@@ -73,10 +91,17 @@ public class CobradeService {
             )
             .map(CobradeResponseDTO::fromModel)
             .toList();
+
+        if (cobradeResponseDTOs.isEmpty()) {
+            throw new NotFoundException(
+                "Cobrade with subtype " + subtype + " not found"
+            );
+        }
+        return cobradeResponseDTOs;
     }
 
     public List<CobradeResponseDTO> findAllByCode(String code) {
-        return cobradeRepository
+        List<CobradeResponseDTO> cobradeResponseDTOs = cobradeRepository
             .findAll()
             .stream()
             .filter(
@@ -86,6 +111,10 @@ public class CobradeService {
             )
             .map(CobradeResponseDTO::fromModel)
             .toList();
+        if (cobradeResponseDTOs.isEmpty()) throw new NotFoundException(
+            "Cobrade with code " + code + " not found"
+        );
+        return cobradeResponseDTOs;
     }
 
     /* Métodos possivelmentes desnecessários */
