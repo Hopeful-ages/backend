@@ -68,4 +68,15 @@ public class ScenarioController {
         scenarioService.deleteScenario(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-city-cobrade")
+    @Operation(summary = "Get Scenario by City and Cobrade",
+            description = "Returns a scenario by cityId and cobradeId")
+    @ApiResponse(responseCode = "200", description = "Scenario retrieved successfully")
+    public ResponseEntity<ScenarioResponseDTO> getScenarioByCityAndCobrade(
+            @RequestParam UUID cityId,
+            @RequestParam UUID cobradeId
+    ) {
+        return ResponseEntity.ok(scenarioService.getScenarioByCityAndCobrade(cityId, cobradeId));
+    }
 }
