@@ -78,40 +78,17 @@ public class CobradeServiceTest {
         assertEquals(1, result.size());
         assertEquals("1.2.3.4", result.get(0).getCode());
     }
-
     @Test
-    void shouldReturnCobradesByType() {
-        when(cobradeRepository.findAll()).thenReturn(List.of(cobrade));
+    void shouldThrowNotFoundExceptionWhenNoCobrades() {
+        when(cobradeRepository.findAll()).thenReturn(List.of());
 
-        List<CobradeResponseDTO> result = cobradeService.findAllByType(
-            "Deslizamento"
+        NotFoundException exception = assertThrows(
+            NotFoundException.class,
+            () -> cobradeService.getAllCobrades()
         );
 
-        assertEquals(1, result.size());
-        assertEquals("Deslizamento", result.get(0).getType());
+        assertEquals("Cobrade not found", exception.getMessage());
     }
+    
 
-    @Test
-    void shouldReturnCobradesBySubtype() {
-        when(cobradeRepository.findAll()).thenReturn(List.of(cobrade));
-
-        List<CobradeResponseDTO> result = cobradeService.findAllBySubtype(
-            "Terra"
-        );
-
-        assertEquals(1, result.size());
-        assertEquals("Terra", result.get(0).getSubType());
-    }
-
-    @Test
-    void shouldReturnCobradesByCode() {
-        when(cobradeRepository.findAll()).thenReturn(List.of(cobrade));
-
-        List<CobradeResponseDTO> result = cobradeService.findAllByCode(
-            "1.2.3.4"
-        );
-
-        assertEquals(1, result.size());
-        assertEquals("1.2.3.4", result.get(0).getCode());
-    }
 }

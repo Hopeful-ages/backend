@@ -5,17 +5,13 @@ import ages.hopeful.modules.cobrades.model.Cobrade;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CobradeRepository extends JpaRepository<Cobrade, UUID> {
-    //public List<CobradeResponseDTO> findAllByGroup(String group);
-
-    public List<CobradeResponseDTO> findAllBySubgroup(String subgroup);
-
-    public List<CobradeResponseDTO> findAllByType(String type);
-
-    public List<CobradeResponseDTO> findAllByCode(String code);
-
-    public List<CobradeResponseDTO> findAllBySubType(String subType);
+public interface CobradeRepository extends JpaRepository<Cobrade, UUID>, JpaSpecificationExecutor<Cobrade> {
+    List<Cobrade> findByTypeIgnoreCase(String type);
+    List<Cobrade> findBySubTypeIgnoreCase(String subtype);
+    List<Cobrade> findBySubgroupIgnoreCase(String subgroup);
+    List<Cobrade> findByCodeIgnoreCase(String code);
 }

@@ -5,11 +5,14 @@ import ages.hopeful.modules.cobrades.dto.CobradeResponseDTO;
 import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.cobrades.repository.CobradeRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,21 +21,76 @@ public class CobradeService {
 
     private final CobradeRepository cobradeRepository;
 
-    //Active COBRADE codes
+    @Transactional(readOnly=true)
     public List<CobradeResponseDTO> getAllCobrades() {
-        List<CobradeResponseDTO> cobradeResponseDTOs = cobradeRepository
+        List<CobradeResponseDTO> cobradeResponseDTO = cobradeRepository
             .findAll()
             .stream()
             .map(CobradeResponseDTO::fromModel)
             .toList();
 
-        if (cobradeResponseDTOs.isEmpty()) {
+        if (cobradeResponseDTO.isEmpty()) {
             throw new NotFoundException("Cobrade not found");
         }
-        return cobradeResponseDTOs;
+        return cobradeResponseDTO;
     }
 
-    public Cobrade getCobradeById(UUID id) {
+    @Transactional(readOnly=true)
+    public List<CobradeResponseDTO> findAllFilter(String type,String subgroup,String subtype,String code) {
+
+
+        if (type == null && subgroup == null && subtype == null && code == null) {
+            throw new NotFoundException("No filters provided");
+        }
+
+        Specification<Cobrade> spec = null;
+
+        if (type != null) {
+            Specification<Cobrade> typeSpec = (root, query, cb) ->
+                    cb.equal(cb.lower(root.get("type")), type.toLowerCase());
+            spec = (spec == null) ? typeSpec : spec.and(typeSpec);
+        }
+
+        if (subtype != null) {
+            Specification<Cobrade> subtypeSpec = (root, query, cb) ->
+                    cb.equal(cb.lower(root.get("subType")), subtype.toLowerCase());
+            spec = (spec == null) ? subtypeSpec : spec.and(subtypeSpec);
+        }
+
+        if (subgroup != null) {
+            Specification<Cobrade> subgroupSpec = (root, query, cb) ->
+                    cb.equal(cb.lower(root.get("subgroup")), subgroup.toLowerCase());
+            spec = (spec == null) ? subgroupSpec : spec.and(subgroupSpec);
+        }
+
+        if (code != null) {
+            Specification<Cobrade> codeSpec = (root, query, cb) ->
+                    cb.equal(cb.lower(root.get("code")), code.toLowerCase());
+            spec = (spec == null) ? codeSpec : spec.and(codeSpec);
+        }
+
+        List<Cobrade> cobrades = cobradeRepository.findAll(spec);
+        if (cobrades.isEmpty()) {
+            throw new NotFoundException("No cobrades found with the given filters");
+        }
+
+        return cobrades.stream()
+                .map(CobradeResponseDTO::fromModel)
+                .collect(Collectors.toList());
+  }
+
+    @Transactional(readOnly=true)
+    public CobradeResponseDTO getCobradeById(UUID id) {
+        Cobrade cobrade = cobradeRepository
+            .findById(id)
+            .orElseThrow(() ->
+                new EntityNotFoundException("Cobrade not found with id: " + id)
+            );
+        return CobradeResponseDTO.fromModel(cobrade);
+
+    }
+
+    public Cobrade getCobradeEntityById(UUID id) {
         return cobradeRepository
             .findById(id)
             .orElseThrow(() ->
@@ -40,158 +98,5 @@ public class CobradeService {
             );
     }
 
-    public List<CobradeResponseDTO> findAllBySubgroup(String subgroup) {
-        List<CobradeResponseDTO> cobradeResponseDTOs = cobradeRepository
-            .findAll()
-            .stream()
-            .filter(
-                cobrade ->
-                    cobrade.getSubgroup() != null &&
-                    cobrade.getSubgroup().equalsIgnoreCase(subgroup)
-            )
-            .map(CobradeResponseDTO::fromModel)
-            .toList();
-
-        if (cobradeResponseDTOs.isEmpty()) {
-            throw new NotFoundException(
-                "Cobrade with subgroup " + subgroup + " not found"
-            );
-        }
-        return cobradeResponseDTOs;
-    }
-
-    public List<CobradeResponseDTO> findAllByType(String type) {
-        List<CobradeResponseDTO> cobradeResponseDTOs = cobradeRepository
-            .findAll()
-            .stream()
-            .filter(
-                cobrade ->
-                    cobrade.getType() != null &&
-                    cobrade.getType().equalsIgnoreCase(type)
-            )
-            .map(CobradeResponseDTO::fromModel)
-            .toList();
-
-        if (cobradeResponseDTOs.isEmpty()) {
-            throw new NotFoundException(
-                "Cobrade with type " + type + " not found"
-            );
-        }
-        return cobradeResponseDTOs;
-    }
-
-    public List<CobradeResponseDTO> findAllBySubtype(String subtype) {
-        List<CobradeResponseDTO> cobradeResponseDTOs = cobradeRepository
-            .findAll()
-            .stream()
-            .filter(
-                cobrade ->
-                    cobrade.getSubType() != null &&
-                    cobrade.getSubType().equalsIgnoreCase(subtype)
-            )
-            .map(CobradeResponseDTO::fromModel)
-            .toList();
-
-        if (cobradeResponseDTOs.isEmpty()) {
-            throw new NotFoundException(
-                "Cobrade with subtype " + subtype + " not found"
-            );
-        }
-        return cobradeResponseDTOs;
-    }
-
-    public List<CobradeResponseDTO> findAllByCode(String code) {
-        List<CobradeResponseDTO> cobradeResponseDTOs = cobradeRepository
-            .findAll()
-            .stream()
-            .filter(
-                cobrade ->
-                    cobrade.getCode() != null &&
-                    cobrade.getCode().equalsIgnoreCase(code)
-            )
-            .map(CobradeResponseDTO::fromModel)
-            .toList();
-        if (cobradeResponseDTOs.isEmpty()) throw new NotFoundException(
-            "Cobrade with code " + code + " not found"
-        );
-        return cobradeResponseDTOs;
-    }
-
-    /* Métodos possivelmentes desnecessários */
-    /*
-    public List<CobradeResponseDTO> allActive() {
-        List<Cobrade> entities = cobradeRepository.findByActiveTrue();
-
-        return entities
-            .stream()
-            .map(CobradeResponseDTO::fromModel)
-            .collect(Collectors.toList());
-    }
-
-    //Filter COBRADE by codes
-    public List<CobradeResponseDTO> listarComFiltros(CobradeFilterDTO filter) {
-        log.info("Códigos COBRADE filtrado: {}", filter);
-
-        List<Cobrade> entities = cobradeRepository.findWithFilters(
-            filter.getGrupo(),
-            filter.getSubgrupo(),
-            filter.getTipo(),
-            filter.getCodigo(),
-            filter.getAtivo()
-        );
-
-        return entities
-            .stream()
-            .map(CobradeResponseDTO::fromEntity)
-            .collect(Collectors.toList());
-    }
-
-    //Search a specific COBRADE code
-    public Optional<CobradeResponseDTO> searchByCode(String code) {
-        log.info("Buscando código COBRADE: {}", code);
-
-        return cobradeRepository
-            .findByCodigoIgnoreCaseAndAtivoTrue(code)
-            .map(CobradeResponseDTO::fromEntity);
-    }
-
-    //Filter by group
-    public List<CobradeResponseDTO> listByGroup(String group) {
-        log.info("Listando códigos COBRADE do group: {}", group);
-
-        List<CobradeEntity> entities =
-            cobradeRepository.findByGroupIgnoreCaseAndActiveTrue(group);
-
-        return entities
-            .stream()
-            .map(CobradeResponseDTO::fromEntity)
-            .collect(Collectors.toList());
-    }
-
-    //Filter by subgroup
-    public List<CobradeResponseDTO> listBySubgroup(String subgroup) {
-        log.info("Listando códigos COBRADE do subgrupo: {}", subgroup);
-
-        List<CobradeEntity> entities =
-            cobradeRepository.findBySubgroupIgnoreCaseAndActiveTrue(subgroup);
-
-        return entities
-            .stream()
-            .map(CobradeResponseDTO::fromEntity)
-            .collect(Collectors.toList());
-    }
-
-    //Filter by type
-    public List<CobradeResponseDTO> listByType(String type) {
-        log.info("Listando códigos COBRADE do tipo: {}", type);
-
-        List<CobradeEntity> entities =
-            cobradeRepository.findByTypeIgnoreCaseAndActiveTrue(type);
-
-        return entities
-            .stream()
-            .map(CobradeResponseDTO::fromEntity)
-            .collect(Collectors.toList());
-    }
-    */
+   
 }

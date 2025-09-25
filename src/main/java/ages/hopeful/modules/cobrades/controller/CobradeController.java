@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,6 +21,13 @@ public class CobradeController {
     public CobradeController(CobradeService service) {
         this.service = service;
     }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<CobradeResponseDTO> getCobradeById(
+        @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(service.getCobradeById(id));
+    }
 
     @GetMapping
     @ApiResponse(
@@ -30,56 +38,14 @@ public class CobradeController {
         return ResponseEntity.ok(service.getAllCobrades());
     }
 
-    @GetMapping("/type/{type}")
-    @ApiResponse(
-        responseCode = "200",
-        description = "Cobrades of type retrieved successfully"
-    )
-    public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesByType(
-        @PathVariable String type
-    ) {
-        return ResponseEntity.ok(service.findAllByType(type));
-    }
 
-    @GetMapping("/subtype/{subtype}")
-    @ApiResponse(
-        responseCode = "200",
-        description = "Cobrades of subtype retrieved successfully"
-    )
-    public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesBySubtype(
-        @PathVariable String subtype
+    @GetMapping("/filter")
+    public ResponseEntity<List<CobradeResponseDTO>> findAllFilter(
+        @RequestParam(required = false) String type,
+        @RequestParam(required = false) String subgroup,
+        @RequestParam(required = false) String subtype,
+        @RequestParam(required = false) String code
     ) {
-        return ResponseEntity.ok(service.findAllBySubtype(subtype));
-    }
-
-    @GetMapping("/subgroup/{subgroup}")
-    @ApiResponse(
-        responseCode = "200",
-        description = "Cobrades of subgroup retrieved successfully"
-    )
-    public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesBySubgroup(
-        @PathVariable String subgroup
-    ) {
-        return ResponseEntity.ok(service.findAllBySubgroup(subgroup));
-    }
-
-    @GetMapping("/code/{code}")
-    @ApiResponse(
-        responseCode = "200",
-        description = "Cobrades of code retrieved successfully"
-    )
-    public ResponseEntity<List<CobradeResponseDTO>> getAllCobradesByCode(
-        @PathVariable String code
-    ) {
-        return ResponseEntity.ok(service.findAllByCode(code));
+        return ResponseEntity.ok(service.findAllFilter(type, subgroup, subtype, code));
     }
 }
-/*
-    @GetMapping("/{id}")
-    public ResponseEntity<CobradeResponseDTO> getCobradeById(
-        @PathVariable UUID id
-    ) {
-        return ResponseEntity.ok(service.getCobradeById(id));
-    }
-}
-*/

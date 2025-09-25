@@ -2,7 +2,6 @@ package ages.hopeful.modules.scenarios.service;
 
 import ages.hopeful.common.exception.ConflictException;
 import ages.hopeful.modules.city.model.City;
-import ages.hopeful.modules.city.repository.CityRepository;
 import ages.hopeful.modules.city.service.CityService;
 import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.cobrades.service.CobradeService;
@@ -12,7 +11,6 @@ import ages.hopeful.modules.scenarios.model.Scenario;
 import ages.hopeful.modules.scenarios.model.Task;
 import ages.hopeful.modules.scenarios.repository.ScenarioRepository;
 import ages.hopeful.modules.services.model.Service;
-import ages.hopeful.modules.services.repository.ServiceRepository;
 import ages.hopeful.modules.services.service.ServiceService;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
@@ -43,7 +41,7 @@ public class ScenarioService {
             .findById(id)
             .orElseThrow(() ->
                 new EntityNotFoundException(
-                    "Scenario não encontrado com id: " + id
+                    "Cenário não encontrado com id: " + id
                 )
             );
         return ScenarioResponseDTO.fromModel(scenario);
@@ -85,7 +83,7 @@ public class ScenarioService {
             .findById(id)
             .orElseThrow(() ->
                 new EntityNotFoundException(
-                    "Scenario não encontrado com id: " + id
+                    "Cenário não encontrado com id: " + id
                 )
             );
 
@@ -113,7 +111,7 @@ public class ScenarioService {
         Scenario scenario
     ) {
         City city = cityService.getCityById(dto.getCityId());
-        Cobrade cobrade = cobradeService.getCobradeById(dto.getCobradeId());
+        Cobrade cobrade = cobradeService.getCobradeEntityById(dto.getCobradeId());
 
         if (scenario == null) {
             return dto.toModel(city, cobrade);
