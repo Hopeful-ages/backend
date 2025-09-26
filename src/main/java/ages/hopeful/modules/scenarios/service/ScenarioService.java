@@ -47,6 +47,12 @@ public class ScenarioService {
         return ScenarioResponseDTO.fromModel(scenario);
     }
 
+    public ScenarioResponseDTO getScenarioByCityAndCobrade(UUID cityId, UUID cobradeId) {
+        Scenario scenario = scenarioRepository.findByCobradeIdAndCityId(cobradeId, cityId)
+                .orElseThrow(() -> new EntityNotFoundException("Scenario não encontrado para cityId: " + cityId + " e cobradeId: " + cobradeId));
+        return ScenarioResponseDTO.fromModel(scenario);
+    }
+
     public ScenarioResponseDTO createScenario(ScenarioRequestDTO dto) {
         Scenario scenario = buildScenarioFromDTO(dto, null);
         if (scenarioExists(scenario)) {
