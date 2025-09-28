@@ -23,7 +23,7 @@ public class TaskRequestDTO {
         return Task.builder()
                 .description(this.getDescription())
                 .phase(this.getPhase())
-                .lastUpdateDate(this.getLastUpdateDate())
+                .lastUpdateDate(this.lastUpdateDate != null ? this.lastUpdateDate : new Date(System.currentTimeMillis()))
                 .service(service)
                 .scenario(scenario)
                 .build();
