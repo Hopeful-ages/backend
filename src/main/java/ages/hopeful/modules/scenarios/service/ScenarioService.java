@@ -94,6 +94,12 @@ public class ScenarioService {
                 );
 
         Scenario scenario = buildScenarioFromDTO(dto, existing);
+        scenario.getTasks().clear();
+        List<Task> tasks = getTasksFromDTO(dto.getTasks(), scenario);
+        for (Task t : tasks) {
+            t.setScenario(scenario);
+            scenario.getTasks().add(t);
+        }
 
         if (!isAdmin) {
             scenario.setParameters(existing.getParameters());
