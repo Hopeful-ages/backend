@@ -81,27 +81,37 @@ public class ScenarioService {
     }
 
     public ScenarioResponseDTO updateScenario(
-        UUID id,
-        ScenarioRequestDTO dto,
-        boolean isAdmin
+            UUID id,
+            ScenarioRequestDTO dto,
+            boolean isAdmin
     ) {
         Scenario existing = scenarioRepository
-            .findById(id)
-            .orElseThrow(() ->
-                new EntityNotFoundException(
-                    "Cenário não encontrado com id: " + id
-                )
-            );
+                .findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Cenário não encontrado com id: " + id
+                        )
+                );
 
         Scenario scenario = buildScenarioFromDTO(dto, existing);
+
         if (!isAdmin) {
             scenario.setParameters(existing.getParameters());
+        } else {
+            scenario.getParameters().clear();
+            List<Parameter> parameters = getParametersFromDTO(dto.getParameters(), scenario);
+            for (Parameter p : parameters) {
+                p.setScenario(scenario);
+                scenario.getParameters().add(p);
+            }
         }
+
         scenario.setId(existing.getId());
         Scenario updated = scenarioRepository.save(scenario);
 
         return ScenarioResponseDTO.fromModel(updated);
     }
+
 
     public void deleteScenario(UUID id) {
         if (!scenarioRepository.existsById(id)) {
