@@ -44,7 +44,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<UserResponseDTO> getUser(@PathVariable UUID id) {
         return ResponseEntity.ok(service.getUserById(id));
     }
