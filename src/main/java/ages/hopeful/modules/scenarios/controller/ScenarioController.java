@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,16 +49,28 @@ public class ScenarioController {
         return ResponseEntity.ok(scenarioService.createScenario(request));
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update a Scenario",
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/{id}/user")
+    @Operation(summary = "Update a Scenario by user",
             description = "Updates an existing scenario by ID")
     @ApiResponse(responseCode = "200", description = "Scenario updated successfully")
-    public ResponseEntity<ScenarioResponseDTO> updateScenario(
+    public ResponseEntity<ScenarioResponseDTO> updateScenarioByUser(
             @PathVariable UUID id,
-            @RequestBody ScenarioRequestDTO request,
-            @RequestParam boolean isAdmin
+            @RequestBody ScenarioRequestDTO request
     ) {
-        return ResponseEntity.ok(scenarioService.updateScenario(id, request, isAdmin));
+        return ResponseEntity.ok(scenarioService.updateScenario(id, request, false));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}/admin")
+    @Operation(summary = "Update a Scenario by admin",
+            description = "Updates an existing scenario by ID")
+    @ApiResponse(responseCode = "200", description = "Scenario updated successfully")
+    public ResponseEntity<ScenarioResponseDTO> updateScenarioByAdmin(
+            @PathVariable UUID id,
+            @RequestBody ScenarioRequestDTO request
+    ) {
+        return ResponseEntity.ok(scenarioService.updateScenario(id, request, true));
     }
 
     @DeleteMapping("/{id}")
