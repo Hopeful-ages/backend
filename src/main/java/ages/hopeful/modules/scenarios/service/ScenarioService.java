@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 
 @org.springframework.stereotype.Service
@@ -80,6 +83,7 @@ public class ScenarioService {
         return saved;
     }
 
+    @Transactional
     public ScenarioResponseDTO updateScenario(
             UUID id,
             ScenarioRequestDTO dto,
@@ -92,7 +96,7 @@ public class ScenarioService {
                                 "Cenário não encontrado com id: " + id
                         )
                 );
-
+        
         Scenario scenario = buildScenarioFromDTO(dto, existing);
         scenario.getTasks().clear();
         List<Task> tasks = getTasksFromDTO(dto.getTasks(), scenario);
@@ -113,9 +117,8 @@ public class ScenarioService {
         }
 
         scenario.setId(existing.getId());
-        Scenario updated = scenarioRepository.save(scenario);
 
-        return ScenarioResponseDTO.fromModel(updated);
+        return ScenarioResponseDTO.fromModel(scenario);
     }
 
 

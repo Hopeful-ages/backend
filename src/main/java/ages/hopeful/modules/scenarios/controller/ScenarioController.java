@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,28 +50,19 @@ public class ScenarioController {
         return ResponseEntity.ok(scenarioService.createScenario(request));
     }
 
-    @PreAuthorize("hasRole('USER')")
-    @PutMapping("/{id}/user")
-    @Operation(summary = "Update a Scenario by user",
-            description = "Updates an existing scenario by ID")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @Operation(summary = "Update a Scenario",
+            description = "Updates an existing scenario by ID. Admin pode alterar parâmetros; usuário comum não.")
     @ApiResponse(responseCode = "200", description = "Scenario updated successfully")
     public ResponseEntity<ScenarioResponseDTO> updateScenarioByUser(
             @PathVariable UUID id,
-            @RequestBody ScenarioRequestDTO request
+            @RequestBody ScenarioRequestDTO request,
+            Authentication authentication
     ) {
-        return ResponseEntity.ok(scenarioService.updateScenario(id, request, false));
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}/admin")
-    @Operation(summary = "Update a Scenario by admin",
-            description = "Updates an existing scenario by ID")
-    @ApiResponse(responseCode = "200", description = "Scenario updated successfully")
-    public ResponseEntity<ScenarioResponseDTO> updateScenarioByAdmin(
-            @PathVariable UUID id,
-            @RequestBody ScenarioRequestDTO request
-    ) {
-        return ResponseEntity.ok(scenarioService.updateScenario(id, request, true));
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        return ResponseEntity.ok(scenarioService.updateScenario(id, request, isAdmin));
     }
 
     @DeleteMapping("/{id}")
