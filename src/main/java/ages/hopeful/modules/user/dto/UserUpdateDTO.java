@@ -1,6 +1,7 @@
 package ages.hopeful.modules.user.dto;
 
 import jakarta.annotation.Nullable;
+import org.hibernate.validator.constraints.br.CPF;
 import jakarta.validation.constraints.*;
 import java.util.UUID;
 import lombok.*;
@@ -18,6 +19,7 @@ public class UserUpdateDTO {
     public String name;
 
     @Nullable
+    @CPF
     @Pattern(regexp = "^[0-9.\\-]{11,14}$")
     public String cpf;
 

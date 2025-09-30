@@ -29,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests for the user service")
@@ -51,6 +52,9 @@ public class UserServiceTest {
 
     @Mock
     private CityRepository cityRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
 
     private UserRequestDTO userRequestDTO;
     private User user;
@@ -67,7 +71,7 @@ public class UserServiceTest {
 
         userRequestDTO = UserRequestDTO.builder()
             .name("Test User")
-            .cpf("123.456.789-00")
+            .cpf("529.982.247-25")
             .email("test@example.com")
             .password("password123")
             .serviceId(serviceId)
@@ -232,7 +236,6 @@ public class UserServiceTest {
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        // Mock modelMapper para atualizar a entidade
         doAnswer(invocation -> {
             UserUpdateDTO dto = invocation.getArgument(0);
             User entity = invocation.getArgument(1);
@@ -333,24 +336,38 @@ public class UserServiceTest {
             userService.updateUser(invalidId, userUpdateDTO)
         );
     }
-    /*
-        @Test
-        @DisplayName(
-            "Should throw IllegalArgumentException when required fields are missing"
-        )
-        void shouldThrowValidationExceptionWhenRequiredFieldsMissing() {
-            UserUpdateDTO invalidRequest = new UserUpdateDTO();
-            invalidRequest.setName(null); // nome obrigatório faltando
-            invalidRequest.setCpf("12345678900");
-            invalidRequest.setEmail("valid@example.com");
 
-            UUID userId = user.getId();
-            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+    @Test
+    @DisplayName("Should create user when CPF is valid")
+    void shouldCreateUserWhenCpfIsValid() {
+        
+        userRequestDTO.setCpf("529.982.247-25");
 
-            assertThrows(IllegalArgumentException.class, () ->
-                userService.updateUser(userId, invalidRequest)
-            );
-        }
-    */
-    /* Teste não funcional para PATCH */
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        when(serviceRepository.findById(any(UUID.class))).thenReturn(Optional.of(service));
+        when(cityRepository.findById(any(UUID.class))).thenReturn(Optional.of(city));
+        when(roleRepository.findByName(anyString())).thenReturn(Optional.of(role));
+        when(modelMapper.map(any(UserRequestDTO.class), eq(User.class))).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
+
+        UserResponseDTO response = userService.createUser(userRequestDTO);
+
+        assertNotNull(response);
+        assertEquals(userResponseDTO.id, response.id);
+        
+        verify(userRepository, times(1)).existsByCpf(userRequestDTO.getCpf());
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when CPF is invalid")
+    void shouldThrowWhenCpfIsInvalid() {
+
+        userRequestDTO.setCpf("123.456.789-00");
+        assertThrows(IllegalArgumentException.class, () -> userService.createUser(userRequestDTO));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
 }

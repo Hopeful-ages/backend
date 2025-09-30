@@ -1,7 +1,9 @@
 package ages.hopeful.modules.city.service;
 
 import java.util.List;
+import java.util.UUID;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; 
@@ -19,6 +21,11 @@ public class CityService {
         return cities.stream()
                 .map(city -> new CityResponseDTO(city.getId(), city.getName(), city.getState()))
                 .toList();
+    }
+
+    public City getCityById(UUID id){
+        return cityRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cidade não encontrada"));
     }
 
 }
