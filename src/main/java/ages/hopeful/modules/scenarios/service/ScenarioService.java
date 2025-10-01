@@ -107,8 +107,10 @@ public class ScenarioService {
 
         if (!isAdmin) {
             scenario.setParameters(existing.getParameters());
+            scenario.setPublished(existing.isPublished());
         } else {
             scenario.getParameters().clear();
+            scenario.setPublished(dto.isPublished());
             List<Parameter> parameters = getParametersFromDTO(dto.getParameters(), scenario);
             for (Parameter p : parameters) {
                 p.setScenario(scenario);

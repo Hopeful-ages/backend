@@ -26,6 +26,7 @@ public class ScenarioRequestDTO {
     private UUID cobradeId;
     private List<TaskRequestDTO> tasks;
     private List<ParameterRequestDTO> parameters;
+    private boolean published;
 
     public Scenario toModel(
         City city,
