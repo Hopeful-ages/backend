@@ -60,7 +60,7 @@ public class User implements UserDetails {
     private Boolean accountStatus = true;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role", nullable = false)
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
     @Override
