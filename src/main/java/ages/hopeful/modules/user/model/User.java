@@ -60,7 +60,7 @@ public class User implements UserDetails {
     private Boolean accountStatus = true;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
+    @JoinColumn(name = "role", nullable = false)
     private Role role;
 
     @Override
@@ -101,11 +101,15 @@ public class User implements UserDetails {
     }
 
     public boolean setAccountStatus(Boolean status) {
-        if (role.getName().equals("ADMIN")) {
-            throw new IllegalArgumentException("Cannot disable an ADMIN user");
-        } else {
-            this.accountStatus = status;
-            return this.accountStatus;
+        if (status == null) {
+        throw new IllegalArgumentException("status must not be null");
         }
+
+        if ("ADMIN".equals(role.getName())) {
+            throw new IllegalArgumentException("Cannot disable an ADMIN user");
+        } 
+
+        this.accountStatus = status;
+        return this.accountStatus; 
     }
 }
