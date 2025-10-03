@@ -149,6 +149,9 @@ public class UserService {
     public void disableUser(UUID userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found")); // lança exceção
+        if ("ADMIN".equals(user.getRole().getName())) {
+            throw new IllegalArgumentException("Cannot disable an ADMIN user");
+        } 
         user.setAccountStatus(false);
         userRepository.save(user);
     }

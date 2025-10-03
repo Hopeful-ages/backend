@@ -99,21 +99,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return accountStatus;
     }
-
-    public boolean setAccountStatus(Boolean status) {
-        if (status == null) {
-        throw new IllegalArgumentException("status must not be null");
-        }
-
-        if (this.role == null) {
-            throw new IllegalStateException("Role must be set before setting account status.");
-        }
-
-        if ("ADMIN".equals(role.getName())) {
-            throw new IllegalArgumentException("Cannot disable an ADMIN user");
-        } 
-
-        this.accountStatus = status;
-        return this.accountStatus; 
-    }
 }
