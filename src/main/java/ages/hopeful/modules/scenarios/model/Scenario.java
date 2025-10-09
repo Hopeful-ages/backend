@@ -58,4 +58,8 @@ public class Scenario {
 
     @OneToMany(mappedBy = "scenario", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Parameter> parameters = new ArrayList<>();
+
+    @Column(name = "published", nullable = false)
+    private boolean published;
+
 }
