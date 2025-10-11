@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="${titulo}">Relatório de Terremoto</title>
+  <style>
+    @page { 
+      size: A4; 
+      margin: 20mm 15mm 20mm 15mm; 
+    }
+    
+    body { 
+      font-family: 'Times New Roman', serif; 
+      font-size: 11px; 
+      line-height: 1.3; 
+      color: #000; 
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Container principal com borda ao redor de todo o documento */
+    .document-container {
+      border: 2px solid #000;
+      padding: 15px;
+      min-height: 95vh;
+      box-sizing: border-box;
+    }
+
+    /* Cabeçalho */
+    .header {
+      text-align: left;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 10px;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    /* Tabela de metadados principal */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+      border: 1px solid #000;
+    }
+
+    .info-table td {
+      border: 1px solid #000;
+      padding: 4px 6px;
+      vertical-align: top;
+      font-size: 11px;
+    }
+
+    .info-label {
+      font-weight: bold;
+      background-color: #f0f0f0;
+      width: 12%;
+      text-align: left;
+    }
+
+    .info-value {
+      width: 21%;
+    }
+
+    /* Seção de descrição */
+    .description-section {
+      margin: 15px 0;
+      text-align: justify;
+      border: 1px solid #000;
+      padding: 8px;
+    }
+
+    .description-label {
+      font-weight: bold;
+      display: inline;
+    }
+
+    /* Caixa de alerta/fluxo de resposta */
+    .response-flow {
+      border: 1px solid #000;
+      margin: 15px 0;
+    }
+
+    .response-header {
+      background-color: #000;
+      color: white;
+      padding: 4px 8px;
+      font-weight: bold;
+      font-size: 11px;
+    }
+
+    .response-content {
+      display: flex;
+      padding: 8px;
+      align-items: center;
+      background-color: #fff;
+    }
+
+    .alert-level-box {
+      width: 80px;
+      height: 40px;
+      background-color: #228B22;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 10px;
+      text-align: center;
+      margin-right: 10px;
+      border: 1px solid #000;
+    }
+
+    .response-details {
+      flex: 1;
+      line-height: 1.3;
+      font-size: 11px;
+    }
+
+    .response-details b {
+      font-weight: bold;
+    }
+
+    /* Seções numeradas */
+    .section-header {
+      background-color: #f0f0f0;
+      border: 1px solid #000;
+      padding: 4px 8px;
+      font-weight: bold;
+      font-size: 11px;
+      margin: 15px 0 8px 0;
+    }
+
+    /* Lista de tarefas com checkboxes */
+    .task-list {
+      margin: 8px 0 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task-list li {
+      margin-bottom: 8px;
+      text-align: justify;
+      line-height: 1.3;
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .task-list li:before {
+      content: "☐";
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 12px;
+    }
+
+    /* Seções com texto censurado/riscado (simulando redação) */
+    .redacted {
+      background-color: #000;
+      color: #000;
+      padding: 0 2px;
+    }
+
+    /* Marca d'água do Rio Grande do Sul */
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.08;
+      z-index: -1;
+      width: 300px;
+      height: auto;
+      pointer-events: none;
+    }
+
+    /* Marca d'água usando a imagem real do brasão */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url(data:image/png;base64,[[${watermarkImage}]]);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 250px;
+      opacity: 0.06;
+      z-index: -1;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="document-container">
+    <div class="header">
+      <div class="title" th:text="${titulo}">Terremoto</div>
+    </div>
+
+    <table class="info-table">
+      <tr>
+        <td class="info-label">ORIGEM:</td>
+        <td class="info-value" th:text="${origem}">Natural</td>
+        <td class="info-label">SUBGRUPO:</td>
+        <td class="info-value" th:text="${subgrupo}">Geológico</td>
+        <td class="info-label">CÓDIGO:</td>
+        <td class="info-value" th:text="${codigo}">Múltiplos</td>
+      </tr>
+    </table>
+
+    <div class="description-section">
+      <span class="description-label">DESCRIÇÃO:</span>
+      <span th:text="${descricao}">
+        <b>1. Tremor de terra (1.1.1.1.0):</b> Vibrações do terreno que provocam 
+        oscilações verticais e horizontais na superfície da Terra (ondas sísmicas). Pode 
+        ser natural (tectônica) ou induzido (explosões, injeção profunda de líquidos e gás, 
+        extração de fluidos, alívio de carga de minas, enchimento de lagos artificiais). 
+        <b>2. Tsunami (1.1.1.2.0):</b> Série de ondas geradas por deslocamento de um grande 
+        volume de água causado geralmente por terremotos, erupções vulcânicas ou 
+        movimentos de massa.
+      </span>
+    </div>
+
+    <div class="response-flow">
+      <div class="response-header">→ FLUXO DE RESPOSTA</div>
+      <div class="response-content">
+        <div class="alert-level-box" th:text="${alertaNivel}">Alerta Verde</div>
+        <div class="response-details">
+          <b>Parâmetros:</b> <span th:text="${parametros}">Tremor ≥ 4.0 na escala Richter</span><br/>
+          <b>Ação:</b> <span th:text="${acao}">Monitoramento contínuo com sismógrafos</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">1.0 O QUE FAZER ANTES DAS ONDAS SÍSMICAS</div>
+    <ul class="task-list">
+      <li th:each="tarefa : ${tarefas}" th:text="${tarefa}">
+        Desenvolver planos de emergência para ondas sísmicas provocadas pelo 
+        homem, por exemplo, detonações, colapso de estruturas e explosões 
+        (Defesa Civil, 2024).
+      </li>
+      <li><span class="redacted">Texto redacted exemplo para simular documento oficial</span></li>
+      <li><span class="redacted">Mais texto censurado para demonstrar</span></li>
+      <li><span class="redacted">Informações classificadas ou sensíveis</span></li>
+      <li><span class="redacted">Dados confidenciais removidos do documento</span></li>
+    </ul>
+
+    <div th:if="${secoes}">
+      <div th:each="secao, iterStat : ${secoes}">
+        <div class="section-header" th:text="|${iterStat.count + 1}.0 ${secao.titulo}|"></div>
+        <ul class="task-list">
+          <li th:each="item : ${secao.itens}" th:text="${item}"></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

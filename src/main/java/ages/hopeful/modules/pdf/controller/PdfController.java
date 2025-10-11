@@ -25,8 +25,11 @@ public class PdfController {
     }
 
     @GetMapping
-    public ResponseEntity<byte[]> returnPdf(@RequestParam String template)
-        throws Exception {
+    public ResponseEntity<byte[]> returnPdf(@RequestParam String template) throws Exception {
+        
+        String watermarkImageBase64 = pdfService.getWatermarkImageBase64();
+        String templatePath = "pdf/" + template + ".html";
+
         Map<String, Object> variables = new HashMap<>();
 
         byte[] data = pdfService.renderPdf(template, variables);
