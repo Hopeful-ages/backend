@@ -1,5 +1,9 @@
 package ages.hopeful.modules.pdf.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -8,10 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ages.hopeful.modules.pdf.service.ImageService;
 import ages.hopeful.modules.pdf.service.PdfService;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 public class PdfController {
@@ -24,7 +24,7 @@ public class PdfController {
         this.imageService = imageService;
     }
 
-    @GetMapping("/documento.pdf")
+    @GetMapping("/document.pdf")
     public ResponseEntity<byte[]> gerarPdf() throws Exception {
         String watermarkImage = imageService.getWatermarkImageBase64();
         
@@ -60,7 +60,7 @@ public class PdfController {
                    ))
         ));
 
-        byte[] pdf = pdfService.renderPdf("terremoto", vars);
+    byte[] pdf = pdfService.renderPdf("document", vars);
 
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=terremoto.pdf")

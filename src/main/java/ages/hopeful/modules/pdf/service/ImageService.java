@@ -19,7 +19,6 @@ public class ImageService {
             byte[] imageBytes = is.readAllBytes();
             return Base64.getEncoder().encodeToString(imageBytes);
         } catch (IOException e) {
-            // Se a imagem não for encontrada ou ocorrer erro de leitura, retorna null
             return null;
         }
     }
