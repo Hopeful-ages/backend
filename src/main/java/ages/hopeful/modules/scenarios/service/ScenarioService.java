@@ -191,4 +191,23 @@ public class ScenarioService {
         }
         return false;
     }
+
+    public List<ScenarioResponseDTO> getScenarioByCityAndCobradeSearch(UUID cityId, UUID cobradeId) {
+        List<Scenario> scenarios = scenarioRepository.findByCobradeIdAndCityIdSearch(cityId, cobradeId);
+        return scenarios.stream().map(ScenarioResponseDTO::fromModel).toList();
+    }
+
+    //Temporário!!!
+    public ScenarioResponseDTO publishScenario(UUID id) {
+        Scenario scenario = scenarioRepository
+            .findById(id)
+            .orElseThrow(() ->
+                new EntityNotFoundException(
+                    "Cenário não encontrado com id: " + id
+                )
+            );
+        scenario.setPublished(true);
+        Scenario updatedScenario = scenarioRepository.save(scenario);
+        return ScenarioResponseDTO.fromModel(updatedScenario);
+    }
 }

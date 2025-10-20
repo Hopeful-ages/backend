@@ -7,6 +7,7 @@ import ages.hopeful.modules.scenarios.service.ScenarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -84,4 +85,25 @@ public class ScenarioController {
     ) {
         return ResponseEntity.ok(scenarioService.getScenarioByCityAndCobrade(cityId, cobradeId));
     }
+
+    @GetMapping("/search/by-city-cobrade")
+    @Operation(summary = "Get Scenario by City and Cobrade",
+            description = "Returns a scenario by cityld and cobradeld for search")
+    @ApiResponse(responseCode = "200", description = "Scenarios retrieved successfully")
+    public ResponseEntity<List<ScenarioResponseDTO>> getScenarioByCityAndCobradeSearch(
+        @Nullable @RequestParam UUID cityId,
+        @Nullable @RequestParam UUID cobradeId
+    ) {
+        return ResponseEntity.ok(scenarioService.getScenarioByCityAndCobradeSearch(cityId, cobradeId));
+    }
+
+    //Temporário!!!
+    @PatchMapping("/{id}/publish")
+    @Operation(summary = "Publish a Scenario",
+            description = "Publishes a scenario by its ID")
+    @ApiResponse(responseCode = "200", description = "Scenario published successfully")
+    public ResponseEntity<ScenarioResponseDTO> publishScenario(@PathVariable UUID id) {
+        return ResponseEntity.ok(scenarioService.publishScenario(id));
+    }
+    
 }
