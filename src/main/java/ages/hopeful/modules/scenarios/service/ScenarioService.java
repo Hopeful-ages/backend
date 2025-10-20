@@ -197,6 +197,19 @@ public class ScenarioService {
         return scenarios.stream().map(ScenarioResponseDTO::fromModel).toList();
     }
 
+    public List<ScenarioResponseDTO> getScenariosRelatedToScenarioById(UUID ScenarioId) {
+        Scenario scenario = scenarioRepository
+            .findById(ScenarioId)
+            .orElseThrow(() ->
+                new EntityNotFoundException(
+                    "Cenário não encontrado com id: " + ScenarioId
+                )
+            );
+        List<Scenario> scenarios = scenarioRepository.findScenarioGroupedBySubgroup(scenario.getCobrade().getSubgroup(),
+                                                                                    scenario.getCity().getId());
+        return scenarios.stream().map(ScenarioResponseDTO::fromModel).toList();
+    }
+
     //Temporário!!!
     public ScenarioResponseDTO publishScenario(UUID id) {
         Scenario scenario = scenarioRepository

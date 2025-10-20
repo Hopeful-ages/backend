@@ -24,4 +24,13 @@ public interface ScenarioRepository extends JpaRepository<Scenario, UUID> {
             @Param("cityId") UUID cityId,
             @Param("cobradeId") UUID cobradeId
     ) ;
+
+    @Query("""
+        SELECT s FROM Scenario s
+        WHERE s.published = true
+        and s.cobrade.subgroup = :subGroup
+        and s.city.id = :cityId
+        
+    """)
+    List<Scenario> findScenarioGroupedBySubgroup(@Param("subGroup")String subgroup, @Param("cityId")UUID cityId);
 }
