@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class ImageService {
 
     public String getWatermarkImageBase64() {
-        ClassPathResource resource = new ClassPathResource("src/main/resources/images/hopeful_pdf_logo.png");
+        ClassPathResource resource = new ClassPathResource("images/hopeful_pdf_logo.png");
         try (InputStream is = resource.getInputStream()) {
             if (is == null) {
                 return null;

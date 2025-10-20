@@ -139,13 +139,13 @@
 </head>
 <body>
   <img th:if="${watermarkImage}"
-       th:src="|data:image/jpeg;base64,${watermarkImage}|"
+       th:src="|data:image/png;base64,${watermarkImage}|"
        alt="watermark"
        class="watermark" />
 
   <div class="document-container">
     <div class="header">
-      <div class="title" th:text="${titulo}">Terremoto</div>
+      <div class="title" th:text="${titulo}">Terremotos</div>
     </div>
 
     <table class="info-table">
@@ -155,43 +155,39 @@
         <td class="info-label">SUBGRUPO:</td>
         <td class="info-value" th:text="${subgrupo}">Geológico</td>
         <td class="info-label">CÓDIGO:</td>
-        <td class="info-value" th:text="${codigo}">Múltiplos</td>
+        <td class="info-value" th:text="${codigo}">1.1.1</td>
       </tr>
     </table>
 
     <div class="description-section">
       <span class="description-label">DESCRIÇÃO:</span>
-      <span th:text="${descricao}">
-        <b>1. Tremor de terra (1.1.1.1.0):</b> Vibrações do terreno que provocam 
-        oscilações verticais e horizontais na superfície da Terra (ondas sísmicas). Pode 
-        ser natural (tectônica) ou induzido (explosões, injeção profunda de líquidos e gás, 
-        extração de fluidos, alívio de carga de minas, enchimento de lagos artificiais). 
-        <b>2. Tsunami (1.1.1.2.0):</b> Série de ondas geradas por deslocamento de um grande 
-        volume de água causado geralmente por terremotos, erupções vulcânicas ou 
-        movimentos de massa.
+      <span th:utext="${descricao}">
+        <b>1. Tremor de terra:</b> Vibrações do terreno que provocam oscilações verticais e horizontais na superfície da Terra (ondas sísmicas).
       </span>
     </div>
 
-    <div class="section-header">1.0 O QUE FAZER ANTES DE TERREMOTOS</div>
-    <ul class="task-list">
-      <li th:each="tarefa : ${tarefas}" th:text="${tarefa}">
-        Desenvolver planos de emergência para ondas sísmicas provocadas pelo 
-        homem, por exemplo, detonações, colapso de estruturas e explosões 
-        (Defesa Civil, 2024).
-      </li>
-      <li><span class="redacted">Texto redacted exemplo para simular documento oficial</span></li>
-      <li><span class="redacted">Mais texto censurado para demonstrar</span></li>
-      <li><span class="redacted">Informações classificadas ou sensíveis</span></li>
-      <li><span class="redacted">Dados confidenciais removidos do documento</span></li>
-    </ul>
+    <!-- 1.0 ANTES DOS EVENTOS -->
+    <div th:if="${antes}">
+      <div class="section-header" th:text="'1.0 O QUE FAZER ANTES DE ' + ${titulo.toUpperCase()}"></div>
+      <ul class="task-list">
+        <li th:each="item : ${antes}" th:text="${item}"></li>
+      </ul>
+    </div>
 
-    <div th:if="${secoes}">
-      <div th:each="secao, iterStat : ${secoes}">
-        <div class="section-header" th:text="|${iterStat.count + 1}.0 ${secao.titulo}|"></div>
-        <ul class="task-list">
-          <li th:each="item : ${secao.itens}" th:text="${item}"></li>
-        </ul>
-      </div>
+    <!-- 2.0 DURANTE OS EVENTOS -->
+    <div th:if="${durante}">
+      <div class="section-header" th:text="'2.0 DURANTE OS ' + ${titulo.toUpperCase()} + 'S'"></div>
+      <ul class="task-list">
+        <li th:each="item : ${durante}" th:text="${item}"></li>
+      </ul>
+    </div>
+
+    <!-- 3.0 APÓS OS EVENTOS -->
+    <div th:if="${apos}">
+      <div class="section-header" th:text="'3.0 APÓS OS ' + ${titulo.toUpperCase()} + 'S'"></div>
+      <ul class="task-list">
+        <li th:each="item : ${apos}" th:text="${item}"></li>
+      </ul>
     </div>
   </div>
 </body>
