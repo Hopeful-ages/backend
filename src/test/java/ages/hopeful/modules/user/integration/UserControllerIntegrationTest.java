@@ -1,5 +1,6 @@
 package ages.hopeful.modules.user.integration;
 
+import ages.hopeful.modules.ClearDatabase;
 import ages.hopeful.modules.user.dto.UserRequestDTO;
 import ages.hopeful.modules.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@ClearDatabase
 @DisplayName("User Controller Integration Tests with H2")
 public class UserControllerIntegrationTest {
 
