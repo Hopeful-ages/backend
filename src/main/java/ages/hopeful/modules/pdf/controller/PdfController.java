@@ -40,12 +40,20 @@ public class PdfController {
         vars.put("antes", request.getAntes());
         vars.put("durante", request.getDurante());
         vars.put("apos", request.getApos());
+        
+        // Parameter fields - handle null values
+        vars.put("parametrosAntes", request.getParametrosAntes() != null ? request.getParametrosAntes() : "");
+        vars.put("acaoAntes", request.getAcaoAntes() != null ? request.getAcaoAntes() : "");
+        vars.put("parametrosDurante", request.getParametrosDurante() != null ? request.getParametrosDurante() : "");
+        vars.put("acaoDurante", request.getAcaoDurante() != null ? request.getAcaoDurante() : "");
+        vars.put("parametrosApos", request.getParametrosApos() != null ? request.getParametrosApos() : "");
+        vars.put("acaoApos", request.getAcaoApos() != null ? request.getAcaoApos() : "");
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(vars);
         System.out.println(json);
 
-        byte[] pdf = pdfService.renderPdf("document", vars);
+        byte[] pdf = pdfService.renderPdf("document-new", vars);
 
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=document.pdf")

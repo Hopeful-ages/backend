@@ -1,7 +1,6 @@
 package ages.hopeful.modules.pdf.dto;
 
 import java.util.List;
-import java.util.Map;
 
 public class PdfRequest {
 
@@ -13,6 +12,14 @@ public class PdfRequest {
     private List<String> antes;
     private List<String> durante;
     private List<String> apos;
+    
+    // Parameter fields for each section
+    private String parametrosAntes;
+    private String acaoAntes;
+    private String parametrosDurante;
+    private String acaoDurante;
+    private String parametrosApos;
+    private String acaoApos;
 
     public PdfRequest() {
     }
@@ -40,5 +47,24 @@ public class PdfRequest {
 
     public void setApos(List<String> apos) { this.apos = apos; }
     public List<String> getApos() { return apos; }
+
+    // Getters and setters for parameter fields
+    public void setParametrosAntes(String parametrosAntes) { this.parametrosAntes = parametrosAntes; }
+    public String getParametrosAntes() { return parametrosAntes; }
+
+    public void setAcaoAntes(String acaoAntes) { this.acaoAntes = acaoAntes; }
+    public String getAcaoAntes() { return acaoAntes; }
+
+    public void setParametrosDurante(String parametrosDurante) { this.parametrosDurante = parametrosDurante; }
+    public String getParametrosDurante() { return parametrosDurante; }
+
+    public void setAcaoDurante(String acaoDurante) { this.acaoDurante = acaoDurante; }
+    public String getAcaoDurante() { return acaoDurante; }
+
+    public void setParametrosApos(String parametrosApos) { this.parametrosApos = parametrosApos; }
+    public String getParametrosApos() { return parametrosApos; }
+
+    public void setAcaoApos(String acaoApos) { this.acaoApos = acaoApos; }
+    public String getAcaoApos() { return acaoApos; }
 
 }

@@ -1,194 +1,248 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <title th:text="${titulo}">Relatório de Terremoto</title>
-  <style th:inline="css">
-    @page { 
-      size: A4; 
-      margin: 20mm 15mm 20mm 15mm; 
-    }
-    
-    body { 
-      font-family: 'Open Sans Bold', serif; 
-      font-size: 18px; 
-      line-height: 1.3; 
-      color: #000; 
-      margin: 0;
-      padding: 0;
-    }
+    <head>
+        <meta charset="UTF-8" />
+        <title th:text="${titulo}">Relatório de Terremoto</title>
+        <style th:inline="css">
+            @page {
+                size: A4;
+                margin: 20mm 15mm 20mm 15mm;
+            }
 
-    /* Marca d'água com logo de fundo fixa em todas as páginas */
-    .watermark {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 0;
-      width: 70%;
-      max-width: 600px;
-    }
+            body {
+                font-family: "Open Sans Bold", serif;
+                font-size: 18px;
+                line-height: 1.3;
+                color: #000;
+                margin: 0;
+                padding: 0;
+            }
 
-    /* Container principal com borda ao redor de todo o documento */
-    .document-container {
-      border: 1.5px solid #000;
-      box-sizing: border-box;
-      position: relative;
-      z-index: 1; /* acima da marca d'água */
-    }
+            /* Marca d'água com logo de fundo fixa em todas as páginas */
+            .watermark {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 0;
+                width: 70%;
+                max-width: 600px;
+            }
 
-    /* Cabeçalho */
-    .header {
-      padding: 10px;
-    }
+            /* Container principal com borda ao redor de todo o documento */
+            .document-container {
+                border: 1.5px solid #000;
+                box-sizing: border-box;
+                position: relative;
+                z-index: 1; /* acima da marca d'água */
+            }
 
-    .title {
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 50px;
-      font-weight: bold;
-      margin: 0;
-    }
+            /* Cabeçalho */
+            .header {
+                padding: 10px;
+            }
 
-    .info-table {
-      font-family: Arial, Helvetica, sans-serif;
-      border-top: 1.5px solid #000;
-      border-bottom: 1.5px solid #000;
-      width: 100%;
-      border-collapse: collapse; /* evita bordas duplas e alinha divisórias */
-    }
+            .title {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 50px;
+                font-weight: bold;
+                margin: 0;
+            }
 
-    .info-table td {
-      padding: 4px 6px;
-      background-color: #ffffff;
-    }
+            .info-table {
+                font-family: Arial, Helvetica, sans-serif;
+                border-top: 1.5px solid #000;
+                border-bottom: 1.5px solid #000;
+                width: 100%;
+                border-collapse: collapse; /* evita bordas duplas e alinha divisórias */
+            }
 
-    .info-label {
-      font-weight: bold;
-      background-color: #f0f0f0;
-    }
+            .info-table td {
+                padding: 4px 6px;
+                background-color: #ffffff;
+            }
 
-    .info-value {
-      width: 33%;
-    }
+            .info-label {
+                font-weight: bold;
+                background-color: #f0f0f0;
+            }
 
-    /* Linhas verticais entre os grupos (após 2º e 4º td) */
-    .info-table td:nth-child(3),
-    .info-table td:nth-child(5) {
-      border-left: 1.5px solid #000;
-    }
+            .info-value {
+                width: 33%;
+            }
 
-    /* Seção de descrição */
-    .description-section {
-      font-family: Arial, Helvetica, sans-serif;
-      text-align: justify;
-      line-height: 1.8;
-      padding: 8px;
-    }
+            /* Linhas verticais entre os grupos (após 2º e 4º td) */
+            .info-table td:nth-child(3),
+            .info-table td:nth-child(5) {
+                border-left: 1.5px solid #000;
+            }
 
-    .description-label {
-      font-weight: bold;
-      display: inline;
-    }
+            /* Seção de descrição */
+            .description-section {
+                font-family: Arial, Helvetica, sans-serif;
+                text-align: justify;
+                line-height: 1.8;
+                padding: 8px;
+            }
 
-    .response-details b {
-      font-weight: bold;
-    }
+            .description-label {
+                font-weight: bold;
+                display: inline;
+            }
 
-    /* Seções numeradas */
-    .section-header {
-      font-family: Arial, Helvetica, sans-serif;
-      border-top: 1.5px solid #000;
-      border-bottom: 1.5px solid #000;      
-      padding: 4px 8px;
-      font-weight: bold;
-      font-size: 18px;
-      margin: 15px 0 8px 0;
-    }
+            .response-details b {
+                font-weight: bold;
+            }
 
-    /* Lista de tarefas com checkboxes */
-    .task-list {
-      font-family: Arial, Helvetica, sans-serif;
-      margin: 8px 0 8px 0px;
-      text-align: justify;
-      line-height: 1.8;
-      list-style: none; 
-      margin-right: 22px;
-    }
+            /* Seções numeradas */
+            .section-header {
+                font-family: Arial, Helvetica, sans-serif;
+                border-top: 1.5px solid #000;
+                border-bottom: 1.5px solid #000;
+                padding: 4px 8px;
+                font-weight: bold;
+                font-size: 18px;
+                margin: 15px 0 8px 0;
+            }
 
-    .task-list li {
-      margin-bottom: 8px;
-      text-align: justify;
-      position: relative;
-      padding-left: 30px; 
-    }
+            /* Lista de tarefas com checkboxes */
+            .task-list {
+                font-family: Arial, Helvetica, sans-serif;
+                margin: 8px 0 8px 0px;
+                text-align: justify;
+                line-height: 1.8;
+                list-style: none;
+                margin-right: 22px;
+            }
 
-    /* Checkbox */
-    .task-list li::before {
-      content: "";
-      position: absolute;
-      margin-top: 10px;
-      width: 15px;
-      height: 15px;
-      border: 1.5px solid #000;
-      background: #fff; /* checkbox branco */
-      box-sizing: border-box;
-    }
+            .task-list li {
+                margin-bottom: 8px;
+                text-align: justify;
+                position: relative;
+                padding-left: 30px;
+            }
 
-    
-  </style>
-</head>
-<body>
-  <img th:if="${watermarkImage}"
-       th:src="|data:image/png;base64,${watermarkImage}|"
-       alt="watermark"
-       class="watermark" />
+            /* Checkbox */
+            .task-list li::before {
+                content: "";
+                position: absolute;
+                margin-top: 10px;
+                width: 15px;
+                height: 15px;
+                border: 1.5px solid #000;
+                background: #fff; /* checkbox branco */
+                box-sizing: border-box;
+            }
 
-  <div class="document-container">
-    <div class="header">
-      <div class="title" th:text="${titulo}">Terremotos</div>
-    </div>
+        </style>
+    </head>
+    <body>
+        <img
+            th:if="${watermarkImage}"
+            th:src="|data:image/png;base64,${watermarkImage}|"
+            alt="watermark"
+            class="watermark"
+        />
 
-    <table class="info-table">
-      <tr>
-        <td class="info-label">ORIGEM:</td>
-        <td class="info-value" th:text="${origem}">Natural</td>
-        <td class="info-label">SUBGRUPO:</td>
-        <td class="info-value" th:text="${subgrupo}">Geológico</td>
-        <td class="info-label">CÓDIGO:</td>
-        <td class="info-value" th:text="${codigo}">1.1.1</td>
-      </tr>
-    </table>
+        <div class="document-container">
+            <div class="header">
+                <div class="title" th:text="${titulo}">Terremotos</div>
+            </div>
 
-    <div class="description-section">
-      <span class="description-label">DESCRIÇÃO:</span>
-      <span th:utext="${descricao}">
-        <b>1. Tremor de terra:</b> Vibrações do terreno que provocam oscilações verticais e horizontais na superfície da Terra (ondas sísmicas).
-      </span>
-    </div>
+            <table class="info-table">
+                <tr>
+                    <td class="info-label">ORIGEM:</td>
+                    <td class="info-value" th:text="${origem}">Natural</td>
+                    <td class="info-label">SUBGRUPO:</td>
+                    <td class="info-value" th:text="${subgrupo}">Geológico</td>
+                    <td class="info-label">CÓDIGO:</td>
+                    <td class="info-value" th:text="${codigo}">1.1.1</td>
+                </tr>
+            </table>
 
-    <!-- 1.0 ANTES DOS EVENTOS -->
-    <div th:if="${antes}">
-      <div class="section-header" th:text="'1.0 O QUE FAZER ANTES DE ' + ${titulo.toUpperCase()}"></div>
-      <ul class="task-list">
-        <li th:each="item : ${antes}" th:text="${item}"></li>
-      </ul>
-    </div>
+            <div class="description-section">
+                <span class="description-label">DESCRIÇÃO:</span>
+                <span th:utext="${descricao}">
+                    <b>1. Tremor de terra:</b> Vibrações do terreno que provocam
+                    oscilações verticais e horizontais na superfície da Terra
+                    (ondas sísmicas).
+                </span>
+            </div>
 
-    <!-- 2.0 DURANTE OS EVENTOS -->
-    <div th:if="${durante}">
-      <div class="section-header" th:text="'2.0 DURANTE OS ' + ${titulo.toUpperCase()} + 'S'"></div>
-      <ul class="task-list">
-        <li th:each="item : ${durante}" th:text="${item}"></li>
-      </ul>
-    </div>
+            <!-- 1.0 FLUXO DE RESPOSTA -->
+            <div th:if="${antes}">
+                <div class="section-header">1.0 FLUXO DE RESPOSTA</div>
+            </div>
 
-    <!-- 3.0 APÓS OS EVENTOS -->
-    <div th:if="${apos}">
-      <div class="section-header" th:text="'3.0 APÓS OS ' + ${titulo.toUpperCase()} + 'S'"></div>
-      <ul class="task-list">
-        <li th:each="item : ${apos}" th:text="${item}"></li>
-      </ul>
-    </div>
-  </div>
-</body>
+            <!-- Parameter box for section 1 -->
+            <div th:if="${antes}">
+                <table class="info-table">
+                    <tr>
+                        <td class="info-label">Parâmetros:</td>
+                        <td class="info-value" th:text="${parametrosAntes}">-</td>
+                        <td class="info-label">Ação:</td>
+                        <td class="info-value" th:text="${acaoAntes}">-</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 1.0 ANTES DOS EVENTOS -->
+            <div th:if="${antes}">
+                <div class="section-header">1.0 O QUE FAZER ANTES DE <span th:text="${titulo}">TREMOR</span></div>
+                <ul class="task-list">
+                    <li th:each="item : ${antes}" th:text="${item}"></li>
+                </ul>
+            </div>
+
+            <!-- 2.0 FLUXO DE RESPOSTA -->
+            <div th:if="${durante}">
+                <div class="section-header">2.0 FLUXO DE RESPOSTA</div>
+            </div>
+
+            <!-- Parameter box for section 2 -->
+            <div th:if="${durante}">
+                <table class="info-table">
+                    <tr>
+                        <td class="info-label">Parâmetros:</td>
+                        <td class="info-value" th:text="${parametrosDurante}">-</td>
+                        <td class="info-label">Ação:</td>
+                        <td class="info-value" th:text="${acaoDurante}">-</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 2.0 DURANTE OS EVENTOS -->
+            <div th:if="${durante}">
+                <div class="section-header">2.0 DURANTE OS <span th:text="${titulo}">TREMORES</span></div>
+                <ul class="task-list">
+                    <li th:each="item : ${durante}" th:text="${item}"></li>
+                </ul>
+            </div>
+
+            <!-- 3.0 FLUXO DE RESPOSTA -->
+            <div th:if="${apos}">
+                <div class="section-header">3.0 FLUXO DE RESPOSTA</div>
+            </div>
+
+            <!-- Parameter box for section 3 -->
+            <div th:if="${apos}">
+                <table class="info-table">
+                    <tr>
+                        <td class="info-label">Parâmetros:</td>
+                        <td class="info-value" th:text="${parametrosApos}">-</td>
+                        <td class="info-label">Ação:</td>
+                        <td class="info-value" th:text="${acaoApos}">-</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 3.0 APÓS OS EVENTOS -->
+            <div th:if="${apos}">
+                <div class="section-header">3.0 APÓS OS <span th:text="${titulo}">TREMORES</span></div>
+                <ul class="task-list">
+                    <li th:each="item : ${apos}" th:text="${item}"></li>
+                </ul>
+            </div>
+        </div>
+    </body>
 </html>
