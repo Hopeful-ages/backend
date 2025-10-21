@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,7 +27,8 @@ public class ScenarioRequestDTO {
     private UUID cobradeId;
     private List<TaskRequestDTO> tasks;
     private List<ParameterRequestDTO> parameters;
-    private boolean published;
+    @Default
+    private boolean published = false;
 
     public Scenario toModel(
         City city,
