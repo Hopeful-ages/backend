@@ -1,8 +1,8 @@
-<!doctype html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8" />
-        <title th:text="${titulo}">Relatório de Terremoto</title>
+        <title th:text="${titulo}"></title>
         <style th:inline="css">
             @page {
                 size: A4;
@@ -18,7 +18,6 @@
                 padding: 0;
             }
 
-            /* Marca d'água com logo de fundo fixa em todas as páginas */
             .watermark {
                 position: fixed;
                 top: 50%;
@@ -29,15 +28,13 @@
                 max-width: 600px;
             }
 
-            /* Container principal com borda ao redor de todo o documento */
             .document-container {
                 border: 1.5px solid #000;
                 box-sizing: border-box;
                 position: relative;
-                z-index: 1; /* acima da marca d'água */
+                z-index: 1;
             }
 
-            /* Cabeçalho */
             .header {
                 padding: 10px;
             }
@@ -54,7 +51,7 @@
                 border-top: 1.5px solid #000;
                 border-bottom: 1.5px solid #000;
                 width: 100%;
-                border-collapse: collapse; /* evita bordas duplas e alinha divisórias */
+                border-collapse: collapse;
             }
 
             .info-table td {
@@ -71,13 +68,11 @@
                 width: 33%;
             }
 
-            /* Linhas verticais entre os grupos (após 2º e 4º td) */
             .info-table td:nth-child(3),
             .info-table td:nth-child(5) {
                 border-left: 1.5px solid #000;
             }
 
-            /* Seção de descrição */
             .description-section {
                 font-family: Arial, Helvetica, sans-serif;
                 text-align: justify;
@@ -90,11 +85,6 @@
                 display: inline;
             }
 
-            .response-details b {
-                font-weight: bold;
-            }
-
-            /* Seções numeradas */
             .section-header {
                 font-family: Arial, Helvetica, sans-serif;
                 border-top: 1.5px solid #000;
@@ -102,35 +92,46 @@
                 padding: 4px 8px;
                 font-weight: bold;
                 font-size: 18px;
-                margin: 15px 0 8px 0;
+                margin: 0;
             }
 
-            /* Lista de tarefas com checkboxes */
+            .parameters-section {
+                font-family: Arial, Helvetica, sans-serif;
+                padding: 8px;
+                text-align: justify;
+                line-height: 1.8;
+                border-bottom: 1.5px solid #000;
+            }
+
+            .parameters-section b {
+                font-weight: bold;
+            }
+
             .task-list {
                 font-family: Arial, Helvetica, sans-serif;
-                margin: 8px 0 8px 0px;
+                margin: 8px 0 8px 8px;
                 text-align: justify;
                 line-height: 1.8;
                 list-style: none;
-                margin-right: 22px;
+                padding-left: 0;
             }
 
             .task-list li {
                 margin-bottom: 8px;
                 text-align: justify;
                 position: relative;
-                padding-left: 30px;
+                padding-left: 25px;
             }
 
-            /* Checkbox */
             .task-list li::before {
                 content: "";
                 position: absolute;
-                margin-top: 10px;
+                left: 0;
+                top: 9px;
                 width: 15px;
                 height: 15px;
                 border: 1.5px solid #000;
-                background: #fff; /* checkbox branco */
+                background: #fff;
                 box-sizing: border-box;
             }
 
@@ -146,99 +147,65 @@
 
         <div class="document-container">
             <div class="header">
-                <div class="title" th:text="${titulo}">Terremotos</div>
+                <div class="title" th:text="${titulo}"></div>
             </div>
 
             <table class="info-table">
                 <tr>
                     <td class="info-label">ORIGEM:</td>
-                    <td class="info-value" th:text="${origem}">Natural</td>
+                    <td class="info-value" th:text="${origem}"></td>
                     <td class="info-label">SUBGRUPO:</td>
-                    <td class="info-value" th:text="${subgrupo}">Geológico</td>
+                    <td class="info-value" th:text="${subgrupo}"></td>
                     <td class="info-label">CÓDIGO:</td>
-                    <td class="info-value" th:text="${codigo}">1.1.1</td>
+                    <td class="info-value" th:text="${codigo}"></td>
                 </tr>
             </table>
 
             <div class="description-section">
                 <span class="description-label">DESCRIÇÃO:</span>
-                <span th:utext="${descricao}">
-                    <b>1. Tremor de terra:</b> Vibrações do terreno que provocam
-                    oscilações verticais e horizontais na superfície da Terra
-                    (ondas sísmicas).
-                </span>
+                <span th:utext="${descricao}"></span>
             </div>
 
-            <!-- 1.0 FLUXO DE RESPOSTA -->
-            <div th:if="${antes}">
+            <!-- ANTES -->
+            <div th:if="${antes != null and !antes.isEmpty()}">
                 <div class="section-header">1.0 FLUXO DE RESPOSTA</div>
-            </div>
+                
+                <div class="parameters-section" th:if="${parametrosAntes != null and parametrosAntes != ''}">
+                    <b>Parâmetros:</b> <span th:text="${parametrosAntes}"></span><br/>
+                    <b>Ação:</b> <span th:text="${acaoAntes}"></span>
+                </div>
 
-            <!-- Parameter box for section 1 -->
-            <div th:if="${antes}">
-                <table class="info-table">
-                    <tr>
-                        <td class="info-label">Parâmetros:</td>
-                        <td class="info-value" th:text="${parametrosAntes}">-</td>
-                        <td class="info-label">Ação:</td>
-                        <td class="info-value" th:text="${acaoAntes}">-</td>
-                    </tr>
-                </table>
-            </div>
-
-            <!-- 1.0 ANTES DOS EVENTOS -->
-            <div th:if="${antes}">
-                <div class="section-header">1.0 O QUE FAZER ANTES DE <span th:text="${titulo}">TREMOR</span></div>
+                <div class="section-header">1.0 O QUE FAZER ANTES</div>
                 <ul class="task-list">
                     <li th:each="item : ${antes}" th:text="${item}"></li>
                 </ul>
             </div>
 
-            <!-- 2.0 FLUXO DE RESPOSTA -->
-            <div th:if="${durante}">
+            <!-- DURANTE -->
+            <div th:if="${durante != null and !durante.isEmpty()}">
                 <div class="section-header">2.0 FLUXO DE RESPOSTA</div>
-            </div>
+                
+                <div class="parameters-section" th:if="${parametrosDurante != null and parametrosDurante != ''}">
+                    <b>Parâmetros:</b> <span th:text="${parametrosDurante}"></span><br/>
+                    <b>Ação:</b> <span th:text="${acaoDurante}"></span>
+                </div>
 
-            <!-- Parameter box for section 2 -->
-            <div th:if="${durante}">
-                <table class="info-table">
-                    <tr>
-                        <td class="info-label">Parâmetros:</td>
-                        <td class="info-value" th:text="${parametrosDurante}">-</td>
-                        <td class="info-label">Ação:</td>
-                        <td class="info-value" th:text="${acaoDurante}">-</td>
-                    </tr>
-                </table>
-            </div>
-
-            <!-- 2.0 DURANTE OS EVENTOS -->
-            <div th:if="${durante}">
-                <div class="section-header">2.0 DURANTE OS <span th:text="${titulo}">TREMORES</span></div>
+                <div class="section-header">2.0 O QUE FAZER DURANTE</div>
                 <ul class="task-list">
                     <li th:each="item : ${durante}" th:text="${item}"></li>
                 </ul>
             </div>
 
-            <!-- 3.0 FLUXO DE RESPOSTA -->
-            <div th:if="${apos}">
+            <!-- APÓS -->
+            <div th:if="${apos != null and !apos.isEmpty()}">
                 <div class="section-header">3.0 FLUXO DE RESPOSTA</div>
-            </div>
+                
+                <div class="parameters-section" th:if="${parametrosApos != null and parametrosApos != ''}">
+                    <b>Parâmetros:</b> <span th:text="${parametrosApos}"></span><br/>
+                    <b>Ação:</b> <span th:text="${acaoApos}"></span>
+                </div>
 
-            <!-- Parameter box for section 3 -->
-            <div th:if="${apos}">
-                <table class="info-table">
-                    <tr>
-                        <td class="info-label">Parâmetros:</td>
-                        <td class="info-value" th:text="${parametrosApos}">-</td>
-                        <td class="info-label">Ação:</td>
-                        <td class="info-value" th:text="${acaoApos}">-</td>
-                    </tr>
-                </table>
-            </div>
-
-            <!-- 3.0 APÓS OS EVENTOS -->
-            <div th:if="${apos}">
-                <div class="section-header">3.0 APÓS OS <span th:text="${titulo}">TREMORES</span></div>
+                <div class="section-header">3.0 O QUE FAZER DEPOIS</div>
                 <ul class="task-list">
                     <li th:each="item : ${apos}" th:text="${item}"></li>
                 </ul>
