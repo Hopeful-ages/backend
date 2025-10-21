@@ -209,8 +209,7 @@ public class ScenarioService {
                 scenario.getCity().getId());
         return scenarios.stream().map(ScenarioResponseDTO::fromModel).toList();
     }
-
-    //Temporário!!!
+    @Transactional
     public ScenarioResponseDTO publishScenario(UUID id) {
         Scenario scenario = scenarioRepository
             .findById(id)
@@ -219,6 +218,9 @@ public class ScenarioService {
                     "Cenário não encontrado com id: " + id
                 )
             );
+            if (scenario.isPublished()) {
+                throw new ConflictException("Cenário já está publicado.");
+            }
         scenario.setPublished(true);
         Scenario updatedScenario = scenarioRepository.save(scenario);
         return ScenarioResponseDTO.fromModel(updatedScenario);

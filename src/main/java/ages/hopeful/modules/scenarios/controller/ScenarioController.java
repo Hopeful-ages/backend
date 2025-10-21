@@ -107,7 +107,6 @@ public class ScenarioController {
         return ResponseEntity.ok(scenarioService.getScenariosRelatedToScenarioById(id));
     }
 
-    //Temporário!!!
     @PatchMapping("/{id}/publish")
     @Operation(summary = "Publish a Scenario",
             description = "Publishes a scenario by its ID")
