@@ -97,6 +97,16 @@ public class ScenarioController {
         return ResponseEntity.ok(scenarioService.getScenarioByCityAndCobradeSearch(cityId, cobradeId));
     }
 
+    @GetMapping("/pdf/{id}/scenarios-by-subgroup")
+    @Operation(summary = "Get Scenarios for PDF by Subgroup",
+            description = "Get Scenarios for PDF by Subgroup")
+    @ApiResponse(responseCode = "200", description = "Scenarios retrieved successfully")
+    public ResponseEntity<List<ScenarioResponseDTO>> getScenarioByCityAndCobradeSearch(
+            @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(scenarioService.getScenariosRelatedToScenarioById(id));
+    }
+
     //Temporário!!!
     @PatchMapping("/{id}/publish")
     @Operation(summary = "Publish a Scenario",
