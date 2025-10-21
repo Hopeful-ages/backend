@@ -21,6 +21,8 @@ public class CobradeResponseDTO {
     private String subgroup;
     private String type;
     private String subType;
+    private String origin;
+    private String group;
 
     public static CobradeResponseDTO fromModel(Cobrade cobrade) {
         if (cobrade == null) return null;
@@ -31,6 +33,8 @@ public class CobradeResponseDTO {
             .subgroup(cobrade.getSubgroup())
             .type(cobrade.getType())
             .subType(cobrade.getSubType())
+            .group(cobrade.getGroup())
+            .origin(cobrade.getOrigin())
             .build();
     }
 }
