@@ -95,11 +95,13 @@ public class PdfController {
         // Titulo: pegar o subgroup do primeiro cenário (todos serão iguais)
         String titulo = scenarios.get(0).getCobrade().getSubgroup();
 
-        // Origem: por enquanto vazio conforme especificado
-        String origem = "";
+        // Origem: pegar origin de dentro da cobrade
+        String origem = scenarios.get(0).getCobrade().getOrigin() != null ? 
+                        scenarios.get(0).getCobrade().getOrigin() : "";
 
-        // Subgrupo: por enquanto vazio conforme especificado
-        String subgrupo = "";
+        // Subgrupo: pegar group de dentro da cobrade
+        String subgrupo = scenarios.get(0).getCobrade().getGroup() != null ? 
+                          scenarios.get(0).getCobrade().getGroup() : "";
 
         // Codigo: "Múltiplos" se mais de um cenário, "Singular" se apenas um
         String codigo = scenarios.size() > 1 ? "Múltiplos" : "Singular";
