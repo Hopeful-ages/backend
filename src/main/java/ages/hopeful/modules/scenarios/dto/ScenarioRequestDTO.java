@@ -40,6 +40,7 @@ public class ScenarioRequestDTO {
             .cobrade(cobrade)
             .tasks(tasks)
             .parameters(parameters)
+            .published(this.published)
             .build();
     }
 
@@ -48,6 +49,7 @@ public class ScenarioRequestDTO {
             .origin(this.getOrigin())
             .city(city)
             .cobrade(cobrade)
+            .published(this.published)
             .build();
     }
 }
