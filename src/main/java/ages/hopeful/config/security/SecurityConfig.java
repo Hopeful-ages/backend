@@ -39,8 +39,8 @@ public class SecurityConfig {
         "/swagger-resources",
         "/webjars/**",
         "/api/auth/login",
-        "/pdf",
-        "/api/scenarios/search/by-city-cobrade"
+        "/api/scenarios/search/by-city-cobrade",
+        "/api/scenarios/pdf/*/scenarios-by-subgroup"
     };
 
     @Bean
