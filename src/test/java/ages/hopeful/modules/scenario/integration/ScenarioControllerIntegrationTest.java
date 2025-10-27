@@ -10,24 +10,24 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.Test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.Test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.security.T.context.support.WithMockUser;
+import org.springframework.T.context.ActiveProfiles;
+import org.springframework.T.web.MockMvc;
+import org.springframework.T.web.servlet.ResultActions;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.T.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.T.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@ActiveProfiles("T")
 @DisplayName("Scenario Controller Integration Tests with H2")
 public class ScenarioControllerIntegrationTest {
 
@@ -70,7 +70,7 @@ public class ScenarioControllerIntegrationTest {
                 .content(toJson(scenario)));
     }
     
-    // Creation of Nested test classes for organization
+    // Creation of Nested T classes for organization
     @Nested
     @DisplayName("POST /api/scenarios")
     class CreateScenarioTests {
