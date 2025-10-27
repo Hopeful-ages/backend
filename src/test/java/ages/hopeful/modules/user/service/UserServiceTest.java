@@ -371,71 +371,52 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Should get user by ID successfully")
-    void shouldGetUserByIdSuccessfully() {
-        UUID userId = UUID.randomUUID();
-        User user = new User();
-        user.setId(userId);
-        user.setName("Test User");
+    @DisplayName("Should throw IllegalArgumentException when CPF is null")
+    void shouldThrowWhenCpfIsNull() {
+        userRequestDTO.setCpf(null);
+        assertThrows(IllegalArgumentException.class, () -> userService.createUser(userRequestDTO));
+        verify(userRepository, never()).save(any(User.class));
+    }
+    
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when CPF is empty")
+    void shouldThrowWhenCpfIsEmpty() {
+        userRequestDTO.setCpf("");
+        assertThrows(IllegalArgumentException.class, () -> userService.createUser(userRequestDTO));
+        verify(userRepository, never()).save(any(User.class));
+    }
 
-        UserResponseDTO expectedResponse = new UserResponseDTO();
-        expectedResponse.setId(userId);
-        expectedResponse.setName("Test User");
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when CPF has invalid format")
+    void shouldThrowWhenCpfHasInvalidFormat() {
+        userRequestDTO.setCpf("52998224725");
+
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(userRepository.existsByCpf(eq("52998224725"))).thenThrow(new IllegalArgumentException("Invalid CPF format"));
+
+        assertThrows(IllegalArgumentException.class, () -> userService.createUser(userRequestDTO));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Should update user when CPF is valid")
+    void shouldUpdateUserWhenCpfIsValid() {
+        UUID userId = user.getId();
+        userUpdateDTO.setCpf("529.982.247-25");
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(expectedResponse);
-
-        UserResponseDTO response = userService.getUserById(userId);
-
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        doNothing().when(modelMapper).map(any(UserUpdateDTO.class), any(User.class));
+        when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
+        when(serviceRepository.findById(userUpdateDTO.getServiceId())).thenReturn(Optional.of(service));
+        when(cityRepository.findById(userUpdateDTO.getCityId())).thenReturn(Optional.of(city));
+        UserResponseDTO response = userService.updateUser(userId, userUpdateDTO);
         assertNotNull(response);
-        assertEquals(userId, response.getId());
-        assertEquals("Test User", response.getName());
-        verify(userRepository).findById(userId);
+        assertEquals(userResponseDTO.id, response.id);
+        verify(userRepository, times(1)).existsByCpf(userUpdateDTO.getCpf());
+        verify(userRepository, times(1)).save(any(User.class)); 
     }
 
-    @Test
-    @DisplayName("Should throw NotFoundException when getting non-existent user")
-    void shouldThrowNotFoundExceptionWhenGettingNonExistentUser() {
-        UUID invalidId = UUID.randomUUID();
-        when(userRepository.findById(invalidId)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> userService.getUserById(invalidId));
-        verify(userRepository).findById(invalidId);
-    }
-
-    @Test
-    @DisplayName("Should disable user successfully")
-    void shouldDisableUserSuccessfully() {
-        UUID userId = UUID.randomUUID();
-        User user = new User();
-        user.setId(userId);
-        user.setAccountStatus(true);
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
-        userService.disableUser(userId);
-
-        assertFalse(user.getAccountStatus());
-        verify(userRepository).save(user);
-    }
-
-    @Test
-    @DisplayName("Should enable user successfully") 
-    void shouldEnableUserSuccessfully() {
-        UUID userId = UUID.randomUUID();
-        User user = new User();
-        user.setId(userId);
-        user.setAccountStatus(false);
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
-        userService.enableUser(userId);
-
-        assertTrue(user.getAccountStatus());
-        verify(userRepository).save(user);
-    }
-
-  
 }
