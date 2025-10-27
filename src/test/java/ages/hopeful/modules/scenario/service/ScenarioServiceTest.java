@@ -1,334 +1,386 @@
-package ages.hopeful.modules.cobrade.service;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
-import ages.hopeful.common.exception.ConflictException;
-import ages.hopeful.common.exception.NotFoundException;
-import ages.hopeful.modules.cobrade.dto.CobradeRequestDTO;
-import ages.hopeful.modules.cobrade.dto.CobradeResponseDTO;
-import ages.hopeful.modules.cobrade.dto.CobradeUpdateDTO;
-import ages.hopeful.modules.cobrade.model.Cobrade;
-import ages.hopeful.modules.cobrade.repository.CobradeRepository;
-import java.util.Optional;
-import java.util.UUID;
+package ages.hopeful.modules.scenario.integration;
+import ages.hopeful.modules.scenarios.dto.ParameterRequestDTO;
+import ages.hopeful.modules.scenarios.dto.ScenarioRequestDTO;
+import ages.hopeful.modules.scenarios.model.Scenario;
+import ages.hopeful.modules.scenarios.repository.ScenarioRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import java.util.List;
+import java.util.UUID;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.;
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+@DisplayName("Scenario Controller Integration Tests")
+class ScenarioControllerIntegrationTest {
+@Autowired
+private MockMvc mockMvc;
 
-@ExtendWith(MockitoExtension.class)
-@DisplayName("Tests for the cobrade service")
-public class CobradeServiceTest {
+@Autowired
+private ScenarioRepository scenarioRepository;
 
-    @InjectMocks
-    private CobradeService cobradeService;
+@Autowired
+private ObjectMapper objectMapper;
 
-    @Mock
-    private CobradeRepository cobradeRepository;
+@BeforeEach
+void setUp() {
+    scenarioRepository.deleteAll();
+}
 
-    @Mock
-    private ModelMapper modelMapper;
-
-    private CobradeRequestDTO cobradeRequestDTO;
-    private Cobrade cobrade;
-    private CobradeResponseDTO cobradeResponseDTO;
-    private CobradeUpdateDTO cobradeUpdateDTO;
-
-    @BeforeEach
-    void setUp() {
-        cobradeRequestDTO = CobradeRequestDTO.builder()
-            .code("1.2.3.4.5")
-            .name("Inundação")
-            .description("Alagamento por precipitação")
-            .category("Hidrológico")
+private ScenarioRequestDTO createValidScenarioRequest() {
+    ParameterRequestDTO parameter = ParameterRequestDTO.builder()
+            .name("População")
+            .value("10000")
             .build();
 
-        cobradeUpdateDTO = CobradeUpdateDTO.builder()
-            .code("1.2.3.4.6")
-            .name("Enxurrada")
-            .description("Alagamento rápido")
-            .category("Hidrológico")
+    return ScenarioRequestDTO.builder()
+            .name("Cenário de Teste")
+            .description("Descrição do cenário")
+            .parameters(List.of(parameter))
             .build();
+}
 
-        cobrade = new Cobrade();
-        cobrade.setId(UUID.randomUUID());
-        cobrade.setCode("1.2.3.4.5");
-        cobrade.setName("Inundação");
-        cobrade.setDescription("Alagamento por precipitação");
-        cobrade.setCategory("Hidrológico");
+private ResultActions performPost(String url, Object content) throws Exception {
+    return mockMvc.perform(post(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(content)));
+}
 
-        cobradeResponseDTO = new CobradeResponseDTO();
-        cobradeResponseDTO.setId(cobrade.getId());
-        cobradeResponseDTO.setCode(cobrade.getCode());
-        cobradeResponseDTO.setName(cobrade.getName());
-        cobradeResponseDTO.setDescription(cobrade.getDescription());
-        cobradeResponseDTO.setCategory(cobrade.getCategory());
+private ResultActions performGet(String url) throws Exception {
+    return mockMvc.perform(get(url)
+            .contentType(MediaType.APPLICATION_JSON));
+}
+
+private ResultActions performPut(String url, Object content) throws Exception {
+    return mockMvc.perform(put(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(content)));
+}
+
+private ResultActions performPatch(String url, Object content) throws Exception {
+    return mockMvc.perform(patch(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(content)));
+}
+
+private ResultActions performDelete(String url) throws Exception {
+    return mockMvc.perform(delete(url)
+            .contentType(MediaType.APPLICATION_JSON));
+}
+
+@Nested
+@DisplayName("Create Scenario Tests")
+class CreateScenarioTests {
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should create scenario successfully with valid data")
+    void shouldCreateScenarioSuccessfully() throws Exception {
+        ScenarioRequestDTO requestDTO = createValidScenarioRequest();
+
+        performPost("/api/scenarios", requestDTO)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Cenário de Teste"))
+                .andExpect(jsonPath("$.description").value("Descrição do cenário"))
+                .andExpect(jsonPath("$.parameters").isArray())
+                .andExpect(jsonPath("$.parameters[0].name").value("População"));
     }
 
     @Test
-    @DisplayName("Should create a cobrade successfully when data is valid")
-    void shouldCreateCobradeSuccessfullyWhenDataIsValid() {
-        when(cobradeRepository.existsByCode(anyString())).thenReturn(false);
-        when(modelMapper.map(any(CobradeRequestDTO.class), eq(Cobrade.class)))
-            .thenReturn(cobrade);
-        when(cobradeRepository.save(any(Cobrade.class))).thenReturn(cobrade);
-        when(modelMapper.map(any(Cobrade.class), eq(CobradeResponseDTO.class)))
-            .thenReturn(cobradeResponseDTO);
+    @WithMockUser(roles = "USER")
+    @DisplayName("Should return 403 when user without admin role tries to create")
+    void shouldReturn403WhenUserWithoutAdminRole() throws Exception {
+        ScenarioRequestDTO requestDTO = createValidScenarioRequest();
 
-        CobradeResponseDTO response = cobradeService.createCobrade(cobradeRequestDTO);
-
-        assertNotNull(response);
-        assertEquals(cobradeResponseDTO.getId(), response.getId());
-        assertEquals("1.2.3.4.5", response.getCode());
-        assertEquals("Inundação", response.getName());
-
-        verify(cobradeRepository, times(1)).existsByCode(cobradeRequestDTO.getCode());
-        verify(cobradeRepository, times(1)).save(cobrade);
+        performPost("/api/scenarios", requestDTO)
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("Should throw ConflictException when code already exists")
-    void shouldThrowConflictExceptionWhenCodeExists() {
-        when(cobradeRepository.existsByCode(anyString())).thenReturn(true);
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should return 400 when name is null")
+    void shouldReturn400WhenNameIsNull() throws Exception {
+        ScenarioRequestDTO requestDTO = createValidScenarioRequest();
+        requestDTO.setName(null);
 
-        assertThrows(ConflictException.class, () ->
-            cobradeService.createCobrade(cobradeRequestDTO)
-        );
-
-        verify(cobradeRepository, times(1)).existsByCode(cobradeRequestDTO.getCode());
-        verify(cobradeRepository, never()).save(any(Cobrade.class));
+        performPost("/api/scenarios", requestDTO)
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("Should throw IllegalArgumentException when code is null")
-    void shouldThrowIllegalArgumentExceptionWhenCodeIsNull() {
-        cobradeRequestDTO.setCode(null);
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should return 400 when name is empty")
+    void shouldReturn400WhenNameIsEmpty() throws Exception {
+        ScenarioRequestDTO requestDTO = createValidScenarioRequest();
+        requestDTO.setName("");
 
-        assertThrows(IllegalArgumentException.class, () ->
-            cobradeService.createCobrade(cobradeRequestDTO)
-        );
-
-        verify(cobradeRepository, never()).existsByCode(anyString());
-        verify(cobradeRepository, never()).save(any(Cobrade.class));
+        performPost("/api/scenarios", requestDTO)
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("Should throw IllegalArgumentException when code is empty")
-    void shouldThrowIllegalArgumentExceptionWhenCodeIsEmpty() {
-        cobradeRequestDTO.setCode("");
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should return 400 when parameters is null")
+    void shouldReturn400WhenParametersIsNull() throws Exception {
+        ScenarioRequestDTO requestDTO = createValidScenarioRequest();
+        requestDTO.setParameters(null);
 
-        assertThrows(IllegalArgumentException.class, () ->
-            cobradeService.createCobrade(cobradeRequestDTO)
-        );
+        performPost("/api/scenarios", requestDTO)
+                .andExpect(status().isBadRequest());
+    }
+}
 
-        verify(cobradeRepository, never()).existsByCode(anyString());
-        verify(cobradeRepository, never()).save(any(Cobrade.class));
+@Nested
+@DisplayName("Get Scenarios Tests")
+class GetScenariosTests {
+
+    @Test
+    @WithMockUser
+    @DisplayName("Should return all scenarios")
+    void shouldReturnAllScenarios() throws Exception {
+        performGet("/api/scenarios")
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray());
     }
 
     @Test
-    @DisplayName("Should throw IllegalArgumentException when name is null")
-    void shouldThrowIllegalArgumentExceptionWhenNameIsNull() {
-        cobradeRequestDTO.setName(null);
-
-        assertThrows(IllegalArgumentException.class, () ->
-            cobradeService.createCobrade(cobradeRequestDTO)
-        );
-
-        verify(cobradeRepository, never()).save(any(Cobrade.class));
+    @WithMockUser
+    @DisplayName("Should return empty array when no scenarios exist")
+    void shouldReturnEmptyArrayWhenNoScenarios() throws Exception {
+        performGet("/api/scenarios")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
     }
 
     @Test
-    @DisplayName("Should update cobrade successfully when data is valid")
-    void shouldUpdateCobradeSuccessfullyWhenDataIsValid() {
-        UUID cobradeId = cobrade.getId();
+    @WithMockUser
+    @DisplayName("Should return scenario by id")
+    void shouldReturnScenarioById() throws Exception {
+        Scenario scenario = scenarioRepository.save(Scenario.builder()
+                .id(UUID.randomUUID())
+                .name("Cenário Teste")
+                .description("Descrição")
+                .build());
 
-        when(cobradeRepository.findById(cobradeId)).thenReturn(Optional.of(cobrade));
-        when(cobradeRepository.existsByCode(anyString())).thenReturn(false);
-        when(cobradeRepository.save(any(Cobrade.class))).thenReturn(cobrade);
-
-        doAnswer(invocation -> {
-            CobradeUpdateDTO dto = invocation.getArgument(0);
-            Cobrade entity = invocation.getArgument(1);
-            if (dto.getCode() != null) entity.setCode(dto.getCode());
-            if (dto.getName() != null) entity.setName(dto.getName());
-            if (dto.getDescription() != null) entity.setDescription(dto.getDescription());
-            if (dto.getCategory() != null) entity.setCategory(dto.getCategory());
-            return null;
-        }).when(modelMapper).map(any(CobradeUpdateDTO.class), any(Cobrade.class));
-
-        when(modelMapper.map(any(Cobrade.class), eq(CobradeResponseDTO.class)))
-            .thenAnswer(invocation -> {
-                Cobrade c = invocation.getArgument(0);
-                CobradeResponseDTO dto = new CobradeResponseDTO();
-                dto.setId(c.getId());
-                dto.setCode(c.getCode());
-                dto.setName(c.getName());
-                dto.setDescription(c.getDescription());
-                dto.setCategory(c.getCategory());
-                return dto;
-            });
-
-        CobradeResponseDTO response = cobradeService.updateCobrade(cobradeId, cobradeUpdateDTO);
-
-        assertNotNull(response);
-        assertEquals(cobrade.getCode(), response.getCode());
-        assertEquals(cobrade.getName(), response.getName());
-        assertEquals(cobrade.getDescription(), response.getDescription());
-        assertEquals(cobrade.getCategory(), response.getCategory());
-
-        verify(cobradeRepository, times(1)).save(cobrade);
+        performGet("/api/scenarios/" + scenario.getId().toString())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Cenário Teste"))
+                .andExpect(jsonPath("$.description").value("Descrição"));
     }
 
     @Test
-    @DisplayName("Should throw ConflictException when updating code to one that already exists")
-    void shouldThrowConflictExceptionWhenUpdatingCodeToExistingOne() {
-        UUID cobradeId = cobrade.getId();
+    @WithMockUser
+    @DisplayName("Should return 404 when scenario not found")
+    void shouldReturn404WhenScenarioNotFound() throws Exception {
+        UUID randomId = UUID.randomUUID();
 
-        when(cobradeRepository.findById(cobradeId)).thenReturn(Optional.of(cobrade));
-        when(cobradeRepository.existsByCode(cobradeUpdateDTO.getCode())).thenReturn(true);
-
-        assertThrows(ConflictException.class, () ->
-            cobradeService.updateCobrade(cobradeId, cobradeUpdateDTO)
-        );
-
-        verify(cobradeRepository, never()).save(any(Cobrade.class));
+        performGet("/api/scenarios/" + randomId.toString())
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    @DisplayName("Should throw NotFoundException when updating a non-existent cobrade")
-    void shouldThrowNotFoundExceptionWhenCobradeDoesNotExist() {
-        UUID invalidId = UUID.randomUUID();
-        when(cobradeRepository.findById(invalidId)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () ->
-            cobradeService.updateCobrade(invalidId, cobradeUpdateDTO)
-        );
-
-        verify(cobradeRepository, never()).save(any(Cobrade.class));
+    @WithMockUser
+    @DisplayName("Should return 400 when id format is invalid")
+    void shouldReturn400WhenIdFormatIsInvalid() throws Exception {
+        performGet("/api/scenarios/invalid-uuid")
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("Should find cobrade by id successfully")
-    void shouldFindCobradeByIdSuccessfully() {
-        UUID cobradeId = cobrade.getId();
+    @WithMockUser
+    @DisplayName("Should filter scenarios by name")
+    void shouldFilterScenariosByName() throws Exception {
+        scenarioRepository.save(Scenario.builder()
+                .id(UUID.randomUUID())
+                .name("Cenário A")
+                .build());
 
-        when(cobradeRepository.findById(cobradeId)).thenReturn(Optional.of(cobrade));
-        when(modelMapper.map(any(Cobrade.class), eq(CobradeResponseDTO.class)))
-            .thenReturn(cobradeResponseDTO);
-
-        CobradeResponseDTO response = cobradeService.getCobradeById(cobradeId);
-
-        assertNotNull(response);
-        assertEquals(cobradeResponseDTO.getId(), response.getId());
-        assertEquals(cobradeResponseDTO.getCode(), response.getCode());
-
-        verify(cobradeRepository, times(1)).findById(cobradeId);
+        performGet("/api/scenarios?name=Cenário A")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Cenário A"));
     }
 
     @Test
-    @DisplayName("Should throw NotFoundException when cobrade not found by id")
-    void shouldThrowNotFoundExceptionWhenCobradeNotFoundById() {
-        UUID invalidId = UUID.randomUUID();
-        when(cobradeRepository.findById(invalidId)).thenReturn(Optional.empty());
+    @WithMockUser
+    @DisplayName("Should return scenarios with pagination")
+    void shouldReturnScenariosWithPagination() throws Exception {
+        performGet("/api/scenarios?page=0&size=10")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+}
 
-        assertThrows(NotFoundException.class, () ->
-            cobradeService.getCobradeById(invalidId)
-        );
+@Nested
+@DisplayName("Update Scenario Tests")
+class UpdateScenarioTests {
 
-        verify(cobradeRepository, times(1)).findById(invalidId);
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should update scenario successfully")
+    void shouldUpdateScenarioSuccessfully() throws Exception {
+        Scenario scenario = scenarioRepository.save(Scenario.builder()
+                .id(UUID.randomUUID())
+                .name("Nome Original")
+                .description("Descrição Original")
+                .build());
+
+        ScenarioRequestDTO updateDTO = createValidScenarioRequest();
+        updateDTO.setName("Nome Atualizado");
+
+        performPut("/api/scenarios/" + scenario.getId().toString(), updateDTO)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Nome Atualizado"));
     }
 
     @Test
-    @DisplayName("Should delete cobrade successfully")
-    void shouldDeleteCobradeSuccessfully() {
-        UUID cobradeId = cobrade.getId();
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should return 404 when updating non-existent scenario")
+    void shouldReturn404WhenUpdatingNonExistentScenario() throws Exception {
+        UUID randomId = UUID.randomUUID();
+        ScenarioRequestDTO updateDTO = createValidScenarioRequest();
 
-        when(cobradeRepository.findById(cobradeId)).thenReturn(Optional.of(cobrade));
-        doNothing().when(cobradeRepository).delete(cobrade);
-
-        cobradeService.deleteCobrade(cobradeId);
-
-        verify(cobradeRepository, times(1)).findById(cobradeId);
-        verify(cobradeRepository, times(1)).delete(cobrade);
+        performPut("/api/scenarios/" + randomId.toString(), updateDTO)
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    @DisplayName("Should throw NotFoundException when deleting a non-existent cobrade")
-    void shouldThrowNotFoundExceptionWhenDeletingNonExistentCobrade() {
-        UUID invalidId = UUID.randomUUID();
-        when(cobradeRepository.findById(invalidId)).thenReturn(Optional.empty());
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should update only provided fields")
+    void shouldUpdateOnlyProvidedFields() throws Exception {
+        Scenario scenario = scenarioRepository.save(Scenario.builder()
+                .id(UUID.randomUUID())
+                .name("Nome Original")
+                .description("Descrição Original")
+                .build());
 
-        assertThrows(NotFoundException.class, () ->
-            cobradeService.deleteCobrade(invalidId)
-        );
+        ScenarioRequestDTO updateDTO = ScenarioRequestDTO.builder()
+                .name("Nome Atualizado")
+                .build();
 
-        verify(cobradeRepository, times(1)).findById(invalidId);
-        verify(cobradeRepository, never()).delete(any(Cobrade.class));
+        performPut("/api/scenarios/" + scenario.getId().toString(), updateDTO)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Nome Atualizado"))
+                .andExpect(jsonPath("$.description").value("Descrição Original"));
     }
 
     @Test
-    @DisplayName("Should create cobrade when code follows valid format")
-    void shouldCreateCobradeWhenCodeFollowsValidFormat() {
-        cobradeRequestDTO.setCode("1.2.3.4.5");
+    @WithMockUser(roles = "USER")
+    @DisplayName("Should return 403 when user without admin role tries to update")
+    void shouldReturn403WhenUserWithoutAdminRoleTries() throws Exception {
+        UUID randomId = UUID.randomUUID();
+        ScenarioRequestDTO updateDTO = createValidScenarioRequest();
 
-        when(cobradeRepository.existsByCode(anyString())).thenReturn(false);
-        when(modelMapper.map(any(CobradeRequestDTO.class), eq(Cobrade.class)))
-            .thenReturn(cobrade);
-        when(cobradeRepository.save(any(Cobrade.class))).thenReturn(cobrade);
-        when(modelMapper.map(any(Cobrade.class), eq(CobradeResponseDTO.class)))
-            .thenReturn(cobradeResponseDTO);
+        performPut("/api/scenarios/" + randomId.toString(), updateDTO)
+                .andExpect(status().isForbidden());
+    }
+}
 
-        CobradeResponseDTO response = cobradeService.createCobrade(cobradeRequestDTO);
+@Nested
+@DisplayName("Patch Scenario Tests")
+class PatchScenarioTests {
 
-        assertNotNull(response);
-        assertEquals("1.2.3.4.5", response.getCode());
-        
-        verify(cobradeRepository, times(1)).existsByCode(cobradeRequestDTO.getCode());
-        verify(cobradeRepository, times(1)).save(any(Cobrade.class));
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should patch scenario successfully")
+    void shouldPatchScenarioSuccessfully() throws Exception {
+        Scenario scenario = scenarioRepository.save(Scenario.builder()
+                .id(UUID.randomUUID())
+                .name("Nome Original")
+                .description("Descrição Original")
+                .build());
+
+        ScenarioRequestDTO patchDTO = ScenarioRequestDTO.builder()
+                .name("Nome Modificado")
+                .build();
+
+        performPatch("/api/scenarios/" + scenario.getId().toString(), patchDTO)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Nome Modificado"));
     }
 
     @Test
-    @DisplayName("Should throw IllegalArgumentException when code format is invalid")
-    void shouldThrowWhenCodeFormatIsInvalid() {
-        cobradeRequestDTO.setCode("123456");
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should return 404 when patching non-existent scenario")
+    void shouldReturn404WhenPatchingNonExistentScenario() throws Exception {
+        UUID randomId = UUID.randomUUID();
+        ScenarioRequestDTO patchDTO = createValidScenarioRequest();
 
-        assertThrows(IllegalArgumentException.class, () -> 
-            cobradeService.createCobrade(cobradeRequestDTO)
-        );
-        
-        verify(cobradeRepository, never()).save(any(Cobrade.class));
+        performPatch("/api/scenarios/" + randomId.toString(), patchDTO)
+                .andExpect(status().isNotFound());
+    }
+}
+
+@Nested
+@DisplayName("Delete Scenario Tests")
+class DeleteScenarioTests {
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should delete scenario successfully")
+    void shouldDeleteScenarioSuccessfully() throws Exception {
+        Scenario scenario = scenarioRepository.save(Scenario.builder()
+                .id(UUID.randomUUID())
+                .name("Cenário para Deletar")
+                .build());
+
+        performDelete("/api/scenarios/" + scenario.getId().toString())
+                .andExpect(status().isNoContent());
+
+        // Verifica se foi realmente deletado
+        performGet("/api/scenarios/" + scenario.getId().toString())
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    @DisplayName("Should allow updating cobrade with same code")
-    void shouldAllowUpdatingCobradeWithSameCode() {
-        UUID cobradeId = cobrade.getId();
-        cobradeUpdateDTO.setCode("1.2.3.4.5"); // mesmo código do cobrade existente
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should return 404 when deleting non-existent scenario")
+    void shouldReturn404WhenDeletingNonExistentScenario() throws Exception {
+        UUID randomId = UUID.randomUUID();
 
-        when(cobradeRepository.findById(cobradeId)).thenReturn(Optional.of(cobrade));
-        when(cobradeRepository.save(any(Cobrade.class))).thenReturn(cobrade);
-
-        doAnswer(invocation -> {
-            CobradeUpdateDTO dto = invocation.getArgument(0);
-            Cobrade entity = invocation.getArgument(1);
-            if (dto.getName() != null) entity.setName(dto.getName());
-            return null;
-        }).when(modelMapper).map(any(CobradeUpdateDTO.class), any(Cobrade.class));
-
-        when(modelMapper.map(any(Cobrade.class), eq(CobradeResponseDTO.class)))
-            .thenReturn(cobradeResponseDTO);
-
-        CobradeResponseDTO response = cobradeService.updateCobrade(cobradeId, cobradeUpdateDTO);
-
-        assertNotNull(response);
-        verify(cobradeRepository, times(1)).save(cobrade);
+        performDelete("/api/scenarios/" + randomId.toString())
+                .andExpect(status().isNotFound());
     }
+}
+
+@Nested
+@DisplayName("Get Scenarios PDF Tests")
+class GetScenariosPdfTests {
+
+    @Test
+    @WithMockUser
+    @DisplayName("Should generate PDF successfully")
+    void shouldGeneratePdfSuccessfully() throws Exception {
+        scenarioRepository.save(Scenario.builder()
+                .id(UUID.randomUUID())
+                .name("Cenário PDF")
+                .description("Para teste de PDF")
+                .build());
+
+        performGet("/api/scenarios/pdf")
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_PDF));
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Should generate empty PDF when no scenarios exist")
+    void shouldGenerateEmptyPdfWhenNoScenarios() throws Exception {
+        performGet("/api/scenarios/pdf")
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_PDF));
+    }
+}
 }
