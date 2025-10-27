@@ -1,12 +1,16 @@
 package ages.hopeful.modules.scenarios.dto;
 
-import ages.hopeful.modules.scenarios.model.Scenario;
-import ages.hopeful.modules.services.model.Service;
-import ages.hopeful.modules.scenarios.model.Task;
-import lombok.*;
-
 import java.util.Date;
 import java.util.UUID;
+
+import ages.hopeful.modules.scenarios.model.Scenario;
+import ages.hopeful.modules.scenarios.model.Task;
+import ages.hopeful.modules.services.model.Service;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -27,5 +31,10 @@ public class TaskRequestDTO {
                 .service(service)
                 .scenario(scenario)
                 .build();
+    }
+
+    public void setInitialTime() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setInitialTime'");
     }
 }
