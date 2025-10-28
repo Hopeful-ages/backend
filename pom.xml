@@ -148,7 +148,7 @@
             <artifactId>modelmapper</artifactId>
             <version>3.2.0</version>
         </dependency>
-    
+
         <!-- CPF Validator -->
         <dependency>
             <groupId>org.hibernate.validator</groupId>
@@ -157,6 +157,25 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
+        </dependency>
+
+        <!-- Html to PDF -->
+        <dependency>
+            <groupId>com.openhtmltopdf</groupId>
+            <artifactId>openhtmltopdf-core</artifactId>
+            <version>1.0.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.openhtmltopdf</groupId>
+            <artifactId>openhtmltopdf-pdfbox</artifactId>
+            <version>1.0.10</version>
+        </dependency>
+
+        <!--Html generator-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
     </dependencies>
 

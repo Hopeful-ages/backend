@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +27,8 @@ public class ScenarioRequestDTO {
     private UUID cobradeId;
     private List<TaskRequestDTO> tasks;
     private List<ParameterRequestDTO> parameters;
+    @Default
+    private boolean published = false;
 
     public Scenario toModel(
         City city,
@@ -39,6 +42,7 @@ public class ScenarioRequestDTO {
             .cobrade(cobrade)
             .tasks(tasks)
             .parameters(parameters)
+            .published(this.published)
             .build();
     }
 
@@ -47,6 +51,7 @@ public class ScenarioRequestDTO {
             .origin(this.getOrigin())
             .city(city)
             .cobrade(cobrade)
+            .published(this.published)
             .build();
     }
 }

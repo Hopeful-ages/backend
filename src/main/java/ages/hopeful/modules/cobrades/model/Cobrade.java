@@ -36,6 +36,12 @@ public class Cobrade {
     @Column(name = "subtype", nullable = false, length = 255)
     private String subType;
 
+    @Column(name = "group_name", nullable = false, length = 255)
+    private String group;
+
+    @Column(name = "origin", nullable = false, length = 255)
+    private String origin;
+
     @OneToMany(
         mappedBy = "cobrade",
         fetch = FetchType.LAZY,

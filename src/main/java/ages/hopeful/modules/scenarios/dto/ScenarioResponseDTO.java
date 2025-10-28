@@ -22,11 +22,13 @@ public class ScenarioResponseDTO {
     private CobradeResponseDTO cobrade;
     private List<TaskResponseDTO> tasks;
     private List<ParameterResponseDTO> parameters;
+    private boolean published;
 
     public static ScenarioResponseDTO fromModel(Scenario scenario) {
         if (scenario == null) return null;
         return ScenarioResponseDTO.builder()
                 .id(scenario.getId())
+                .published(scenario.isPublished())
                 .origin(scenario.getOrigin())
                 .city(CityResponseDTO.fromModel(scenario.getCity()))
                 .cobrade(CobradeResponseDTO.fromModel(scenario.getCobrade()))

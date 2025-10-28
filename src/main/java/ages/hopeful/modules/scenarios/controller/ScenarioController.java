@@ -1,12 +1,14 @@
 package ages.hopeful.modules.scenarios.controller;
 
 
+import ages.hopeful.modules.pdf.service.PdfGenerationService;
 import ages.hopeful.modules.scenarios.dto.ScenarioRequestDTO;
 import ages.hopeful.modules.scenarios.dto.ScenarioResponseDTO;
 import ages.hopeful.modules.scenarios.service.ScenarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -21,9 +23,11 @@ import java.util.UUID;
 public class ScenarioController {
 
     private final ScenarioService scenarioService;
+    private final PdfGenerationService pdfGenerationService;
 
-    public ScenarioController(ScenarioService scenarioService) {
+    public ScenarioController(ScenarioService scenarioService, PdfGenerationService pdfGenerationService) {
         this.scenarioService = scenarioService;
+        this.pdfGenerationService = pdfGenerationService;
     }
 
     @GetMapping
@@ -84,4 +88,35 @@ public class ScenarioController {
     ) {
         return ResponseEntity.ok(scenarioService.getScenarioByCityAndCobrade(cityId, cobradeId));
     }
+
+    @GetMapping("/search/by-city-cobrade")
+    @Operation(summary = "Get Scenario by City and Cobrade",
+            description = "Returns a scenario by cityld and cobradeld for search")
+    @ApiResponse(responseCode = "200", description = "Scenarios retrieved successfully")
+    public ResponseEntity<List<ScenarioResponseDTO>> getScenarioByCityAndCobradeSearch(
+        @Nullable @RequestParam UUID cityId,
+        @Nullable @RequestParam UUID cobradeId
+    ) {
+        return ResponseEntity.ok(scenarioService.getScenarioByCityAndCobradeSearch(cityId, cobradeId));
+    }
+
+    @GetMapping("/pdf/{id}/scenarios-by-subgroup")
+    @Operation(summary = "Generate PDF for Scenarios by Subgroup",
+            description = "Generates a PDF document with all scenarios related to the given scenario ID")
+    @ApiResponse(responseCode = "200", description = "PDF generated successfully")
+    public ResponseEntity<byte[]> generatePdfForScenariosBySubgroup(
+            @PathVariable UUID id
+    ) throws Exception {
+        List<ScenarioResponseDTO> scenarios = scenarioService.getScenariosRelatedToScenarioById(id);
+        return pdfGenerationService.generatePdfFromScenarios(scenarios);
+    }
+
+    @PatchMapping("/{id}/publish")
+    @Operation(summary = "Publish a Scenario",
+            description = "Publishes a scenario by its ID")
+    @ApiResponse(responseCode = "200", description = "Scenario published successfully")
+    public ResponseEntity<ScenarioResponseDTO> publishScenario(@PathVariable UUID id) {
+        return ResponseEntity.ok(scenarioService.publishScenario(id));
+    }
+    
 }
