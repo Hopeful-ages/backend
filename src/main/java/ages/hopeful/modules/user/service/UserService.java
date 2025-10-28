@@ -153,8 +153,8 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         
-        if (user.getEmail().equals(currentUserEmail)) {
-            throw new IllegalArgumentException("Você não pode desabilitar sua própria conta");
+        if (user.getEmail().equals(currentUserEmail)|| user.getRole().getName().equals("ADMIN")) {
+            throw new IllegalArgumentException("Conta Admin não pode ser desabilitada");
         }
         
         user.setAccountStatus(false);
