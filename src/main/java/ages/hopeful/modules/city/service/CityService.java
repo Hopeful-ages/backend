@@ -6,7 +6,6 @@ import java.util.UUID;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; 
 import ages.hopeful.modules.city.dto.CityResponseDTO;
 import ages.hopeful.modules.city.model.City;
 import ages.hopeful.modules.city.repository.CityRepository;

@@ -1,7 +1,6 @@
 package ages.hopeful.modules.servicos.integration;
 
 import java.util.UUID;
-import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
