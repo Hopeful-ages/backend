@@ -5,11 +5,16 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import ages.hopeful.common.exception.NotFoundException;
+import ages.hopeful.modules.city.model.City;
+import ages.hopeful.modules.cobrades.model.Cobrade;
+import ages.hopeful.modules.services.model.Service;
+import ages.hopeful.modules.scenarios.dto.ParameterRequestDTO;
 import ages.hopeful.modules.scenarios.dto.ScenarioRequestDTO;
 import ages.hopeful.modules.scenarios.dto.ScenarioResponseDTO;
+import ages.hopeful.modules.scenarios.dto.TaskRequestDTO;
 import ages.hopeful.modules.scenarios.model.Scenario;
 import ages.hopeful.modules.scenarios.repository.ScenarioRepository;
-import ages.hopeful.modules.scenarios.service.*;
+import ages.hopeful.modules.scenarios.service.ScenarioService;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,13 +38,78 @@ class ScenarioServiceTest {
     @Mock
     private ModelMapper modelMapper;
 
+    private UUID scenarioId;
+    private UUID cityId;
+    private UUID cobradeId;
+    private UUID serviceId;
+
+    private City city;
+    private Cobrade cobrade;
+    private Service service;
+
+    private ParameterRequestDTO parameterRequestDTO;
+    private TaskRequestDTO taskRequestDTO;
     private ScenarioRequestDTO scenarioRequestDTO;
     private ScenarioResponseDTO scenarioResponseDTO;
     private Scenario scenario;
 
     @BeforeEach
     void setUp() {
-        serviceScenario = new ages.hopeful.modules.scenario.service.ScenarioServiceTest(scenarioRepository, modelMapper);
+        scenarioId = UUID.randomUUID();
+        cityId = UUID.randomUUID();
+        cobradeId = UUID.randomUUID();
+        serviceId = UUID.randomUUID();
+
+        city = new City();
+        city.setId(cityId);
+        city.setName("Porto Alegre");
+        city.setState("RS");
+
+        cobrade = new Cobrade();
+        cobrade.setId(cobradeId);
+        cobrade.setCode("1.2.3.4.5");
+        cobrade.setSubgroup("Inundação");
+        cobrade.setType("Hidrológico");
+        cobrade.setSubType("Alagamentos");
+
+        service = new Service();
+        service.setId(serviceId);
+        service.setName("Serviço de Emergência");
+
+        parameterRequestDTO = ParameterRequestDTO.builder()
+                
+        .description("Descrição")
+                .action("Ação")
+                .phase("Fase")
+                .build();
+
+        taskRequestDTO = TaskRequestDTO.builder()
+                .description("Descrição")
+                .phase("Fase")
+                .lastUpdateDate(new Date(System.currentTimeMillis()))
+                .service(service)
+                .scenario(scenario)
+                .build();
+
+        scenarioRequestDTO = ScenarioRequestDTO.builder()
+                .cityId(cityId)
+                .cobradeId(cobradeId)
+                .origin("Manual")
+                .published(false)
+                .tasks(List.of(taskRequestDTO))
+                .parameters(List.of(parameterRequestDTO))
+                .build();
+
+        scenario = new Scenario();
+        scenario.setId(scenarioId);
+        scenario.setCity(city);
+        scenario.setCobrade(cobrade);
+        scenario.setOrigin("Manual");
+        scenario.setPublished(false);
+        scenario.setTasks(new ArrayList<>());
+        scenario.setParameters(new ArrayList<>());
+
+        scenarioResponseDTO = ScenarioResponseDTO.fromModel(scenario);
     }
 
     @Test
@@ -52,7 +122,7 @@ class ScenarioServiceTest {
         ScenarioResponseDTO response = scenarioService.createScenario(scenarioRequestDTO);
 
         assertNotNull(response);
-        assertEquals("Test Scenario", response.getOrigin());
+        assertEquals("Manual", response.getOrigin());
         verify(scenarioRepository, times(1)).save(any(Scenario.class));
     }
 
@@ -65,7 +135,7 @@ class ScenarioServiceTest {
         List<ScenarioResponseDTO> response = scenarioService.getAllScenarios();
 
         assertEquals(1, response.size());
-        assertEquals("Test Scenario", response.get(0).getOrigin());
+        assertEquals("Manual", response.get(0).getOrigin());
         verify(scenarioRepository, times(1)).findAll();
     }
 
