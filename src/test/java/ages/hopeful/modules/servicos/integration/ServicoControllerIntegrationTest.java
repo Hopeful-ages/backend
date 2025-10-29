@@ -3,7 +3,6 @@ package ages.hopeful.modules.servicos.integration;
 import java.util.UUID;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
@@ -25,8 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ages.hopeful.modules.services.dto.ServiceRequestDTO;
 import ages.hopeful.modules.services.model.Service;
 import ages.hopeful.modules.services.repository.ServiceRepository;
-import ages.hopeful.modules.scenarios.repository.TaskRepository;
-import ages.hopeful.modules.user.repository.UserRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,23 +39,7 @@ public class ServicoControllerIntegrationTest {
     @Autowired
     private ServiceRepository serviceRepository;
 
-    @Autowired
-    private TaskRepository taskRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @BeforeEach
-    @Transactional
-    void setUp() {
-        // Clear in order respecting foreign key constraints
-        // Users reference Services, Tasks reference Services
-        taskRepository.deleteAll();
-        userRepository.deleteAll();
-        serviceRepository.deleteAll();
-    }
-
-    
 
     @Test
     @WithMockUser(roles = "USER")
