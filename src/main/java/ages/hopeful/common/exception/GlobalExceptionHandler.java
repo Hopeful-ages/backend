@@ -1,6 +1,7 @@
 package ages.hopeful.common.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import jakarta.persistence.EntityNotFoundException;
 import java.nio.file.AccessDeniedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -97,6 +98,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
             new ErrorResponse("Bad Request", ex.getMessage()),
             HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(
+        EntityNotFoundException ex
+    ) {
+        return new ResponseEntity<>(
+            new ErrorResponse("Not Found", ex.getMessage()),
+            HttpStatus.NOT_FOUND
         );
     }
 

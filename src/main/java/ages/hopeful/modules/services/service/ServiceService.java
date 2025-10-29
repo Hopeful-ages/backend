@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -31,4 +33,16 @@ public class ServiceService {
         return serviceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado"));
     }
+    @Transactional
+    public ServiceResponseDTO createService(ages.hopeful.modules.services.dto.ServiceRequestDTO serviceDTO) {
+        ages.hopeful.modules.services.model.Service service = serviceDTO.toModel();
+        ages.hopeful.modules.services.model.Service savedService = serviceRepository.save(service);
+        return modelMapper.map(savedService, ServiceResponseDTO.class);
+    }
+    @Transactional
+    public void deleteService(UUID id) {
+        ages.hopeful.modules.services.model.Service service = getServiceById(id);
+        serviceRepository.delete(service);
+    }
+    
 }

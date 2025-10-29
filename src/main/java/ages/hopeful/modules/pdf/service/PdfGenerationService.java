@@ -217,7 +217,7 @@ public class PdfGenerationService {
         byte[] pdf = pdfService.renderPdf("document", vars);
 
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=document.pdf")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + request.getTitulo() + ".pdf")
             .contentType(MediaType.APPLICATION_PDF)
             .body(pdf);
     }
