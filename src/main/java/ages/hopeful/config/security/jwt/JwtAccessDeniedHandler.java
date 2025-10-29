@@ -1,7 +1,6 @@
 package ages.hopeful.config.security.jwt;
 
 import ages.hopeful.common.exception.GlobalExceptionHandler;
-import ages.hopeful.common.exception.GlobalExceptionHandler.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
