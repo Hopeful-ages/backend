@@ -1,4 +1,4 @@
-package ages.hopeful.modules.servicos;
+package ages.hopeful.modules.servicos.integration;
 
 import java.util.UUID;
 import java.util.List;
@@ -26,6 +26,7 @@ import ages.hopeful.modules.services.dto.ServiceRequestDTO;
 import ages.hopeful.modules.services.model.Service;
 import ages.hopeful.modules.services.repository.ServiceRepository;
 import ages.hopeful.modules.scenarios.repository.TaskRepository;
+import ages.hopeful.modules.user.repository.UserRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -45,11 +46,16 @@ public class ServicoControllerIntegrationTest {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @BeforeEach
     @Transactional
     void setUp() {
-        // Clear tasks first due to foreign key constraints
+        // Clear in order respecting foreign key constraints
+        // Users reference Services, Tasks reference Services
         taskRepository.deleteAll();
+        userRepository.deleteAll();
         serviceRepository.deleteAll();
     }
 

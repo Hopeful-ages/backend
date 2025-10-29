@@ -1,4 +1,4 @@
-package ages.hopeful.modules.servicos;
+package ages.hopeful.modules.servicos.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
