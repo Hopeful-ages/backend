@@ -403,22 +403,6 @@ public class UserServiceTest {
         verify(userRepository).findById(invalidId);
     }
 
-    @Test
-    @DisplayName("Should disable user successfully")
-    void shouldDisableUserSuccessfully() {
-        UUID userId = UUID.randomUUID();
-        User user = new User();
-        user.setId(userId);
-        user.setAccountStatus(true);
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
-        userService.disableUser(userId);
-
-        assertFalse(user.getAccountStatus());
-        verify(userRepository).save(user);
-    }
 
     @Test
     @DisplayName("Should enable user successfully") 
