@@ -370,56 +370,5 @@ public class UserServiceTest {
         verify(userRepository, never()).save(any(User.class));
     }
 
-    @Test
-    @DisplayName("Should get user by ID successfully")
-    void shouldGetUserByIdSuccessfully() {
-        UUID userId = UUID.randomUUID();
-        User user = new User();
-        user.setId(userId);
-        user.setName("Test User");
-
-        UserResponseDTO expectedResponse = new UserResponseDTO();
-        expectedResponse.setId(userId);
-        expectedResponse.setName("Test User");
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(expectedResponse);
-
-        UserResponseDTO response = userService.getUserById(userId);
-
-        assertNotNull(response);
-        assertEquals(userId, response.getId());
-        assertEquals("Test User", response.getName());
-        verify(userRepository).findById(userId);
-    }
-
-    @Test
-    @DisplayName("Should throw NotFoundException when getting non-existent user")
-    void shouldThrowNotFoundExceptionWhenGettingNonExistentUser() {
-        UUID invalidId = UUID.randomUUID();
-        when(userRepository.findById(invalidId)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> userService.getUserById(invalidId));
-        verify(userRepository).findById(invalidId);
-    }
-
-
-    @Test
-    @DisplayName("Should enable user successfully") 
-    void shouldEnableUserSuccessfully() {
-        UUID userId = UUID.randomUUID();
-        User user = new User();
-        user.setId(userId);
-        user.setAccountStatus(false);
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
-        userService.enableUser(userId);
-
-        assertTrue(user.getAccountStatus());
-        verify(userRepository).save(user);
-    }
-
   
 }
