@@ -191,4 +191,38 @@ public class ScenarioService {
         }
         return false;
     }
+
+    public List<ScenarioResponseDTO> getScenarioByCityAndCobradeSearch(UUID cityId, UUID cobradeId) {
+        List<Scenario> scenarios = scenarioRepository.findByCobradeIdAndCityIdSearch(cityId, cobradeId);
+        return scenarios.stream().map(ScenarioResponseDTO::fromModel).toList();
+    }
+
+    public List<ScenarioResponseDTO> getScenariosRelatedToScenarioById(UUID ScenarioId) {
+        Scenario scenario = scenarioRepository
+                .findById(ScenarioId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Cenário não encontrado com id: " + ScenarioId
+                        )
+                );
+        List<Scenario> scenarios = scenarioRepository.findScenarioGroupedBySubgroup(scenario.getCobrade().getSubgroup(),
+                scenario.getCity().getId());
+        return scenarios.stream().map(ScenarioResponseDTO::fromModel).toList();
+    }
+    @Transactional
+    public ScenarioResponseDTO publishScenario(UUID id) {
+        Scenario scenario = scenarioRepository
+            .findById(id)
+            .orElseThrow(() ->
+                new EntityNotFoundException(
+                    "Cenário não encontrado com id: " + id
+                )
+            );
+            if (scenario.isPublished()) {
+                throw new ConflictException("Cenário já está publicado.");
+            }
+        scenario.setPublished(true);
+        Scenario updatedScenario = scenarioRepository.save(scenario);
+        return ScenarioResponseDTO.fromModel(updatedScenario);
+    }
 }

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import ages.hopeful.modules.city.dto.CityResponseDTO;
 import ages.hopeful.modules.services.model.Service;
+import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class UserResponseDTO {
   public Service service;
   public CityResponseDTO city;
   public Boolean accountStatus;
+  public Role role;
 
   public static UserResponseDTO UserModelToResponse(User user){
       return UserResponseDTO.builder()
@@ -34,6 +36,7 @@ public class UserResponseDTO {
               .service(user.getService())
               .city(CityResponseDTO.fromModel(user.getCity()))
               .accountStatus(user.getAccountStatus())
+              .role(user.getRole())
               .build();
   }
  

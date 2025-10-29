@@ -31,4 +31,6 @@ public class UserRequestDTO {
   public UUID serviceId;
 
   public UUID cityId;
+
+  public UUID roleId;
 }
