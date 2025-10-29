@@ -1,7 +1,7 @@
 package ages.hopeful.modules.user.model;
 
 import ages.hopeful.modules.city.model.City;
-import ages.hopeful.modules.services.model.Service;
+import ages.hopeful.modules.departments.model.Department;
 import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class User implements UserDetails {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_id", referencedColumnName = "id")
-    private Service service;
+    private Department department;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "city_id", referencedColumnName = "id")

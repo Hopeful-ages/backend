@@ -45,7 +45,7 @@ public class UserControllerIntegrationTest {
         user.setCpf("390.533.447-05"); // CPF válido
         user.setPhone("11999999999");
         user.setPassword("senha123");
-        user.setServiceId(UUID.fromString("550e8400-e29b-41d4-a716-446655440005"));
+        user.setDepartmentId(UUID.fromString("550e8400-e29b-41d4-a716-446655440005"));
         user.setCityId(UUID.fromString("550e8400-e29b-41d4-a716-446655440015"));
         return user;
     }

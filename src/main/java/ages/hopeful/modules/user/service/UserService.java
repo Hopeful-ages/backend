@@ -4,7 +4,7 @@ import ages.hopeful.common.exception.ConflictException;
 import ages.hopeful.common.exception.NotFoundException;
 import ages.hopeful.config.security.jwt.JwtUtil;
 import ages.hopeful.modules.city.repository.CityRepository;
-import ages.hopeful.modules.services.repository.ServiceRepository;
+import ages.hopeful.modules.departments.repository.DepartmentRepository;
 import ages.hopeful.modules.user.dto.*;
 import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
@@ -32,7 +32,7 @@ public class UserService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final ModelMapper modelMapper;
-  private final ServiceRepository serviceRepository;
+  private final DepartmentRepository departmentRepository;
   private final CityRepository cityRepository;
   private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder; 
@@ -96,7 +96,7 @@ public class UserService {
             throw new ConflictException("CPF already exists");
         }
 
-        var service = serviceRepository.findById(dto.getServiceId())
+        var department = departmentRepository.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new NotFoundException("Service not found"));
 
         var city = cityRepository.findById(dto.getCityId())
@@ -108,7 +108,7 @@ public class UserService {
         User user = modelMapper.map(dto, User.class);
         user.setAccountStatus(true);
         user.setRole(role);
-        user.setService(service);
+        user.setDepartment(department);
         user.setCity(city);
         user.setPassword(passwordEncoder.encode(dto.getPassword())); 
 
@@ -170,10 +170,10 @@ public class UserService {
     }
 
     private void enrichUser(User user, UserUpdateDTO dto) {
-        if (dto.getServiceId() != null) {
-            var service = serviceRepository.findById(dto.getServiceId())
-                    .orElseThrow(() -> new NotFoundException("Service not found"));
-            user.setService(service);
+        if (dto.getDepartmentId() != null) {
+            var department = departmentRepository.findById(dto.getDepartmentId())
+                    .orElseThrow(() -> new NotFoundException("Department not found"));
+            user.setDepartment(department);
         }
         if (dto.getCityId() != null) {
             var city = cityRepository.findById(dto.getCityId())

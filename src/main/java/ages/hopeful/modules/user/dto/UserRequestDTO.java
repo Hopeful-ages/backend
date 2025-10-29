@@ -28,7 +28,7 @@ public class UserRequestDTO {
   @NotBlank @Size(min = 6, max = 100)
   public String password;
 
-  public UUID serviceId;
+  public UUID departmentId;
 
   public UUID cityId;
 
