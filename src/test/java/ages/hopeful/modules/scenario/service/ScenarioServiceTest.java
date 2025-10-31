@@ -14,18 +14,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
-import ages.hopeful.common.exception.NotFoundException;
 import ages.hopeful.modules.city.model.City;
+import ages.hopeful.modules.city.service.CityService;
 import ages.hopeful.modules.cobrades.model.Cobrade;
+import ages.hopeful.modules.cobrades.service.CobradeService;
 import ages.hopeful.modules.scenarios.dto.ParameterRequestDTO;
 import ages.hopeful.modules.scenarios.dto.ScenarioRequestDTO;
 import ages.hopeful.modules.scenarios.dto.ScenarioResponseDTO;
@@ -34,6 +33,8 @@ import ages.hopeful.modules.scenarios.model.Scenario;
 import ages.hopeful.modules.scenarios.repository.ScenarioRepository;
 import ages.hopeful.modules.scenarios.service.ScenarioService;
 import ages.hopeful.modules.services.model.Service;
+import ages.hopeful.modules.services.service.ServiceService;
+import jakarta.persistence.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Unit tests for ScenarioService")
@@ -46,7 +47,13 @@ class ScenarioServiceTest {
     private ScenarioRepository scenarioRepository;
 
     @Mock
-    private ModelMapper modelMapper;
+    private CityService cityService;
+
+    @Mock
+    private CobradeService cobradeService;
+
+    @Mock
+    private ServiceService serviceService;
 
     private UUID scenarioId;
     private UUID cityId;
@@ -60,7 +67,6 @@ class ScenarioServiceTest {
     private ParameterRequestDTO parameterRequestDTO;
     private TaskRequestDTO taskRequestDTO;
     private ScenarioRequestDTO scenarioRequestDTO;
-    private ScenarioResponseDTO scenarioResponseDTO;
     private Scenario scenario;
 
     @BeforeEach
@@ -118,29 +124,34 @@ class ScenarioServiceTest {
         scenario.setPublished(false);
         scenario.setTasks(new ArrayList<>());
         scenario.setParameters(new ArrayList<>());
-
-        scenarioResponseDTO = ScenarioResponseDTO.fromModel(scenario);
     }
 
     @Test
     @DisplayName("Should create a scenario successfully when data is valid")
     void shouldCreateScenarioSuccessfullyWhenDataIsValid() {
-        when(modelMapper.map(any(ScenarioRequestDTO.class), eq(Scenario.class))).thenReturn(scenario);
+        // Mock para cityService e cobradeService
+        when(cityService.getCityById(cityId)).thenReturn(city);
+        when(cobradeService.getCobradeEntityById(cobradeId)).thenReturn(cobrade);
+        when(serviceService.getServiceById(serviceId)).thenReturn(service);
+        
+        // Mock para verificar se o cenário não existe
+        when(scenarioRepository.findByCobradeIdAndCityId(cobradeId, cityId))
+                .thenReturn(Optional.empty());
+        
+        // Mock para salvar o cenário
         when(scenarioRepository.save(any(Scenario.class))).thenReturn(scenario);
-        when(modelMapper.map(any(Scenario.class), eq(ScenarioResponseDTO.class))).thenReturn(scenarioResponseDTO);
 
         ScenarioResponseDTO response = scenarioService.createScenario(scenarioRequestDTO);
 
         assertNotNull(response);
         assertEquals("Manual", response.getOrigin());
-        verify(scenarioRepository, times(1)).save(any(Scenario.class));
+        verify(scenarioRepository, times(2)).save(any(Scenario.class));
     }
 
     @Test
     @DisplayName("Should return all scenarios")
     void shouldReturnAllScenarios() {
         when(scenarioRepository.findAll()).thenReturn(List.of(scenario));
-        when(modelMapper.map(any(Scenario.class), eq(ScenarioResponseDTO.class))).thenReturn(scenarioResponseDTO);
 
         List<ScenarioResponseDTO> response = scenarioService.getAllScenarios();
 
@@ -155,7 +166,7 @@ class ScenarioServiceTest {
         UUID invalidId = UUID.randomUUID();
         when(scenarioRepository.findById(invalidId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> scenarioService.getScenarioById(invalidId));
+        assertThrows(EntityNotFoundException.class, () -> scenarioService.getScenarioById(invalidId));
         verify(scenarioRepository, times(1)).findById(invalidId);
     }
 
@@ -163,10 +174,10 @@ class ScenarioServiceTest {
     @DisplayName("Should delete scenario successfully when it exists")
     void shouldDeleteScenarioSuccessfully() {
         UUID id = scenario.getId();
-        when(scenarioRepository.findById(id)).thenReturn(Optional.of(scenario));
+        when(scenarioRepository.existsById(id)).thenReturn(true);
 
         scenarioService.deleteScenario(id);
 
-        verify(scenarioRepository, times(1)).delete(scenario);
+        verify(scenarioRepository, times(1)).deleteById(id);
     }
 }
