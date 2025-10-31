@@ -61,7 +61,7 @@ docker compose up -d db
 
 PARA RODAR EM DEV - Rodar o comando acima para subir o banco de dados
 ```bash
-docker -f docker-compose.yml up -d db
+docker compose -f docker-compose.dev.yml up --build
 ```
 
 

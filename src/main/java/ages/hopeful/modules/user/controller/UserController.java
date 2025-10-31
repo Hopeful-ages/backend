@@ -1,10 +1,12 @@
 package ages.hopeful.modules.user.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,15 +24,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-
-import java.net.URI;
-import java.util.List;
-import java.util.UUID;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -99,12 +92,13 @@ public class UserController {
     }
 
     @PatchMapping("/disable/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Disable User by id",
             description = "Disable User by id")
     @ApiResponse(responseCode = "200", description = "User disable successfully")
     @ApiResponse(responseCode = "400", description = "User not found")
-    public ResponseEntity<Void> disableUserById( @PathVariable UUID id) {
-        service.disableUser(id);
+    public ResponseEntity<Void> disableUserById(@PathVariable UUID id, Authentication authentication) {
+        service.disableUser(id, authentication);
         return ResponseEntity.noContent().build();
     }
 

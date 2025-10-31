@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <title th:text="${titulo}"></title>
+        <style th:inline="css">
+            @page {
+                size: A4;
+                margin: 20mm 15mm 20mm 15mm;
+            }
+
+            body {
+                font-family: "Open Sans Bold", serif;
+                font-size: 18px;
+                line-height: 1.3;
+                color: #000;
+                margin: 0;
+                padding: 0;
+            }
+
+            .watermark {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 0;
+                width: 70%;
+                max-width: 600px;
+            }
+
+            .document-container {
+                position: relative;
+                z-index: 1;
+                border: 1.5px solid #000;
+                box-sizing: border-box;
+            }
+
+            .content-section {
+                margin: 0;
+                padding: 0;
+            }
+
+            .content-section:not(:first-child) {
+                margin-top: 0;
+            }
+
+            .content-section:last-child .task-section {
+                border-bottom: none;
+            }
+
+            .header {
+                padding: 10px;
+            }
+
+            .title {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 50px;
+                font-weight: bold;
+                margin: 0;
+            }
+
+            .info-table {
+                font-family: Arial, Helvetica, sans-serif;
+                border-top: 1.5px solid #000;
+                border-bottom: 1.5px solid #000;
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .info-table td {
+                padding: 4px 6px;
+                background-color: #ffffff;
+            }
+
+            .info-label {
+                font-weight: bold;
+                background-color: #f0f0f0;
+            }
+
+            .info-value {
+                width: 33%;
+            }
+
+            .info-table td:nth-child(3),
+            .info-table td:nth-child(5) {
+                border-left: 1.5px solid #000;
+            }
+
+            .description-section {
+                font-family: Arial, Helvetica, sans-serif;
+                text-align: justify;
+                line-height: 1.8;
+                padding: 8px;
+            }
+
+            .description-label {
+                font-weight: bold;
+                display: inline;
+            }
+
+            .section-header {
+                font-family: Arial, Helvetica, sans-serif;
+                border-top: 1.5px solid #000;
+                border-bottom: 1.5px solid #000;
+                padding: 4px 8px;
+                font-weight: bold;
+                font-size: 18px;
+                margin: 0;
+                background-color: #ffffff;
+            }
+
+            .parameters-section {
+                font-family: Arial, Helvetica, sans-serif;
+                padding: 8px;
+                text-align: justify;
+                line-height: 1.8;
+                border-bottom: 1.5px solid #000;
+                margin: 0;
+                background-color: #ffffff;
+            }
+
+            .parameters-section b {
+                font-weight: bold;
+            }
+
+            .task-list {
+                font-family: Arial, Helvetica, sans-serif;
+                margin: 0;
+                padding: 8px 8px 8px 8px;
+                text-align: justify;
+                line-height: 1.8;
+                list-style: none;
+                background-color: #ffffff;
+                height: auto;
+                min-height: 0;
+            }
+
+            .task-section {
+                border-bottom: 1.5px solid #000;
+                margin: 0;
+                padding: 0;
+                height: auto;
+                min-height: 0;
+                page-break-inside: avoid;
+            }
+
+            .task-list li {
+                margin-bottom: 4px;
+                text-align: justify;
+                position: relative;
+                padding-left: 25px;
+            }
+            
+            .task-list li:last-child {
+                margin-bottom: 0px;
+            }
+
+            .task-list li::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 9px;
+                width: 15px;
+                height: 15px;
+                border: 1.5px solid #000;
+                background: #fff;
+                box-sizing: border-box;
+            }
+
+            .content-section {
+                page-break-inside: avoid;
+                height: auto;
+            }
+
+            .content-section.break-before {
+                page-break-before: always;
+            }
+
+            .content-section {
+                height: auto;
+                min-height: 0;
+                margin: 0;
+                padding: 0;
+            }
+
+            .section-header,
+            .task-section,
+            .parameters-section {
+                page-break-inside: avoid;
+            }
+
+            .document-container {
+                page-break-after: always;
+            }
+
+        </style>
+    </head>
+    <body>
+        <img
+            th:if="${watermarkImage}"
+            th:src="|data:image/png;base64,${watermarkImage}|"
+            alt="watermark"
+            class="watermark"
+        />
+
+        <div class="document-container">
+            <div class="header">
+                <div class="title" th:text="${titulo}"></div>
+            </div>
+
+            <table class="info-table">
+                <tr>
+                    <td class="info-label">ORIGEM:</td>
+                    <td class="info-value" th:text="${origem}"></td>
+                    <td class="info-label">SUBGRUPO:</td>
+                    <td class="info-value" th:text="${subgrupo}"></td>
+                    <td class="info-label">CÓDIGO:</td>
+                    <td class="info-value" th:text="${codigo}"></td>
+                </tr>
+            </table>
+
+            <div class="description-section">
+                <span class="description-label">DESCRIÇÃO:</span>
+                <span th:utext="${descricao}"></span>
+            </div>
+
+            <!-- ANTES -->
+            <div th:if="${antes != null and !antes.isEmpty()}" class="content-section">
+                <div class="section-header">1.0 FLUXO DE RESPOSTA</div>
+                <div class="parameters-section" th:if="${parametrosAntes != null and parametrosAntes != ''}">
+                    <b>Parâmetros:</b> <span th:utext="${parametrosAntes}"></span><br/>
+                    <b>Ação:</b> <span th:utext="${acaoAntes}"></span>
+                </div>
+                <div class="section-header">1.0 O QUE FAZER ANTES</div>
+                <div class="task-section">
+                    <ul class="task-list">
+                        <li th:each="item : ${antes}" th:text="${item}"></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- DURANTE -->
+            <div th:if="${durante != null and !durante.isEmpty()}" class="content-section">
+                <div class="section-header">2.0 FLUXO DE RESPOSTA</div>
+                <div class="parameters-section" th:if="${parametrosDurante != null and parametrosDurante != ''}">
+                    <b>Parâmetros:</b> <span th:utext="${parametrosDurante}"></span><br/>
+                    <b>Ação:</b> <span th:utext="${acaoDurante}"></span>
+                </div>
+                <div class="section-header">2.0 O QUE FAZER DURANTE</div>
+                <div class="task-section">
+                    <ul class="task-list">
+                        <li th:each="item : ${durante}" th:text="${item}"></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- APÓS -->
+            <div th:if="${apos != null and !apos.isEmpty()}" class="content-section break-before">
+                <div class="section-header">3.0 FLUXO DE RESPOSTA</div>
+                <div class="parameters-section" th:if="${parametrosApos != null and parametrosApos != ''}">
+                    <b>Parâmetros:</b> <span th:utext="${parametrosApos}"></span><br/>
+                    <b>Ação:</b> <span th:utext="${acaoApos}"></span>
+                </div>
+                <div class="section-header">3.0 O QUE FAZER DEPOIS</div>
+                <div class="task-section">
+                    <ul class="task-list">
+                        <li th:each="item : ${apos}" th:text="${item}"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

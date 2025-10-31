@@ -17,6 +17,7 @@ import jakarta.validation.Validation;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -146,9 +147,16 @@ public class UserService {
     }
 
    @Transactional
-    public void disableUser(UUID userId){
+    public void disableUser(UUID userId, Authentication authentication){
+        String currentUserEmail = authentication.getName();
+        
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found")); // lança exceção
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        
+        if (user.getEmail().equals(currentUserEmail)|| user.getRole().getName().equals("ADMIN")) {
+            throw new IllegalArgumentException("Conta Admin não pode ser desabilitada");
+        }
+        
         user.setAccountStatus(false);
         userRepository.save(user);
     }

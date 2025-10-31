@@ -1,9 +1,7 @@
 package ages.hopeful.config.security;
 
-import ages.hopeful.config.security.jwt.JwtAccessDeniedHandler;
-import ages.hopeful.config.security.jwt.JwtAuthenticationEntryPoint;
-import ages.hopeful.config.security.jwt.JwtAuthenticationFilter;
-import lombok.AllArgsConstructor;
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +17,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+import ages.hopeful.config.security.jwt.JwtAccessDeniedHandler;
+import ages.hopeful.config.security.jwt.JwtAuthenticationEntryPoint;
+import ages.hopeful.config.security.jwt.JwtAuthenticationFilter;
+import lombok.AllArgsConstructor;
 
 @Configuration
 @AllArgsConstructor
@@ -38,7 +39,8 @@ public class SecurityConfig {
         "/swagger-resources",
         "/webjars/**",
         "/api/auth/login",
-        "/api/scenarios/search/by-city-cobrade"
+        "/api/scenarios/search/by-city-cobrade",
+        "/api/scenarios/pdf/*/scenarios-by-subgroup"
     };
 
     @Bean
