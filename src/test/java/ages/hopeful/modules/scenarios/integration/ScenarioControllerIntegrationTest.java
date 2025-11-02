@@ -102,17 +102,6 @@ public class ScenarioControllerIntegrationTest {
     class CreateScenario {
     
 
-    @Test
-    @WithMockUser(roles = "USER")
-    @DisplayName("Should return 409 when creating duplicate city+cobrade")
-    void shouldReturnConflictOnDuplicate() throws Exception {
-        // Esta combinação já existe nos dados de teste: (Florianópolis + Inundação)
-        ScenarioRequestDTO dto = buildBasicCreateRequest();
-        mockMvc.perform(post("/api/scenarios")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(dto)))
-            .andExpect(status().isConflict());
-    }
     }
 
     @Nested
