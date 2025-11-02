@@ -23,7 +23,7 @@
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                z-index: 0;
+                z-index: 1;
                 width: 70%;
                 max-width: 600px;
             }
@@ -100,13 +100,13 @@
 
             .section-header {
                 font-family: Arial, Helvetica, sans-serif;
-                border-top: 1.5px solid #000;
-                border-bottom: 1.5px solid #000;
                 padding: 4px 8px;
                 font-weight: bold;
                 font-size: 18px;
                 margin: 0;
                 background-color: #ffffff;
+                border-top: 1.5px solid #000;
+                border-bottom: 1.5px solid #000;
             }
 
             .parameters-section {
@@ -114,7 +114,6 @@
                 padding: 8px;
                 text-align: justify;
                 line-height: 1.8;
-                border-bottom: 1.5px solid #000;
                 margin: 0;
                 background-color: #ffffff;
             }
@@ -136,8 +135,7 @@
             }
 
             .task-section {
-                border-bottom: 1.5px solid #000;
-                margin: 0;
+                margin-left: 15px;
                 padding: 0;
                 height: auto;
                 min-height: 0;
@@ -149,6 +147,8 @@
                 text-align: justify;
                 position: relative;
                 padding-left: 25px;
+                page-break-inside: avoid; 
+                break-inside: avoid;      
             }
             
             .task-list li:last-child {
@@ -167,11 +167,6 @@
                 box-sizing: border-box;
             }
 
-            .content-section {
-                page-break-inside: avoid;
-                height: auto;
-            }
-
             .content-section.break-before {
                 page-break-before: always;
             }
@@ -183,14 +178,29 @@
                 padding: 0;
             }
 
-            .section-header,
-            .task-section,
-            .parameters-section {
+            .section-header {
                 page-break-inside: avoid;
+                border-top: 1.5px solid #000;
+                border-bottom: 1.5px solid #000;
             }
 
-            .document-container {
-                page-break-after: always;
+            .task-section {
+                page-break-inside: auto; 
+            }
+
+            .description-section,
+            .parameters-section {
+                page-break-inside: auto;
+            }
+            
+            .content-section {
+                page-break-inside: auto;
+                margin: 0;
+                padding: 0;
+            }
+
+            .content-section.break-before {
+                page-break-before: auto; 
             }
 
         </style>
