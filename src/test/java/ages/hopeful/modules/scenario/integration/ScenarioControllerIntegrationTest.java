@@ -1,4 +1,4 @@
-package ages.hopeful.modules.scenarios.integration;
+package ages.hopeful.modules.scenario.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
