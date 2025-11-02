@@ -1,4 +1,4 @@
-package ages.hopeful.modules.servicos.integration;
+package ages.hopeful.modules.department.integration;
 
 import java.util.UUID;
 

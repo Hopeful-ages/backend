@@ -8,6 +8,14 @@ import lombok.*;
 import java.util.Date;
 import java.util.UUID;
 
+import ages.hopeful.modules.scenarios.model.Scenario;
+import ages.hopeful.modules.scenarios.model.Task;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,4 +36,5 @@ public class TaskRequestDTO {
                 .scenario(scenario)
                 .build();
     }
+
 }
