@@ -27,9 +27,6 @@ public class ParameterRequestDTO {
                 .build();
     }
 
-    public void setValue() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }
 
 

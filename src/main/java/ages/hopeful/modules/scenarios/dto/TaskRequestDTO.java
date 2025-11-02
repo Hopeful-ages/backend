@@ -33,8 +33,4 @@ public class TaskRequestDTO {
                 .build();
     }
 
-    public void setInitialTime() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setInitialTime'");
-    }
 }
