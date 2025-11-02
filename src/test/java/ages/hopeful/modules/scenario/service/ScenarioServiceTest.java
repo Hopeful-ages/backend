@@ -25,6 +25,8 @@ import ages.hopeful.modules.city.model.City;
 import ages.hopeful.modules.city.service.CityService;
 import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.cobrades.service.CobradeService;
+import ages.hopeful.modules.departments.model.Department;
+import ages.hopeful.modules.departments.service.DepartmentService;
 import ages.hopeful.modules.scenarios.dto.ParameterRequestDTO;
 import ages.hopeful.modules.scenarios.dto.ScenarioRequestDTO;
 import ages.hopeful.modules.scenarios.dto.ScenarioResponseDTO;
@@ -32,8 +34,7 @@ import ages.hopeful.modules.scenarios.dto.TaskRequestDTO;
 import ages.hopeful.modules.scenarios.model.Scenario;
 import ages.hopeful.modules.scenarios.repository.ScenarioRepository;
 import ages.hopeful.modules.scenarios.service.ScenarioService;
-import ages.hopeful.modules.services.model.Service;
-import ages.hopeful.modules.services.service.ServiceService;
+
 import jakarta.persistence.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +54,7 @@ class ScenarioServiceTest {
     private CobradeService cobradeService;
 
     @Mock
-    private ServiceService serviceService;
+    private DepartmentService departmentService;
 
     private UUID scenarioId;
     private UUID cityId;
@@ -62,7 +63,7 @@ class ScenarioServiceTest {
 
     private City city;
     private Cobrade cobrade;
-    private Service service;
+    private Department department;
 
     private ParameterRequestDTO parameterRequestDTO;
     private TaskRequestDTO taskRequestDTO;
@@ -88,13 +89,12 @@ class ScenarioServiceTest {
         cobrade.setType("Hidrológico");
         cobrade.setSubType("Alagamentos");
 
-        service = new Service();
-        service.setId(serviceId);
-        service.setName("Serviço de Emergência");
+        department = new Department();
+        department.setId(serviceId);
+        department.setName("Serviço de Emergência");
 
         parameterRequestDTO = ParameterRequestDTO.builder()
-                
-        .description("Descrição")
+                .description("Descrição")
                 .action("Ação")
                 .phase("Fase")
                 .build();
@@ -104,7 +104,7 @@ class ScenarioServiceTest {
                 .description("Descrição")
                 .phase("Fase")
                 .lastUpdateDate(new Date(System.currentTimeMillis()))
-                .serviceId(serviceId)
+                .departmentId(serviceId)
                 .build();
 
         scenarioRequestDTO = ScenarioRequestDTO.builder()
@@ -132,8 +132,8 @@ class ScenarioServiceTest {
         // Mock para cityService e cobradeService
         when(cityService.getCityById(cityId)).thenReturn(city);
         when(cobradeService.getCobradeEntityById(cobradeId)).thenReturn(cobrade);
-        when(serviceService.getServiceById(serviceId)).thenReturn(service);
-        
+        when(departmentService.getDepartmentById(serviceId)).thenReturn(department);
+
         // Mock para verificar se o cenário não existe
         when(scenarioRepository.findByCobradeIdAndCityId(cobradeId, cityId))
                 .thenReturn(Optional.empty());

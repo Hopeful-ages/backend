@@ -3,7 +3,7 @@ package ages.hopeful.modules.user.dto;
 import java.util.UUID;
 
 import ages.hopeful.modules.city.dto.CityResponseDTO;
-import ages.hopeful.modules.services.model.Service;
+import ages.hopeful.modules.departments.model.Department;
 import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ public class UserResponseDTO {
   public String cpf;
   public String email;
   public String phone;
-  public Service service;
+  public Department department;
   public CityResponseDTO city;
   public Boolean accountStatus;
   public Role role;
@@ -33,7 +33,7 @@ public class UserResponseDTO {
               .cpf(user.getCpf())
               .email(user.getEmail())
               .phone(user.getPhone())
-              .service(user.getService())
+              .department(user.getDepartment())
               .city(CityResponseDTO.fromModel(user.getCity()))
               .accountStatus(user.getAccountStatus())
               .role(user.getRole())

@@ -37,7 +37,7 @@ public class UserUpdateDTO {
     public String password;
 
     @Nullable
-    public UUID serviceId;
+    public UUID departmentId;
 
     @Nullable
     public UUID cityId;

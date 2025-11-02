@@ -1,6 +1,5 @@
 package ages.hopeful.modules.cobrades.repository;
 
-import ages.hopeful.modules.cobrades.dto.CobradeResponseDTO;
 import ages.hopeful.modules.cobrades.model.Cobrade;
 import java.util.List;
 import java.util.UUID;

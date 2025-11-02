@@ -113,12 +113,12 @@ public class PdfGenerationService {
         // Processar todas as tarefas de todos os cenários
         for (ScenarioResponseDTO scenario : scenarios) {
             for (TaskResponseDTO task : scenario.getTasks()) {
-                String serviceName = task.getService() != null ? escapeHtml(task.getService().getName()) : "Sem serviço";
+                String departmentName = task.getDepartment() != null ? escapeHtml(task.getDepartment().getName()) : "Sem departamento";
                 String updateDate = task.getLastUpdateDate() != null ? dateFormat.format(task.getLastUpdateDate()) : "";
-                
-                // Formato: description (serviceName, updateDate)
-                String taskInfo = escapeHtml(task.getDescription()) + " (" + serviceName + ", " + updateDate + ")";
-                
+
+                // Formato: description (departmentName, updateDate)
+                String taskInfo = escapeHtml(task.getDescription()) + " (" + departmentName + ", " + updateDate + ")";
+
                 switch (task.getPhase()) {
                     case "ANTES":
                         tarefasAntes.add(taskInfo);

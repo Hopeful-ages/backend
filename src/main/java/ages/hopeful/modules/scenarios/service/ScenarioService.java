@@ -5,13 +5,13 @@ import ages.hopeful.modules.city.model.City;
 import ages.hopeful.modules.city.service.CityService;
 import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.cobrades.service.CobradeService;
+import ages.hopeful.modules.departments.model.Department;
+import ages.hopeful.modules.departments.service.DepartmentService;
 import ages.hopeful.modules.scenarios.dto.*;
 import ages.hopeful.modules.scenarios.model.Parameter;
 import ages.hopeful.modules.scenarios.model.Scenario;
 import ages.hopeful.modules.scenarios.model.Task;
 import ages.hopeful.modules.scenarios.repository.ScenarioRepository;
-import ages.hopeful.modules.services.model.Service;
-import ages.hopeful.modules.services.service.ServiceService;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class ScenarioService {
     private final ScenarioRepository scenarioRepository;
     private final CityService cityService;
     private final CobradeService cobradeService;
-    private final ServiceService serviceService;
+    private final DepartmentService departmentService;
 
     public List<ScenarioResponseDTO> getAllScenarios() {
         return scenarioRepository
@@ -159,10 +159,10 @@ public class ScenarioService {
             ? tasks
                 .stream()
                 .map(task -> {
-                    Service service = serviceService.getServiceById(
-                        task.getServiceId()
+                    Department department = departmentService.getDepartmentById(
+                        task.getDepartmentId()
                     );
-                    return task.toModel(service, scenario);
+                    return task.toModel(department, scenario);
                 })
                 .toList()
             : List.of();

@@ -13,9 +13,6 @@ public class ImageService {
     public String getWatermarkImageBase64() {
         ClassPathResource resource = new ClassPathResource("images/hopeful_pdf_logo.png");
         try (InputStream is = resource.getInputStream()) {
-            if (is == null) {
-                return null;
-            }
             byte[] imageBytes = is.readAllBytes();
             return Base64.getEncoder().encodeToString(imageBytes);
         } catch (IOException e) {
