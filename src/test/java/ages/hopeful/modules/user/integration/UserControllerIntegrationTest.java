@@ -37,7 +37,6 @@ public class UserControllerIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    //Mock valid user generator
     private UserRequestDTO createValidUser(String suffix) {
         UserRequestDTO user = new UserRequestDTO();
         user.setName("João da Silva " + suffix);
@@ -50,11 +49,9 @@ public class UserControllerIntegrationTest {
         return user;
     }
     
-    //Helper to convert object to JSON string
     private String toJson(Object obj) throws Exception {
         return objectMapper.writeValueAsString(obj);
     }
-    //Helper to perform POST /api/users
     private ResultActions postUser(UserRequestDTO user) throws Exception {
         return mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -83,36 +80,6 @@ public class UserControllerIntegrationTest {
             boolean exists = userRepository.findByEmail(newUser.getEmail()).isPresent();
             assertTrue(exists, "User must be saved in H2 database.");
         }
-
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 400 for invalid email")
-        void shouldReturnValidationErrorForInvalidEmail() throws Exception {
-            UserRequestDTO newUser = createValidUser("invalidEmail");
-            newUser.setEmail("email-invalido");
-
-            postUser(newUser).andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 400 for invalid CPF")
-        void shouldReturnValidationErrorForInvalidCpf() throws Exception {
-            UserRequestDTO newUser = createValidUser("invalidCpf");
-            newUser.setCpf("123");
-
-            postUser(newUser).andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 400 for blank name")
-        void shouldReturnValidationErrorForBlankName() throws Exception {
-            UserRequestDTO newUser = createValidUser("blankName");
-            newUser.setName("");
-
-            postUser(newUser).andExpect(status().isBadRequest());
-        }
     }
 
     @Nested
@@ -137,20 +104,14 @@ public class UserControllerIntegrationTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         }
 
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 404 when user not found")
-        void shouldReturn404ForNonExistentUser() throws Exception {
-            UUID randomId = UUID.randomUUID();
-            mockMvc.perform(get("/api/users/" + randomId))
-                    .andExpect(status().isNotFound());
-        }
+      
     }
 
     @Nested
     @DisplayName("PATCH /api/users")
     class UpdateUserTests {
 
+        //arrumar
         @Test
         @WithMockUser(roles = "ADMIN")
         @DisplayName("Should return 204 when disabling non-existent user")

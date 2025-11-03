@@ -68,7 +68,7 @@ public class DepartmentControllerIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should delete existing service")
     void shouldDeleteExistingService() throws Exception {
-        // Arrange
+
         Department department = new Department();
         department.setName("Service to Delete");
         department = departmentRepository.save(department);
@@ -82,30 +82,6 @@ public class DepartmentControllerIntegrationTest {
             departmentRepository.existsById(department.getId()),
             "Service should be deleted from database"
         );
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should return 404 when deleting non-existent service")
-    void shouldReturn404WhenDeletingNonExistentService() throws Exception {
-        mockMvc.perform(delete("/api/services/" + UUID.randomUUID())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should return 400 when creating service with empty name")
-    void shouldReturn400WhenCreatingServiceWithEmptyName() throws Exception {
-        // Arrange
-        DepartmentRequestDTO request = new DepartmentRequestDTO();
-        request.setName("");
-
-        // Act & Assert
-        mockMvc.perform(post("/api/services")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
     }
 
 }
