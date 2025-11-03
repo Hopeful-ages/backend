@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayName("Test cases for cobrades")
 public class CobradeServiceTest {
 
-    // Test cases for cobrades
 
     @InjectMocks
     private CobradeService cobradeService;

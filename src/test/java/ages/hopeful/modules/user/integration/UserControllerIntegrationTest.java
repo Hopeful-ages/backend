@@ -63,7 +63,6 @@ public class UserControllerIntegrationTest {
 
     @BeforeEach
     void setup() {
-        // Criar e salvar dependências usando factories
         var role = roleRepository.save(RoleFactory.createUserRole());
 
         var city = cityRepository.save(CityFactory.createFlorianopolis());
@@ -72,7 +71,6 @@ public class UserControllerIntegrationTest {
         var department = departmentRepository.save(DepartmentFactory.createDefesaCivil());
         departmentId = department.getId();
 
-        // Criar usuário de teste
         testUser = UserFactory.createUser("test.user@example.com", "Test User", "USER");
         testUser.setCity(city);
         testUser.setDepartment(department);
@@ -92,7 +90,7 @@ public class UserControllerIntegrationTest {
         UserRequestDTO user = new UserRequestDTO();
         user.setName("João da Silva " + suffix);
         user.setEmail("joao.silva." + suffix + "@teste.com");
-        user.setCpf("390.533.447-05"); // CPF válido
+        user.setCpf("390.533.447-05");
         user.setPhone("11999999999");
         user.setPassword("senha123");
         user.setDepartmentId(departmentId);
@@ -183,7 +181,6 @@ public class UserControllerIntegrationTest {
         @WithMockUser(roles = "ADMIN")
         @DisplayName("Should disable and then enable existing user")
         void shouldDisableAndEnableExistingUser() throws Exception {
-            // Primeiro desabilita
             mockMvc.perform(patch("/api/users/disable/" + testUser.getId()))
                     .andExpect(status().isNoContent());
 

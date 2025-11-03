@@ -21,7 +21,7 @@ public class UserFactory {
         user.setName(name);
         user.setCpf(generateCpf());
         user.setPhone("(51) 99999-9999");
-        user.setPassword("$2a$10$cfFYnikRgfxgkq6I44oxeORd6Ud0PbK79OkLY2gv6URUEAdudGA9."); // senha: "password123"
+        user.setPassword("$2a$10$cfFYnikRgfxgkq6I44oxeORd6Ud0PbK79OkLY2gv6URUEAdudGA9.");
         user.setAccountStatus(true);
         
         if ("ADMIN".equals(roleName)) {

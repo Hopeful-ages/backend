@@ -27,11 +27,9 @@ public class V7__populate_cidade_from_ibge extends BaseJavaMigration {
     public void migrate(Context context) throws Exception {
         Connection conn = context.getConnection();
 
-        // 1) busca UFs
         JsonNode estados = getJson(URL_ESTADOS);
         System.out.println("[V7] UFs: " + estados.size());
 
-        // 2) INSERT preparado (gera UUID no Java, evita duplicatas sem usar ON CONFLICT)
         String sql = """
             INSERT INTO city (id, name, state)
             SELECT ?, ?, ?
@@ -51,11 +49,11 @@ public class V7__populate_cidade_from_ibge extends BaseJavaMigration {
                 for (JsonNode m : municipios) {
                     String cityName = m.get("nome").asText();
 
-                    ps.setObject(1, UUID.randomUUID()); // id
-                    ps.setString(2, cityName);          // name
-                    ps.setString(3, uf);                // state (sigla)
-                    ps.setString(4, cityName);          // where not exists -> name
-                    ps.setString(5, uf);                // where not exists -> state
+                    ps.setObject(1, UUID.randomUUID()); 
+                    ps.setString(2, cityName);          
+                    ps.setString(3, uf);               
+                    ps.setString(4, cityName);          
+                    ps.setString(5, uf);                
                     ps.addBatch();
 
                     if (++pend % 1000 == 0) {
@@ -69,7 +67,6 @@ public class V7__populate_cidade_from_ibge extends BaseJavaMigration {
             }
         }
 
-        // log final
         try (var st = conn.createStatement();
              var rs = st.executeQuery("SELECT COUNT(*) FROM city")) {
             if (rs.next()) System.out.println("[V7] Total na tabela city: " + rs.getLong(1));

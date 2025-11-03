@@ -42,7 +42,6 @@ public class DepartmentControllerIntegrationTest {
 
     @BeforeEach
     void setup() {
-        // Limpar repositório antes de cada teste
         departmentRepository.deleteAll();
     }
 
@@ -57,12 +56,10 @@ public class DepartmentControllerIntegrationTest {
     @WithMockUser(roles = "USER")
     @DisplayName("Should create a new service and persist in DB")
     void shouldCreateNewServiceAndPersist() throws Exception {
-        // Arrange
         String departmentName = "Civil Defense " + UUID.randomUUID().toString().substring(0, 5);
         DepartmentRequestDTO request = new DepartmentRequestDTO();
         request.setName(departmentName);
 
-        // Act & Assert
         mockMvc.perform(post("/api/services")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -70,7 +67,6 @@ public class DepartmentControllerIntegrationTest {
                 .andExpect(jsonPath("$.name").value(departmentName))
                 .andExpect(jsonPath("$.id").isNotEmpty());
 
-        // Verify persistence
         assertTrue(
             departmentRepository.findAll().stream()
                 .anyMatch(s -> s.getName().equals(departmentName)),
@@ -82,12 +78,10 @@ public class DepartmentControllerIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should delete existing service")
     void shouldDeleteExistingService() throws Exception {
-        // Usar factory para criar departamento temporário
         Department department = departmentRepository.save(
             DepartmentFactory.createDepartment("Service to Delete " + UUID.randomUUID())
         );
 
-        // Act & Assert
         mockMvc.perform(delete("/api/services/" + department.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());

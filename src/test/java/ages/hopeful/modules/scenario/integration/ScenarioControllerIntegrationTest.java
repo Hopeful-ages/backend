@@ -349,7 +349,6 @@ public class ScenarioControllerIntegrationTest {
         @WithMockUser(roles = "USER")
         @DisplayName("Should get scenario by city and cobrade")
         void shouldGetByCityCobrade() throws Exception {
-            // Criar cenário antes de buscar
             Scenario testScenario = createPersistedTestScenario();
             
             mockMvc.perform(get("/api/scenarios/by-city-cobrade")

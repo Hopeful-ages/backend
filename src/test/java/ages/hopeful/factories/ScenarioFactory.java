@@ -81,7 +81,6 @@ public class ScenarioFactory {
                 .published(false)
                 .build();
         
-        // Adicionar tarefas
         Task task1 = TaskFactory.createEvacuationTask();
         task1.setScenario(scenario);
         scenario.getTasks().add(task1);
@@ -90,7 +89,6 @@ public class ScenarioFactory {
         task2.setScenario(scenario);
         scenario.getTasks().add(task2);
         
-        // Adicionar parâmetros
         Parameter param1 = ParameterFactory.createWaterLevelParameter();
         param1.setScenario(scenario);
         scenario.getParameters().add(param1);
