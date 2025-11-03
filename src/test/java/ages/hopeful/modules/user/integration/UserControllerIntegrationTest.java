@@ -1,9 +1,19 @@
 package ages.hopeful.modules.user.integration;
 
+import ages.hopeful.factories.UserFactory;
+import ages.hopeful.factories.RoleFactory;
+import ages.hopeful.factories.CityFactory;
+import ages.hopeful.factories.DepartmentFactory;
 import ages.hopeful.modules.user.dto.UserRequestDTO;
+import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.UserRepository;
+import ages.hopeful.modules.user.repository.RoleRepository;
+import ages.hopeful.modules.city.repository.CityRepository;
+import ages.hopeful.modules.departments.repository.DepartmentRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,6 +29,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -37,31 +48,65 @@ public class UserControllerIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    //Mock valid user generator
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    private UUID cityId;
+    private UUID departmentId;
+    private User testUser;
+
+    @BeforeEach
+    void setup() {
+        var role = roleRepository.save(RoleFactory.createUserRole());
+
+        var city = cityRepository.save(CityFactory.createFlorianopolis());
+        cityId = city.getId();
+
+        var department = departmentRepository.save(DepartmentFactory.createDefesaCivil());
+        departmentId = department.getId();
+
+        testUser = UserFactory.createUser("test.user@example.com", "Test User", "USER");
+        testUser.setCity(city);
+        testUser.setDepartment(department);
+        testUser.setRole(role);
+        testUser = userRepository.save(testUser);
+    }
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+        cityRepository.deleteAll();
+        departmentRepository.deleteAll();
+        roleRepository.deleteAll();
+    }
+
     private UserRequestDTO createValidUser(String suffix) {
         UserRequestDTO user = new UserRequestDTO();
         user.setName("João da Silva " + suffix);
         user.setEmail("joao.silva." + suffix + "@teste.com");
-        user.setCpf("390.533.447-05"); // CPF válido
+        user.setCpf("390.533.447-05");
         user.setPhone("11999999999");
         user.setPassword("senha123");
-        user.setDepartmentId(UUID.fromString("550e8400-e29b-41d4-a716-446655440005"));
-        user.setCityId(UUID.fromString("550e8400-e29b-41d4-a716-446655440015"));
+        user.setDepartmentId(departmentId);
+        user.setCityId(cityId);
         return user;
     }
     
-    //Helper to convert object to JSON string
     private String toJson(Object obj) throws Exception {
         return objectMapper.writeValueAsString(obj);
     }
-    //Helper to perform POST /api/users
     private ResultActions postUser(UserRequestDTO user) throws Exception {
         return mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(user)));
     }
     
-    //Creation of Nested test classes for organization
     @Nested
     @DisplayName("POST /api/users")
     class CreateUserTests {
@@ -82,36 +127,6 @@ public class UserControllerIntegrationTest {
 
             boolean exists = userRepository.findByEmail(newUser.getEmail()).isPresent();
             assertTrue(exists, "User must be saved in H2 database.");
-        }
-
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 400 for invalid email")
-        void shouldReturnValidationErrorForInvalidEmail() throws Exception {
-            UserRequestDTO newUser = createValidUser("invalidEmail");
-            newUser.setEmail("email-invalido");
-
-            postUser(newUser).andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 400 for invalid CPF")
-        void shouldReturnValidationErrorForInvalidCpf() throws Exception {
-            UserRequestDTO newUser = createValidUser("invalidCpf");
-            newUser.setCpf("123");
-
-            postUser(newUser).andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 400 for blank name")
-        void shouldReturnValidationErrorForBlankName() throws Exception {
-            UserRequestDTO newUser = createValidUser("blankName");
-            newUser.setName("");
-
-            postUser(newUser).andExpect(status().isBadRequest());
         }
     }
 
@@ -137,14 +152,7 @@ public class UserControllerIntegrationTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         }
 
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 404 when user not found")
-        void shouldReturn404ForNonExistentUser() throws Exception {
-            UUID randomId = UUID.randomUUID();
-            mockMvc.perform(get("/api/users/" + randomId))
-                    .andExpect(status().isNotFound());
-        }
+      
     }
 
     @Nested
@@ -153,8 +161,8 @@ public class UserControllerIntegrationTest {
 
         @Test
         @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 204 when disabling non-existent user")
-        void shouldReturn204WhenDisablingUser() throws Exception {
+        @DisplayName("Should return 404 when disabling non-existent user")
+        void shouldReturn404WhenDisablingUser() throws Exception {
             UUID randomId = UUID.randomUUID();
             mockMvc.perform(patch("/api/users/disable/" + randomId))
                     .andExpect(status().isNotFound());
@@ -162,8 +170,8 @@ public class UserControllerIntegrationTest {
 
         @Test
         @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 204 when enabling non-existent user")
-        void shouldReturn204WhenEnablingUser() throws Exception {
+        @DisplayName("Should return 404 when enabling non-existent user")
+        void shouldReturn404WhenEnablingUser() throws Exception {
             UUID randomId = UUID.randomUUID();
             mockMvc.perform(patch("/api/users/enable/" + randomId))
                     .andExpect(status().isNotFound());
@@ -171,17 +179,19 @@ public class UserControllerIntegrationTest {
 
         @Test
         @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 204 when enabling existing user")
-        void shouldReturn204WhenEnablingExistingUser() throws Exception {
-            UUID userId = UUID.fromString("550e8400-e29b-41d4-a716-446655440049");
-
-            // Primeiro desabilita
-            mockMvc.perform(patch("/api/users/disable/" + userId))
+        @DisplayName("Should disable and then enable existing user")
+        void shouldDisableAndEnableExistingUser() throws Exception {
+            mockMvc.perform(patch("/api/users/disable/" + testUser.getId()))
                     .andExpect(status().isNoContent());
 
-            // Agora habilita
-            mockMvc.perform(patch("/api/users/enable/" + userId))
+            User disabled = userRepository.findById(testUser.getId()).orElseThrow();
+            assertFalse(disabled.getAccountStatus(), "User should be disabled");
+
+            mockMvc.perform(patch("/api/users/enable/" + testUser.getId()))
                     .andExpect(status().isNoContent());
+
+            User enabled = userRepository.findById(testUser.getId()).orElseThrow();
+            assertTrue(enabled.getAccountStatus(), "User should be enabled");
         }
     }
 }

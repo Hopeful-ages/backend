@@ -106,7 +106,6 @@ public class UserServiceTest {
     @Test
     @DisplayName("Should create a user successfully when data is valid")
     void shouldCreateUserSuccessfullyWhenDataIsValid() {
-        // Mocking
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
         when(departmentRepository.findById(any(UUID.class))).thenReturn(
@@ -315,7 +314,7 @@ public class UserServiceTest {
     )
     void shouldThrowValidationExceptionWhenPasswordIsInvalid() {
         UUID userId = user.getId();
-        userUpdateDTO.setPassword("123"); // senha muito curta
+        userUpdateDTO.setPassword("123"); 
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 

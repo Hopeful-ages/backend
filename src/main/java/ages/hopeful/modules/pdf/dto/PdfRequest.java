@@ -13,7 +13,6 @@ public class PdfRequest {
     private List<String> durante;
     private List<String> apos;
     
-    // Parameter fields for each section
     private String parametrosAntes;
     private String acaoAntes;
     private String parametrosDurante;
@@ -48,7 +47,6 @@ public class PdfRequest {
     public void setApos(List<String> apos) { this.apos = apos; }
     public List<String> getApos() { return apos; }
 
-    // Getters and setters for parameter fields
     public void setParametrosAntes(String parametrosAntes) { this.parametrosAntes = parametrosAntes; }
     public String getParametrosAntes() { return parametrosAntes; }
 

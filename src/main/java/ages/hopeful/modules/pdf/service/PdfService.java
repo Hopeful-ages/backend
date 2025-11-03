@@ -27,10 +27,8 @@ public class PdfService {
 
         String html = templateEngine.process(template, ctx);
         
-        // Remove leading/trailing whitespace and ensure proper XML formatting
         html = html.trim();
         
-        // Log first 500 characters for debugging
         logger.debug("Generated HTML (first 500 chars): {}", html.substring(0, Math.min(500, html.length())));
 
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {

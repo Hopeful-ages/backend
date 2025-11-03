@@ -22,7 +22,6 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
 
-        // Mesma estrutura do GlobalExceptionHandler
         var errorResponse = new GlobalExceptionHandler.ErrorResponse(
                 "Forbidden", "Você não tem permissão para acessar esta rota"
         );
