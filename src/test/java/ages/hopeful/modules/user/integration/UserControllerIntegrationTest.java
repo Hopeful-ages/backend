@@ -1,9 +1,19 @@
 package ages.hopeful.modules.user.integration;
 
+import ages.hopeful.factories.UserFactory;
+import ages.hopeful.factories.RoleFactory;
+import ages.hopeful.factories.CityFactory;
+import ages.hopeful.factories.DepartmentFactory;
 import ages.hopeful.modules.user.dto.UserRequestDTO;
+import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.UserRepository;
+import ages.hopeful.modules.user.repository.RoleRepository;
+import ages.hopeful.modules.city.repository.CityRepository;
+import ages.hopeful.modules.departments.repository.DepartmentRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,6 +29,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -37,6 +48,46 @@ public class UserControllerIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    private UUID cityId;
+    private UUID departmentId;
+    private User testUser;
+
+    @BeforeEach
+    void setup() {
+        // Criar e salvar dependências usando factories
+        var role = roleRepository.save(RoleFactory.createUserRole());
+
+        var city = cityRepository.save(CityFactory.createFlorianopolis());
+        cityId = city.getId();
+
+        var department = departmentRepository.save(DepartmentFactory.createDefesaCivil());
+        departmentId = department.getId();
+
+        // Criar usuário de teste
+        testUser = UserFactory.createUser("test.user@example.com", "Test User", "USER");
+        testUser.setCity(city);
+        testUser.setDepartment(department);
+        testUser.setRole(role);
+        testUser = userRepository.save(testUser);
+    }
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+        cityRepository.deleteAll();
+        departmentRepository.deleteAll();
+        roleRepository.deleteAll();
+    }
+
     private UserRequestDTO createValidUser(String suffix) {
         UserRequestDTO user = new UserRequestDTO();
         user.setName("João da Silva " + suffix);
@@ -44,8 +95,8 @@ public class UserControllerIntegrationTest {
         user.setCpf("390.533.447-05"); // CPF válido
         user.setPhone("11999999999");
         user.setPassword("senha123");
-        user.setDepartmentId(UUID.fromString("550e8400-e29b-41d4-a716-446655440005"));
-        user.setCityId(UUID.fromString("550e8400-e29b-41d4-a716-446655440015"));
+        user.setDepartmentId(departmentId);
+        user.setCityId(cityId);
         return user;
     }
     
@@ -58,7 +109,6 @@ public class UserControllerIntegrationTest {
                 .content(toJson(user)));
     }
     
-    //Creation of Nested test classes for organization
     @Nested
     @DisplayName("POST /api/users")
     class CreateUserTests {
@@ -111,11 +161,10 @@ public class UserControllerIntegrationTest {
     @DisplayName("PATCH /api/users")
     class UpdateUserTests {
 
-        //arrumar
         @Test
         @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 204 when disabling non-existent user")
-        void shouldReturn204WhenDisablingUser() throws Exception {
+        @DisplayName("Should return 404 when disabling non-existent user")
+        void shouldReturn404WhenDisablingUser() throws Exception {
             UUID randomId = UUID.randomUUID();
             mockMvc.perform(patch("/api/users/disable/" + randomId))
                     .andExpect(status().isNotFound());
@@ -123,8 +172,8 @@ public class UserControllerIntegrationTest {
 
         @Test
         @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 204 when enabling non-existent user")
-        void shouldReturn204WhenEnablingUser() throws Exception {
+        @DisplayName("Should return 404 when enabling non-existent user")
+        void shouldReturn404WhenEnablingUser() throws Exception {
             UUID randomId = UUID.randomUUID();
             mockMvc.perform(patch("/api/users/enable/" + randomId))
                     .andExpect(status().isNotFound());
@@ -132,17 +181,20 @@ public class UserControllerIntegrationTest {
 
         @Test
         @WithMockUser(roles = "ADMIN")
-        @DisplayName("Should return 204 when enabling existing user")
-        void shouldReturn204WhenEnablingExistingUser() throws Exception {
-            UUID userId = UUID.fromString("550e8400-e29b-41d4-a716-446655440049");
-
+        @DisplayName("Should disable and then enable existing user")
+        void shouldDisableAndEnableExistingUser() throws Exception {
             // Primeiro desabilita
-            mockMvc.perform(patch("/api/users/disable/" + userId))
+            mockMvc.perform(patch("/api/users/disable/" + testUser.getId()))
                     .andExpect(status().isNoContent());
 
-            // Agora habilita
-            mockMvc.perform(patch("/api/users/enable/" + userId))
+            User disabled = userRepository.findById(testUser.getId()).orElseThrow();
+            assertFalse(disabled.getAccountStatus(), "User should be disabled");
+
+            mockMvc.perform(patch("/api/users/enable/" + testUser.getId()))
                     .andExpect(status().isNoContent());
+
+            User enabled = userRepository.findById(testUser.getId()).orElseThrow();
+            assertTrue(enabled.getAccountStatus(), "User should be enabled");
         }
     }
 }

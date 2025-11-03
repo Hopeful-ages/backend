@@ -2,6 +2,8 @@ package ages.hopeful.modules.department.integration;
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ages.hopeful.factories.DepartmentFactory;
 import ages.hopeful.modules.departments.dto.DepartmentRequestDTO;
 import ages.hopeful.modules.departments.model.Department;
 import ages.hopeful.modules.departments.repository.DepartmentRepository;
@@ -36,6 +39,17 @@ public class DepartmentControllerIntegrationTest {
     
     @Autowired
     private DepartmentRepository departmentRepository;
+
+    @BeforeEach
+    void setup() {
+        // Limpar repositório antes de cada teste
+        departmentRepository.deleteAll();
+    }
+
+    @AfterEach
+    void tearDown() {
+        departmentRepository.deleteAll();
+    }
 
 
 
@@ -68,10 +82,10 @@ public class DepartmentControllerIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should delete existing service")
     void shouldDeleteExistingService() throws Exception {
-
-        Department department = new Department();
-        department.setName("Service to Delete");
-        department = departmentRepository.save(department);
+        // Usar factory para criar departamento temporário
+        Department department = departmentRepository.save(
+            DepartmentFactory.createDepartment("Service to Delete " + UUID.randomUUID())
+        );
 
         // Act & Assert
         mockMvc.perform(delete("/api/services/" + department.getId())
@@ -82,6 +96,17 @@ public class DepartmentControllerIntegrationTest {
             departmentRepository.existsById(department.getId()),
             "Service should be deleted from database"
         );
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    @DisplayName("Should get all services")
+    void shouldGetAllServices() throws Exception {
+        mockMvc.perform(get("/api/services")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray());
     }
 
 }
