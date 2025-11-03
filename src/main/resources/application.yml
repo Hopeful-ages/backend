@@ -1,3 +1,34 @@
 spring:
-    application:
-            name: hopeful
+  application:
+    name: hopeful
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hopefuldatabase
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+
+  flyway:
+    baseline-on-migrate: false
+    locations: classpath:db/migration
+    enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+    enabled: true
+    url: /v3/api-docs
+    display-request-duration: true
+  packages-to-scan: ages.hopeful
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

@@ -1,0 +1,4 @@
+ALTER TABLE papel RENAME TO role;
+
+
+ALTER TABLE role RENAME COLUMN nome TO name;
