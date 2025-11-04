@@ -29,19 +29,16 @@ import java.util.UUID;
 @AllArgsConstructor
 @Service
 public class UserService {
-  private final UserRepository userRepository;
-  private final RoleRepository roleRepository;
-  private final ModelMapper modelMapper;
-  private final DepartmentRepository departmentRepository;
-  private final CityRepository cityRepository;
-  private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder; 
-
-
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final ModelMapper modelMapper;
+    private final DepartmentRepository departmentRepository;
+    private final CityRepository cityRepository;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserResponseDTO getUserById(UUID id) {
-
         User user = userRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found"));
@@ -102,7 +99,7 @@ public class UserService {
         var city = cityRepository.findById(dto.getCityId())
                 .orElseThrow(() -> new NotFoundException("City not found"));
 
-        Role role = roleRepository.findByName("USER")
+        Role role = roleRepository.findById(dto.getRoleId())
                 .orElseThrow(() -> new NotFoundException("Role not found"));
 
         User user = modelMapper.map(dto, User.class);
@@ -110,7 +107,7 @@ public class UserService {
         user.setRole(role);
         user.setDepartment(department);
         user.setCity(city);
-        user.setPassword(passwordEncoder.encode(dto.getPassword())); 
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserResponseDTO.class);
@@ -146,23 +143,23 @@ public class UserService {
         return getUserById(userId);
     }
 
-   @Transactional
-    public void disableUser(UUID userId, Authentication authentication){
+    @Transactional
+    public void disableUser(UUID userId, Authentication authentication) {
         String currentUserEmail = authentication.getName();
-        
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        
-        if (user.getEmail().equals(currentUserEmail)|| user.getRole().getName().equals("ADMIN")) {
+
+        if (user.getEmail().equals(currentUserEmail) || user.getRole().getName().equals("ADMIN")) {
             throw new IllegalArgumentException("Conta Admin não pode ser desabilitada");
         }
-        
+
         user.setAccountStatus(false);
         userRepository.save(user);
     }
 
     @Transactional
-    public void enableUser(UUID userId){
+    public void enableUser(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         user.setAccountStatus(true);
@@ -180,6 +177,11 @@ public class UserService {
                     .orElseThrow(() -> new NotFoundException("City not found"));
             user.setCity(city);
         }
+        if (dto.getRoleId() != null) {
+            var role = roleRepository.findById(dto.getRoleId())
+                    .orElseThrow(() -> new NotFoundException("Role not found"));
+            user.setRole(role);
+        }
     }
 
     private void hashPassword(User user, UserUpdateDTO dto) {
@@ -187,6 +189,5 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
     }
-
 }
 
