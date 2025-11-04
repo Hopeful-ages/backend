@@ -226,7 +226,7 @@ public class UserServiceTest {
             userRequestDTO.getDepartmentId()
         );
         verify(cityRepository, times(1)).findById(userRequestDTO.getCityId());
-        verify(roleRepository, times(1)).findById(userRequestDTO.getRoleId());
+        verify(roleRepository, never()).findById(any(UUID.class));
     }
 
     @Test
