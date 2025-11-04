@@ -59,11 +59,13 @@ public class UserControllerIntegrationTest {
 
     private UUID cityId;
     private UUID departmentId;
+    private UUID roleId;
     private User testUser;
 
     @BeforeEach
     void setup() {
         var role = roleRepository.save(RoleFactory.createUserRole());
+        roleId = role.getId();
 
         var city = cityRepository.save(CityFactory.createFlorianopolis());
         cityId = city.getId();
@@ -95,6 +97,7 @@ public class UserControllerIntegrationTest {
         user.setPassword("senha123");
         user.setDepartmentId(departmentId);
         user.setCityId(cityId);
+        user.setRoleId(roleId);
         return user;
     }
     
