@@ -112,13 +112,13 @@ public class UserServiceTest {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
         when(departmentRepository.findById(any(UUID.class))).thenReturn(
-            Optional.of(department)
+            Optional.of(new Department())
         );
         when(cityRepository.findById(any(UUID.class))).thenReturn(
-            Optional.of(city)
+            Optional.of(new City())
         );
         when(roleRepository.findById(any(UUID.class))).thenReturn(
-            Optional.of(role)
+            Optional.of(new Role())
         );
         when(
             modelMapper.map(any(UserRequestDTO.class), eq(User.class))
