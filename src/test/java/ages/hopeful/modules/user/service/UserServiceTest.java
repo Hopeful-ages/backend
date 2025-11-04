@@ -352,9 +352,9 @@ public class UserServiceTest {
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
-        when(departmentRepository.findById(any(UUID.class))).thenReturn(Optional.of(department));
-        when(cityRepository.findById(any(UUID.class))).thenReturn(Optional.of(city));
-        when(roleRepository.findById(any(UUID.class))).thenReturn(Optional.of(role));
+        when(departmentRepository.findById(any(UUID.class))).thenReturn(Optional.of(new Department()));
+        when(cityRepository.findById(any(UUID.class))).thenReturn(Optional.of(new City()));
+        when(roleRepository.findById(any(UUID.class))).thenReturn(Optional.of(new Role()));
         when(modelMapper.map(any(UserRequestDTO.class), eq(User.class))).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
