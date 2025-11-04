@@ -92,6 +92,16 @@ public class UserService {
             throw new ConflictException("CPF already exists");
         }
 
+        if (dto.getDepartmentId() == null) {
+            throw new IllegalArgumentException("Department ID must not be null");
+        }
+        if (dto.getCityId() == null) {
+            throw new IllegalArgumentException("City ID must not be null");
+        }
+        if (dto.getRoleId() == null) {
+            throw new IllegalArgumentException("Role ID must not be null");
+        }
+
         var department = departmentRepository.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new NotFoundException("Service not found"));
 
