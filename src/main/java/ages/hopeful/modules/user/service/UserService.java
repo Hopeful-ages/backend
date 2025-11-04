@@ -6,7 +6,6 @@ import ages.hopeful.config.security.jwt.JwtUtil;
 import ages.hopeful.modules.city.repository.CityRepository;
 import ages.hopeful.modules.departments.repository.DepartmentRepository;
 import ages.hopeful.modules.user.dto.*;
-import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.RoleRepository;
 import ages.hopeful.modules.user.repository.UserRepository;

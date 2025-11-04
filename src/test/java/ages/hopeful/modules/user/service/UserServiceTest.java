@@ -68,6 +68,7 @@ public class UserServiceTest {
     void setUp() {
         UUID departmentId = UUID.randomUUID();
         UUID cityId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
 
         userRequestDTO = UserRequestDTO.builder()
             .name("Test User")
@@ -76,6 +77,7 @@ public class UserServiceTest {
             .password("password123")
             .departmentId(departmentId)
             .cityId(cityId)
+            .roleId(roleId)
             .build();
 
         userUpdateDTO = UserUpdateDTO.builder()
@@ -85,6 +87,7 @@ public class UserServiceTest {
             .phone("555199999999")
             .departmentId(departmentId)
             .cityId(cityId)
+            .roleId(roleId)
             .password("newpassword123")
             .build();
 
@@ -98,7 +101,7 @@ public class UserServiceTest {
         userResponseDTO.name = user.getName();
         userResponseDTO.email = user.getEmail();
 
-        role = new Role(UUID.randomUUID(), "USER");
+        role = new Role();
         department = new Department();
         city = new City();
     }
@@ -114,7 +117,7 @@ public class UserServiceTest {
         when(cityRepository.findById(any(UUID.class))).thenReturn(
             Optional.of(city)
         );
-        when(roleRepository.findByName(anyString())).thenReturn(
+        when(roleRepository.findById(any(UUID.class))).thenReturn(
             Optional.of(role)
         );
         when(
@@ -139,7 +142,7 @@ public class UserServiceTest {
             userRequestDTO.getDepartmentId()
         );
         verify(cityRepository, times(1)).findById(userRequestDTO.getCityId());
-        verify(roleRepository, times(1)).findByName("USER");
+        verify(roleRepository, times(1)).findById(userRequestDTO.getRoleId());
         verify(userRepository, times(1)).save(user);
     }
 
@@ -196,6 +199,7 @@ public class UserServiceTest {
             userRequestDTO.getDepartmentId()
         );
         verify(cityRepository, never()).findById(any(UUID.class));
+        verify(roleRepository, never()).findById(any(UUID.class));
     }
 
     @Test
@@ -222,7 +226,7 @@ public class UserServiceTest {
             userRequestDTO.getDepartmentId()
         );
         verify(cityRepository, times(1)).findById(userRequestDTO.getCityId());
-        verify(roleRepository, never()).findByName(anyString());
+        verify(roleRepository, times(1)).findById(userRequestDTO.getRoleId());
     }
 
     @Test
@@ -261,6 +265,9 @@ public class UserServiceTest {
         when(cityRepository.findById(userUpdateDTO.getCityId()))
             .thenReturn(Optional.of(city));
 
+        when(roleRepository.findById(userUpdateDTO.getRoleId()))
+            .thenReturn(Optional.of(role));
+
         UserResponseDTO response = userService.updateUser(userId, userUpdateDTO);
 
         assertNotNull(response);
@@ -269,6 +276,7 @@ public class UserServiceTest {
         assertEquals(user.getCpf(), response.getCpf());
         assertEquals(department, user.getDepartment());
         assertEquals(city, user.getCity());
+        assertEquals(role, user.getRole());
 
         verify(userRepository, times(1)).save(user);
     }
@@ -346,7 +354,7 @@ public class UserServiceTest {
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
         when(departmentRepository.findById(any(UUID.class))).thenReturn(Optional.of(department));
         when(cityRepository.findById(any(UUID.class))).thenReturn(Optional.of(city));
-        when(roleRepository.findByName(anyString())).thenReturn(Optional.of(role));
+        when(roleRepository.findById(any(UUID.class))).thenReturn(Optional.of(role));
         when(modelMapper.map(any(UserRequestDTO.class), eq(User.class))).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
