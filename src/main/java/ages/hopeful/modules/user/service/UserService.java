@@ -99,7 +99,7 @@ public class UserService {
         var city = cityRepository.findById(dto.getCityId())
                 .orElseThrow(() -> new NotFoundException("City not found"));
 
-        Role role = roleRepository.findById(dto.getRoleId())
+        var role = roleRepository.findById(dto.getRoleId())
                 .orElseThrow(() -> new NotFoundException("Role not found"));
 
         User user = modelMapper.map(dto, User.class);
