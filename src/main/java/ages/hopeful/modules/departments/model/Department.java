@@ -1,4 +1,4 @@
-package ages.hopeful.modules.services.model;
+package ages.hopeful.modules.departments.model;
 
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ import lombok.Data;
 @Entity
 @Table(name = "services")
 @Data
-public class Service {
+public class Department {
      @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)

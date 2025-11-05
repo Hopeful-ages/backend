@@ -10,8 +10,8 @@ import ages.hopeful.common.exception.ConflictException;
 import ages.hopeful.common.exception.NotFoundException;
 import ages.hopeful.modules.city.model.City;
 import ages.hopeful.modules.city.repository.CityRepository;
-import ages.hopeful.modules.services.model.Service;
-import ages.hopeful.modules.services.repository.ServiceRepository;
+import ages.hopeful.modules.departments.model.Department;
+import ages.hopeful.modules.departments.repository.DepartmentRepository;
 import ages.hopeful.modules.user.dto.UserRequestDTO;
 import ages.hopeful.modules.user.dto.UserResponseDTO;
 import ages.hopeful.modules.user.dto.UserUpdateDTO;
@@ -48,7 +48,7 @@ public class UserServiceTest {
     private ModelMapper modelMapper;
 
     @Mock
-    private ServiceRepository serviceRepository;
+    private DepartmentRepository departmentRepository;
 
     @Mock
     private CityRepository cityRepository;
@@ -61,21 +61,23 @@ public class UserServiceTest {
     private UserResponseDTO userResponseDTO;
     private UserUpdateDTO userUpdateDTO;
     private Role role;
-    private Service service;
+    private Department department;
     private City city;
 
     @BeforeEach
     void setUp() {
-        UUID serviceId = UUID.randomUUID();
+        UUID departmentId = UUID.randomUUID();
         UUID cityId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
 
         userRequestDTO = UserRequestDTO.builder()
             .name("Test User")
             .cpf("529.982.247-25")
             .email("test@example.com")
             .password("password123")
-            .serviceId(serviceId)
+            .departmentId(departmentId)
             .cityId(cityId)
+            .roleId(roleId)
             .build();
 
         userUpdateDTO = UserUpdateDTO.builder()
@@ -83,8 +85,9 @@ public class UserServiceTest {
             .cpf("987.654.321-00")
             .email("updated@example.com")
             .phone("555199999999")
-            .serviceId(serviceId)
+            .departmentId(departmentId)
             .cityId(cityId)
+            .roleId(roleId)
             .password("newpassword123")
             .build();
 
@@ -98,25 +101,24 @@ public class UserServiceTest {
         userResponseDTO.name = user.getName();
         userResponseDTO.email = user.getEmail();
 
-        role = new Role(UUID.randomUUID(), "USER");
-        service = new Service();
+        role = new Role();
+        department = new Department();
         city = new City();
     }
 
     @Test
     @DisplayName("Should create a user successfully when data is valid")
     void shouldCreateUserSuccessfullyWhenDataIsValid() {
-        // Mocking
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
-        when(serviceRepository.findById(any(UUID.class))).thenReturn(
-            Optional.of(service)
+        when(departmentRepository.findById(any(UUID.class))).thenReturn(
+            Optional.of(new Department())
         );
         when(cityRepository.findById(any(UUID.class))).thenReturn(
-            Optional.of(city)
+            Optional.of(new City())
         );
-        when(roleRepository.findByName(anyString())).thenReturn(
-            Optional.of(role)
+        when(roleRepository.findById(any(UUID.class))).thenReturn(
+            Optional.of(new Role())
         );
         when(
             modelMapper.map(any(UserRequestDTO.class), eq(User.class))
@@ -136,11 +138,11 @@ public class UserServiceTest {
             userRequestDTO.getEmail()
         );
         verify(userRepository, times(1)).existsByCpf(userRequestDTO.getCpf());
-        verify(serviceRepository, times(1)).findById(
-            userRequestDTO.getServiceId()
+        verify(departmentRepository, times(1)).findById(
+            userRequestDTO.getDepartmentId()
         );
         verify(cityRepository, times(1)).findById(userRequestDTO.getCityId());
-        verify(roleRepository, times(1)).findByName("USER");
+        verify(roleRepository, times(1)).findById(userRequestDTO.getRoleId());
         verify(userRepository, times(1)).save(user);
     }
 
@@ -173,7 +175,7 @@ public class UserServiceTest {
             userRequestDTO.getEmail()
         );
         verify(userRepository, times(1)).existsByCpf(userRequestDTO.getCpf());
-        verify(serviceRepository, never()).findById(any(UUID.class));
+        verify(departmentRepository, never()).findById(any(UUID.class));
     }
 
     @Test
@@ -181,7 +183,7 @@ public class UserServiceTest {
     void shouldThrowNotFoundExceptionWhenServiceNotFound() {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
-        when(serviceRepository.findById(any(UUID.class))).thenReturn(
+        when(departmentRepository.findById(any(UUID.class))).thenReturn(
             Optional.empty()
         );
 
@@ -193,10 +195,11 @@ public class UserServiceTest {
             userRequestDTO.getEmail()
         );
         verify(userRepository, times(1)).existsByCpf(userRequestDTO.getCpf());
-        verify(serviceRepository, times(1)).findById(
-            userRequestDTO.getServiceId()
+        verify(departmentRepository, times(1)).findById(
+            userRequestDTO.getDepartmentId()
         );
         verify(cityRepository, never()).findById(any(UUID.class));
+        verify(roleRepository, never()).findById(any(UUID.class));
     }
 
     @Test
@@ -204,8 +207,8 @@ public class UserServiceTest {
     void shouldThrowNotFoundExceptionWhenCityNotFound() {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
-        when(serviceRepository.findById(any(UUID.class))).thenReturn(
-            Optional.of(service)
+        when(departmentRepository.findById(any(UUID.class))).thenReturn(
+            Optional.of(department)
         );
         when(cityRepository.findById(any(UUID.class))).thenReturn(
             Optional.empty()
@@ -219,11 +222,11 @@ public class UserServiceTest {
             userRequestDTO.getEmail()
         );
         verify(userRepository, times(1)).existsByCpf(userRequestDTO.getCpf());
-        verify(serviceRepository, times(1)).findById(
-            userRequestDTO.getServiceId()
+        verify(departmentRepository, times(1)).findById(
+            userRequestDTO.getDepartmentId()
         );
         verify(cityRepository, times(1)).findById(userRequestDTO.getCityId());
-        verify(roleRepository, never()).findByName(anyString());
+        verify(roleRepository, never()).findById(any(UUID.class));
     }
 
     @Test
@@ -256,11 +259,14 @@ public class UserServiceTest {
                 return dto;
             });
 
-        when(serviceRepository.findById(userUpdateDTO.getServiceId()))
-            .thenReturn(Optional.of(service));
+        when(departmentRepository.findById(userUpdateDTO.getDepartmentId()))
+            .thenReturn(Optional.of(department));
 
         when(cityRepository.findById(userUpdateDTO.getCityId()))
             .thenReturn(Optional.of(city));
+
+        when(roleRepository.findById(userUpdateDTO.getRoleId()))
+            .thenReturn(Optional.of(role));
 
         UserResponseDTO response = userService.updateUser(userId, userUpdateDTO);
 
@@ -268,8 +274,9 @@ public class UserServiceTest {
         assertEquals(user.getName(), response.getName());
         assertEquals(user.getEmail(), response.getEmail());
         assertEquals(user.getCpf(), response.getCpf());
-        assertEquals(service, user.getService());
+        assertEquals(department, user.getDepartment());
         assertEquals(city, user.getCity());
+        assertEquals(role, user.getRole());
 
         verify(userRepository, times(1)).save(user);
     }
@@ -315,7 +322,7 @@ public class UserServiceTest {
     )
     void shouldThrowValidationExceptionWhenPasswordIsInvalid() {
         UUID userId = user.getId();
-        userUpdateDTO.setPassword("123"); // senha muito curta
+        userUpdateDTO.setPassword("123"); 
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
@@ -345,9 +352,9 @@ public class UserServiceTest {
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
-        when(serviceRepository.findById(any(UUID.class))).thenReturn(Optional.of(service));
-        when(cityRepository.findById(any(UUID.class))).thenReturn(Optional.of(city));
-        when(roleRepository.findByName(anyString())).thenReturn(Optional.of(role));
+        when(departmentRepository.findById(any(UUID.class))).thenReturn(Optional.of(new Department()));
+        when(cityRepository.findById(any(UUID.class))).thenReturn(Optional.of(new City()));
+        when(roleRepository.findById(any(UUID.class))).thenReturn(Optional.of(new Role()));
         when(modelMapper.map(any(UserRequestDTO.class), eq(User.class))).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);

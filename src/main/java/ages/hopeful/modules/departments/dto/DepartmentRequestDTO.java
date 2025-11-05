@@ -1,11 +1,9 @@
-package ages.hopeful.modules.services.dto;
+package ages.hopeful.modules.departments.dto;
 
-import java.util.UUID;
-
+import ages.hopeful.modules.departments.model.Department;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ages.hopeful.modules.services.model.Service;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -13,14 +11,14 @@ import jakarta.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class ServiceRequestDTO {
+public class DepartmentRequestDTO {
     @NotBlank @Size(max = 150)
     private String name;
 
-    public Service toModel() {
-        Service service = new Service();
-        service.setName(this.name);
-        return service;
+    public Department toModel() {
+        Department department = new Department();
+        department.setName(this.name);
+        return department;
     }
 }
 

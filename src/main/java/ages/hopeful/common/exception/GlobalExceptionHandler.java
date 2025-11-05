@@ -130,7 +130,6 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // Classe ErrorResponse normal, com getters e setters
     public static class ErrorResponse {
 
         private String error;

@@ -3,7 +3,7 @@ package ages.hopeful.modules.scenarios.model;
 import java.util.Date;
 import java.util.UUID;
 
-import ages.hopeful.modules.services.model.Service;
+import ages.hopeful.modules.departments.model.Department;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,7 +29,7 @@ import lombok.ToString;
 @Builder
 @Table(name = "tasks")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"scenario", "service"})
+@ToString(exclude = {"scenario", "department"})
 public class Task {
 
     @Id
@@ -49,7 +49,7 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_id", referencedColumnName = "id")
-    private Service service;
+    private Department department;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "scenario_id", nullable = false)

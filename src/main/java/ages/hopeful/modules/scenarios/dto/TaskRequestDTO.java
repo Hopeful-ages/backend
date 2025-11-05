@@ -1,12 +1,17 @@
 package ages.hopeful.modules.scenarios.dto;
 
+import ages.hopeful.modules.departments.model.Department;
 import ages.hopeful.modules.scenarios.model.Scenario;
-import ages.hopeful.modules.services.model.Service;
 import ages.hopeful.modules.scenarios.model.Task;
-import lombok.*;
 
 import java.util.Date;
 import java.util.UUID;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -17,15 +22,16 @@ public class TaskRequestDTO {
     private String description;
     private String phase;
     private Date lastUpdateDate;
-    private UUID serviceId;
+    private UUID departmentId;
 
-    public Task toModel(Service service, Scenario scenario) {
+    public Task toModel(Department department, Scenario scenario) {
         return Task.builder()
                 .description(this.getDescription())
                 .phase(this.getPhase())
                 .lastUpdateDate(this.lastUpdateDate != null ? this.lastUpdateDate : new Date(System.currentTimeMillis()))
-                .service(service)
+                .department(department)
                 .scenario(scenario)
                 .build();
     }
+
 }

@@ -51,30 +51,22 @@ public class PdfGenerationService {
 
 
 
-        // Formatar data para ano apenas
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
 
-        // Titulo: pegar o subgroup do primeiro cenário (todos serão iguais)
         String titulo = scenarios.get(0).getCobrade().getSubgroup();
 
-        // Origem: pegar origin de dentro da cobrade
         String origem = scenarios.get(0).getCobrade().getOrigin() != null ? 
                         scenarios.get(0).getCobrade().getOrigin() : "";
 
-        // Subgrupo: pegar group de dentro da cobrade
         String subgrupo = scenarios.get(0).getCobrade().getGroup() != null ? 
                           scenarios.get(0).getCobrade().getGroup() : "";
 
-        // Codigo: "Múltiplos" se mais de um cenário, "Singular" se apenas um
         String codigo = scenarios.size() > 1 ? "Múltiplos" : "Singular";
 
-        // Descrição: concatenar subType + code : description de cada cenário
         StringBuilder descricaoBuilder = new StringBuilder();
         for (int i = 0; i < scenarios.size(); i++) {
             ScenarioResponseDTO scenario = scenarios.get(i);
-            // Primeira tentativa: usar subType se não for null
-            // Segunda tentativa: usar type se não for null  
-            // Terceira tentativa: usar subgroup como último recurso
+            
             String subType;
             if (scenario.getCobrade().getSubType() != null) {
                 subType = escapeHtml(scenario.getCobrade().getSubType());
@@ -93,32 +85,27 @@ public class PdfGenerationService {
             }
             
             if (scenarios.size() > 1) {
-                // Se houver múltiplos cenários, enumerar
                 descricaoBuilder.append("<b>").append(i + 1).append(". ")
                                .append(subType).append(" (").append(code).append("):</b> ")
                                .append(description);
             } else {
-                // Se houver apenas um cenário, não enumerar - mas incluir o nome
                 descricaoBuilder.append("<b>").append(subType).append(" (").append(code)
                                .append("):</b> ").append(description);
             }
         }
         String descricao = descricaoBuilder.toString();
 
-        // Listas de tarefas por fase
         List<String> tarefasAntes = new ArrayList<>();
         List<String> tarefasDurante = new ArrayList<>();
         List<String> tarefasApos = new ArrayList<>();
 
-        // Processar todas as tarefas de todos os cenários
         for (ScenarioResponseDTO scenario : scenarios) {
             for (TaskResponseDTO task : scenario.getTasks()) {
-                String serviceName = task.getService() != null ? escapeHtml(task.getService().getName()) : "Sem serviço";
+                String departmentName = task.getDepartment() != null ? escapeHtml(task.getDepartment().getName()) : "Sem departamento";
                 String updateDate = task.getLastUpdateDate() != null ? dateFormat.format(task.getLastUpdateDate()) : "";
-                
-                // Formato: description (serviceName, updateDate)
-                String taskInfo = escapeHtml(task.getDescription()) + " (" + serviceName + ", " + updateDate + ")";
-                
+
+                String taskInfo = escapeHtml(task.getDescription()) + " (" + departmentName + ", " + updateDate + ")";
+
                 switch (task.getPhase()) {
                     case "ANTES":
                         tarefasAntes.add(taskInfo);
@@ -133,7 +120,6 @@ public class PdfGenerationService {
             }
         }
 
-        // Processar parâmetros - agregar por fase
         StringBuilder parametrosAntes = new StringBuilder();
         StringBuilder acaoAntes = new StringBuilder();
         StringBuilder parametrosDurante = new StringBuilder();
@@ -166,13 +152,12 @@ public class PdfGenerationService {
             }
         }
 
-        // Criar o PdfRequest
         PdfRequest pdfRequest = new PdfRequest();
         pdfRequest.setTitulo(escapeHtml(titulo));
         pdfRequest.setOrigem(escapeHtml(origem));
         pdfRequest.setSubgrupo(escapeHtml(subgrupo));
         pdfRequest.setCodigo(escapeHtml(codigo));
-        pdfRequest.setDescricao(descricao); // Já foi escapado no stream acima
+        pdfRequest.setDescricao(descricao); 
         pdfRequest.setAntes(tarefasAntes);
         pdfRequest.setDurante(tarefasDurante);
         pdfRequest.setApos(tarefasApos);
