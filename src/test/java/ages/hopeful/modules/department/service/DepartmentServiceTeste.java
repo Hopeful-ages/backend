@@ -53,7 +53,6 @@ public class DepartmentServiceTeste {
 
     @Test
     void shouldReturnDepartmentById() {
-        // Arrange
         UUID id = UUID.randomUUID();
         Department department = new Department();
         department.setId(id);
@@ -61,10 +60,10 @@ public class DepartmentServiceTeste {
 
         when(departmentRepository.findById(id)).thenReturn(Optional.of(department));
 
-        // Act
+        
         Department result = departmentService.getDepartmentById(id);
 
-        // Assert
+        
         assertEquals(id, result.getId());
         assertEquals("Serviço Teste", result.getName());
         verify(departmentRepository, times(1)).findById(id);
@@ -73,7 +72,6 @@ public class DepartmentServiceTeste {
     @Test
     @DisplayName("should return all services")
     void shouldReturnAllDepartments() {
-        // Arrange
         List<Department> departments = new ArrayList<>();
         Department s1 = new Department();
         s1.setName("Serviço 1");
@@ -87,10 +85,10 @@ public class DepartmentServiceTeste {
         when(modelMapper.map(any(Department.class), eq(DepartmentResponseDTO.class)))
                 .thenReturn(new DepartmentResponseDTO(s1.getId(),"Serviço 1"))
                 .thenReturn(new DepartmentResponseDTO(s2.getId(),"Serviço 2"));
-        // Act
+        
         List<DepartmentResponseDTO> result = departmentService.getAllDepartments();
 
-        // Assert
+        
         assertEquals(2, result.size());
         assertEquals("Serviço 1", result.get(0).getName());
         assertEquals("Serviço 2", result.get(1).getName());
@@ -100,7 +98,6 @@ public class DepartmentServiceTeste {
     @Test
     @DisplayName("should create a new service")
     void shouldCreateDepartment() {
-        // Arrange
         Department departmentToSave = new Department();
         departmentToSave.setName("New Service");
 
@@ -112,12 +109,12 @@ public class DepartmentServiceTeste {
         when(modelMapper.map(any(Department.class), eq(DepartmentResponseDTO.class)))
                 .thenReturn(new DepartmentResponseDTO(savedDepartment.getId(), "New Service"));
 
-        // Act
+        
         DepartmentRequestDTO departmentDTO = new DepartmentRequestDTO();
         departmentDTO.setName("New Service");
         DepartmentResponseDTO result = departmentService.createDepartment(departmentDTO);
 
-        // Assert
+        
         assertEquals("New Service", result.getName());
         verify(departmentRepository, times(1)).save(any(Department.class));
     }
@@ -125,7 +122,6 @@ public class DepartmentServiceTeste {
     @Test
     @DisplayName("should delete department by id")
     void shouldDeleteDepartmentById() {
-        // Arrange
         UUID id = UUID.randomUUID();
         Department department = new Department();
         department.setId(id);
@@ -133,10 +129,10 @@ public class DepartmentServiceTeste {
 
         when(departmentRepository.findById(id)).thenReturn(Optional.of(department));
 
-        // Act
+        
         departmentService.deleteDepartment(id);
 
-        // Assert
+        
         verify(departmentRepository, times(1)).findById(id);
         verify(departmentRepository, times(1)).delete(department);
     }

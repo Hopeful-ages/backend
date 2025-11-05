@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor // necessário para MapStruct ou ModelMapper
+@NoArgsConstructor 
 @AllArgsConstructor
 public class UserResponseDTO {
   public UUID id;

@@ -3,13 +3,10 @@ package ages.hopeful.modules.scenarios.dto;
 import ages.hopeful.modules.departments.model.Department;
 import ages.hopeful.modules.scenarios.model.Scenario;
 import ages.hopeful.modules.scenarios.model.Task;
-import lombok.*;
 
 import java.util.Date;
 import java.util.UUID;
 
-import ages.hopeful.modules.scenarios.model.Scenario;
-import ages.hopeful.modules.scenarios.model.Task;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
