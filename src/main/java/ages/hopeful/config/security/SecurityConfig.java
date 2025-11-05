@@ -39,6 +39,7 @@ public class SecurityConfig {
         "/swagger-resources",
         "/webjars/**",
         "/api/auth/login",
+        "/api/auth/forgot-password",
         "/api/scenarios/search/by-city-cobrade",
         "/api/scenarios/pdf/*/scenarios-by-subgroup"
     };
