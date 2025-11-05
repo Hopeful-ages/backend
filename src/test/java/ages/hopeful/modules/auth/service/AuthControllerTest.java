@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 
+import java.util.Objects;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -27,29 +29,22 @@ class AuthControllerTest {
     @InjectMocks
     private AuthController authController;
 
-    // ---------------------------------------------------
-    // 1. Credenciais válidas → 200 com token
-    // ---------------------------------------------------
     @Test
-    @DisplayName("Must return 200 with token and user informations when credentials are valid")
+    @DisplayName("Must return 200 with token and user information when credentials are valid")
     void shouldReturn200WithTokenAndUserInfoWhenCredentialsValid() {
-        // Arrange
+
         LoginRequest request = new LoginRequest("john", "password123");
         TokenResponse tokenResponse = new TokenResponse("fake-jwt-token");
         when(authService.login(any(LoginRequest.class))).thenReturn(tokenResponse);
 
-        // Act
         ResponseEntity<?> response = authController.login(request);
 
-        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(((TokenResponse) response.getBody()).getToken()).isEqualTo("fake-jwt-token");
+        assertThat(((TokenResponse) Objects.requireNonNull(response.getBody())).getToken()).isEqualTo("fake-jwt-token");
         verify(authService, times(1)).login(any(LoginRequest.class));
     }
 
-    // ---------------------------------------------------
-    // 2. Username vazio → 400
-    // ---------------------------------------------------
+
     @Test
     @DisplayName("Must return 400 when username is blank")
     void shouldReturn400WhenUsernameEmpty() {
@@ -62,9 +57,6 @@ class AuthControllerTest {
         verify(authService, never()).login(any());
     }
 
-    // ---------------------------------------------------
-    // 3. Password vazio → 400
-    // ---------------------------------------------------
     @Test
     @DisplayName("Must return 400 when password is blank")
     void shouldReturn400WhenPasswordEmpty() {
@@ -77,9 +69,6 @@ class AuthControllerTest {
         verify(authService, never()).login(any());
     }
 
-    // ---------------------------------------------------
-    // 4. Ambos vazios → 400
-    // ---------------------------------------------------
     @Test
     @DisplayName("Must return 400 when both are blank")
     void shouldReturn400WhenBothEmpty() {
@@ -92,18 +81,14 @@ class AuthControllerTest {
         verify(authService, never()).login(any());
     }
 
-    // ---------------------------------------------------
-    // 5. Credenciais inválidas → 401
-    // ---------------------------------------------------
     @Test
     @DisplayName("Must return 401 when credentials are invalid")
     void shouldReturn401WhenInvalidCredentials() {
-        // Arrange
+
         LoginRequest request = new LoginRequest("john", "wrongpass");
         when(authService.login(any(LoginRequest.class)))
                 .thenThrow(new BadCredentialsException("username or password Invalid"));
 
-        // Act & Assert
         BadCredentialsException exception =
                 org.junit.jupiter.api.Assertions.assertThrows(
                         BadCredentialsException.class,

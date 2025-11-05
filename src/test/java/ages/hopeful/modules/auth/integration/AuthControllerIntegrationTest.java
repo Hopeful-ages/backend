@@ -27,11 +27,8 @@ class AuthControllerIntegrationTest {
 
     private final String LOGIN_URL = "/api/auth/login";
 
-    // -------------------------------
-    // 1. Credenciais válidas → 200 + token
-    // -------------------------------
     @Test
-    @DisplayName("Must authenticate existing user and return valid JWT")
+    @DisplayName("Must authenticate existing user and return valid JWT with user information")
     void shouldAuthenticateAndReturnValidJWT() throws Exception {
         LoginRequest request = new LoginRequest("abner@naoinfomado.com", "Senha");
 
@@ -47,21 +44,20 @@ class AuthControllerIntegrationTest {
         String token = response.getBody().getToken();
         assertThat(token).isNotBlank();
 
-        // Validate JWT using JwtUtil
         jwtUtil.validateToken(token);
 
         String username = jwtUtil.getUsernameFromToken(token);
         List<String> roles = jwtUtil.getRolesFromToken(token);
         UUID userId = jwtUtil.getUserIdFromToken(token);
+        UUID cityId = jwtUtil.getCityFromToken(token);
 
         assertThat(username).isEqualTo("abner@naoinfomado.com");
         assertThat(roles).isNotEmpty();
         assertThat(userId).isNotNull();
+        assertThat(cityId).isNotNull();
     }
 
-    // -------------------------------
-    // 2. Campos obrigatórios ausentes → 400
-    // -------------------------------
+
     @Test
     @DisplayName("Must return 400 when username is missing")
     void shouldReturn400WhenUsernameMissing() {
@@ -75,9 +71,6 @@ class AuthControllerIntegrationTest {
         assertThat(response.getBody()).contains("Usuário e senha são obrigatórios.");
     }
 
-    // -------------------------------
-    // 3. Username não existe → 401
-    // -------------------------------
     @Test
     @DisplayName("Must return 401 when username does not exist")
     void shouldReturn401WhenUsernameNotExist() {
@@ -90,9 +83,6 @@ class AuthControllerIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
-    // -------------------------------
-    // 4. Password incorreto → 401
-    // -------------------------------
     @Test
     @DisplayName("Must return 401 when password is incorrect")
     void shouldReturn401WhenPasswordIncorrect() {
