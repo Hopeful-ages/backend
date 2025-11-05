@@ -70,7 +70,7 @@ public class CityIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is("Porto Alegre")))
-                .andExpect(jsonPath("$[0].state", is("RS"))); // Verificação completa
+                .andExpect(jsonPath("$[0].state", is("RS"))); 
     }
 
     @Test
