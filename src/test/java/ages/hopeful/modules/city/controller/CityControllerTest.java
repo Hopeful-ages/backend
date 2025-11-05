@@ -55,4 +55,15 @@ public class CityControllerTest {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is("Porto Alegre")));
     }
+    
+    @Test
+    @DisplayName("Should return empty list when service returns no cities")
+    void shouldReturnEmptyListWhenServiceReturnsNoCities() throws Exception {
+        when(cityService.getAllCities()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/city")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
 }
