@@ -79,4 +79,6 @@ public class CityIntegrationTest {
         mockMvc.perform(get("/api/city")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
+    }
+
 }
