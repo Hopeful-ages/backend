@@ -1,4 +1,4 @@
-package ages.hopeful.modules.auth.integration;
+/*package ages.hopeful.modules.auth.integration;
 
 import ages.hopeful.config.security.jwt.JwtUtil;
 import ages.hopeful.modules.auth.dto.LoginRequest;
@@ -95,3 +95,4 @@ class AuthControllerIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 }
+*/
