@@ -48,7 +48,7 @@ public class CityIntegrationTest {
 
     @Test
     @WithMockUser
-    @DisplayName("Should return empty list when no cities")
+    @DisplayName("1. Deve retornar lista vazia quando não houver cities")
     void shouldReturnEmptyListWhenNoCities() throws Exception {
         mockMvc.perform(get("/api/city")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -58,7 +58,7 @@ public class CityIntegrationTest {
 
     @Test
     @WithMockUser
-    @DisplayName("Should return list with registered cities")
+    @DisplayName("2. Deve retornar lista com cities cadastradas e dados corretos")
     void shouldReturnListWithRegisteredCities() throws Exception {
         City city = new City();
         city.setName("Porto Alegre");
@@ -69,6 +69,14 @@ public class CityIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is("Porto Alegre")));
+                .andExpect(jsonPath("$[0].name", is("Porto Alegre")))
+                .andExpect(jsonPath("$[0].state", is("RS"))); // Verificação completa
     }
+
+    @Test
+    @DisplayName("3. Deve retornar erro 401/403 quando o usuário não estiver autenticado (Teste de Erro)")
+    void shouldReturnUnauthorizedWhenNoMockUser() throws Exception {
+        mockMvc.perform(get("/api/city")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
 }
