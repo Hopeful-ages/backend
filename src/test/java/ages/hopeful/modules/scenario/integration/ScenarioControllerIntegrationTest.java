@@ -370,7 +370,7 @@ public class ScenarioControllerIntegrationTest {
         void shouldPublishAndSearch() throws Exception {
             Scenario testScenario = createPersistedTestScenario();
             
-            mockMvc.perform(patch("/api/scenarios/" + testScenario.getId() + "/publish"))
+            mockMvc.perform(patch("/api/scenarios/" + testScenario.getId() + "/changes-publish-status"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.published").value(true));
 
