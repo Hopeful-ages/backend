@@ -28,10 +28,6 @@ public class CobradeService {
             .stream()
             .map(CobradeResponseDTO::fromModel)
             .toList();
-
-        // if (cobradeResponseDTO.isEmpty()) {
-        //     throw new NotFoundException("Cobrade not found");
-        // }
     }
 
     @Transactional(readOnly=true)
