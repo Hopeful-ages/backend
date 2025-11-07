@@ -57,15 +57,12 @@ public class CobradeServiceTest {
         assertEquals("1.2.3.4", result.get(0).getCode());
     }
     @Test
-    void shouldThrowNotFoundExceptionWhenNoCobrades() {
+    void shouldReturnEmptyListWhenNoCobrades() {
         when(cobradeRepository.findAll()).thenReturn(List.of());
 
-        NotFoundException exception = assertThrows(
-            NotFoundException.class,
-            () -> cobradeService.getAllCobrades()
-        );
-
-        assertEquals("Cobrade not found", exception.getMessage());
+        List<CobradeResponseDTO> result = cobradeService.getAllCobrades();
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
     
 
