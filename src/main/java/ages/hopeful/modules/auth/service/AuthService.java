@@ -1,6 +1,5 @@
 package ages.hopeful.modules.auth.service;
 
-import ages.hopeful.common.service.EmailService;
 import ages.hopeful.config.security.jwt.JwtUtil;
 import ages.hopeful.modules.auth.dto.ForgotPasswordRequest;
 import ages.hopeful.modules.auth.dto.LoginRequest;
@@ -69,11 +68,13 @@ public class AuthService {
     }
 
     public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
-        User user = userRepository.findByEmail(forgotPasswordRequest.getEmail()).orElse(null);
-
-        if (user == null) {
-            return;
+        if (forgotPasswordRequest.getEmail() == null || forgotPasswordRequest.getEmail().isEmpty()) {
+            throw new IllegalArgumentException("Digite seu e-mail.");
         }
+
+        User user = userRepository.findByEmail(forgotPasswordRequest.getEmail()).orElseThrow(
+            () -> new IllegalArgumentException("E-mail não cadastrado.")
+        );
 
         String token = UUID.randomUUID().toString();
         PasswordResetToken passwordResetToken = new PasswordResetToken();
@@ -87,10 +88,19 @@ public class AuthService {
     }
 
     public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        if (resetPasswordRequest.getNewPassword() == null || resetPasswordRequest.getNewPassword().isEmpty()) {
+            throw new IllegalArgumentException("A nova senha é obrigatória.");
+        }
+
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(resetPasswordRequest.getToken()).orElse(null);
 
         if (passwordResetToken == null || passwordResetToken.isUsed() || passwordResetToken.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new BadCredentialsException("Link de recuperação inválido ou expirado");
+        }
+
+        // Validação da força da senha (exemplo simples)
+        if (resetPasswordRequest.getNewPassword().length() < 8) {
+            throw new IllegalArgumentException("A senha deve ter pelo menos 8 caracteres.");
         }
 
         User user = passwordResetToken.getUser();
