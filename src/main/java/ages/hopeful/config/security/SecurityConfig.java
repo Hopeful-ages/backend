@@ -40,6 +40,7 @@ public class SecurityConfig {
         "/webjars/**",
         "/api/auth/login",
         "/api/auth/forgot-password",
+        "/api/auth/reset-password",
         "/api/scenarios/search/by-city-cobrade",
         "/api/scenarios/pdf/*/scenarios-by-subgroup"
     };
