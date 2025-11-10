@@ -1,98 +1,118 @@
-/*package ages.hopeful.modules.auth.integration;
+package ages.hopeful.modules.auth.integration;
 
-import ages.hopeful.config.security.jwt.JwtUtil;
-import ages.hopeful.modules.auth.dto.LoginRequest;
-import ages.hopeful.modules.auth.dto.TokenResponse;
+import ages.hopeful.factories.CityFactory;
+import ages.hopeful.factories.DepartmentFactory;
+import ages.hopeful.factories.RoleFactory;
+import ages.hopeful.factories.UserFactory;
+import ages.hopeful.modules.city.repository.CityRepository;
+import ages.hopeful.modules.departments.repository.DepartmentRepository;
+import ages.hopeful.modules.user.model.User;
+import ages.hopeful.modules.user.repository.RoleRepository;
+import ages.hopeful.modules.user.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
-
-import java.util.List;
-import java.util.UUID;
+import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+import ages.hopeful.modules.auth.dto.LoginRequest;
+import ages.hopeful.modules.auth.dto.TokenResponse;
+import ages.hopeful.config.security.jwt.JwtUtil;
+
+import java.util.UUID;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 @DisplayName("Integration tests for /api/auth/login with JWT")
 class AuthControllerIntegrationTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private JwtUtil jwtUtil;
 
     private final String LOGIN_URL = "/api/auth/login";
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    private UUID cityId;
+    private UUID departmentId;
+    private UUID roleId;
+    private User testUser;
+
+    @BeforeEach
+    void setup() {
+        var role = roleRepository.save(RoleFactory.createUserRole());
+        roleId = role.getId();
+
+        var city = cityRepository.save(CityFactory.createFlorianopolis());
+        cityId = city.getId();
+
+        var department = departmentRepository.save(DepartmentFactory.createDefesaCivil());
+        departmentId = department.getId();
+
+        testUser = UserFactory.createUser("test.user@example.com", "Test User", "ADMIN");
+        testUser.setCity(city);
+        testUser.setPassword(passwordEncoder.encode("password")); // ✅ encode it here
+        testUser.setDepartment(department);
+        testUser.setRole(role);
+        testUser = userRepository.save(testUser);
+    }
 
     @Test
-    @DisplayName("Must authenticate existing user and return valid JWT with user information")
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Should authenticate existing user and return valid JWT with user information")
     void shouldAuthenticateAndReturnValidJWT() throws Exception {
-        LoginRequest request = new LoginRequest("abner@naoinfomado.com", "Senha");
+        LoginRequest request = new LoginRequest("test.user@example.com", "password");
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<LoginRequest> entity = new HttpEntity<>(request, headers);
+        // perform login
+        String responseBody = mockMvc.perform(post(LOGIN_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-        ResponseEntity<TokenResponse> response =
-                restTemplate.postForEntity(LOGIN_URL, entity, TokenResponse.class);
+        TokenResponse tokenResponse = objectMapper.readValue(responseBody, TokenResponse.class);
+        String token = tokenResponse.getToken();
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        String token = response.getBody().getToken();
-        assertThat(token).isNotBlank();
-
+        // Validate JWT
         jwtUtil.validateToken(token);
 
         String username = jwtUtil.getUsernameFromToken(token);
-        List<String> roles = jwtUtil.getRolesFromToken(token);
-        UUID userId = jwtUtil.getUserIdFromToken(token);
-        UUID cityId = jwtUtil.getCityFromToken(token);
-
-        assertThat(username).isEqualTo("abner@naoinfomado.com");
-        assertThat(roles).isNotEmpty();
-        assertThat(userId).isNotNull();
-        assertThat(cityId).isNotNull();
-    }
-
-
-    @Test
-    @DisplayName("Must return 400 when username is missing")
-    void shouldReturn400WhenUsernameMissing() {
-        LoginRequest request = new LoginRequest("", "password123");
-        HttpEntity<LoginRequest> entity = new HttpEntity<>(request);
-
-        ResponseEntity<String> response =
-                restTemplate.postForEntity(LOGIN_URL, entity, String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).contains("Usuário e senha são obrigatórios.");
-    }
-
-    @Test
-    @DisplayName("Must return 401 when username does not exist")
-    void shouldReturn401WhenUsernameNotExist() {
-        LoginRequest request = new LoginRequest("nonexistent@example.com", "password123");
-        HttpEntity<LoginRequest> entity = new HttpEntity<>(request);
-
-        ResponseEntity<String> response =
-                restTemplate.postForEntity(LOGIN_URL, entity, String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    }
-
-    @Test
-    @DisplayName("Must return 401 when password is incorrect")
-    void shouldReturn401WhenPasswordIncorrect() {
-        LoginRequest request = new LoginRequest("existingUser@example.com", "wrongpassword");
-        HttpEntity<LoginRequest> entity = new HttpEntity<>(request);
-
-        ResponseEntity<String> response =
-                restTemplate.postForEntity(LOGIN_URL, entity, String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(username).isEqualTo("test.user@example.com");
+        assertThat(jwtUtil.getRolesFromToken(token)).isNotEmpty();
+        assertThat(jwtUtil.getUserIdFromToken(token)).isNotNull();
+        assertThat(jwtUtil.getCityFromToken(token)).isNotNull();
     }
 }
-*/
