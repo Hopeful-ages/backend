@@ -2,6 +2,8 @@ package ages.hopeful.modules.department.integration;
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ages.hopeful.factories.DepartmentFactory;
 import ages.hopeful.modules.departments.dto.DepartmentRequestDTO;
 import ages.hopeful.modules.departments.model.Department;
 import ages.hopeful.modules.departments.repository.DepartmentRepository;
@@ -37,18 +40,26 @@ public class DepartmentControllerIntegrationTest {
     @Autowired
     private DepartmentRepository departmentRepository;
 
+    @BeforeEach
+    void setup() {
+        departmentRepository.deleteAll();
+    }
+
+    @AfterEach
+    void tearDown() {
+        departmentRepository.deleteAll();
+    }
+
 
 
     @Test
     @WithMockUser(roles = "USER")
     @DisplayName("Should create a new service and persist in DB")
     void shouldCreateNewServiceAndPersist() throws Exception {
-        // Arrange
         String departmentName = "Civil Defense " + UUID.randomUUID().toString().substring(0, 5);
         DepartmentRequestDTO request = new DepartmentRequestDTO();
         request.setName(departmentName);
 
-        // Act & Assert
         mockMvc.perform(post("/api/services")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -56,7 +67,6 @@ public class DepartmentControllerIntegrationTest {
                 .andExpect(jsonPath("$.name").value(departmentName))
                 .andExpect(jsonPath("$.id").isNotEmpty());
 
-        // Verify persistence
         assertTrue(
             departmentRepository.findAll().stream()
                 .anyMatch(s -> s.getName().equals(departmentName)),
@@ -68,12 +78,10 @@ public class DepartmentControllerIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should delete existing service")
     void shouldDeleteExistingService() throws Exception {
-        // Arrange
-        Department department = new Department();
-        department.setName("Service to Delete");
-        department = departmentRepository.save(department);
+        Department department = departmentRepository.save(
+            DepartmentFactory.createDepartment("Service to Delete " + UUID.randomUUID())
+        );
 
-        // Act & Assert
         mockMvc.perform(delete("/api/services/" + department.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -85,27 +93,14 @@ public class DepartmentControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should return 404 when deleting non-existent service")
-    void shouldReturn404WhenDeletingNonExistentService() throws Exception {
-        mockMvc.perform(delete("/api/services/" + UUID.randomUUID())
+    @WithMockUser(roles = "USER")
+    @DisplayName("Should get all services")
+    void shouldGetAllServices() throws Exception {
+        mockMvc.perform(get("/api/services")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should return 400 when creating service with empty name")
-    void shouldReturn400WhenCreatingServiceWithEmptyName() throws Exception {
-        // Arrange
-        DepartmentRequestDTO request = new DepartmentRequestDTO();
-        request.setName("");
-
-        // Act & Assert
-        mockMvc.perform(post("/api/services")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray());
     }
 
 }

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -49,9 +50,10 @@ public class ScenarioController {
     @PostMapping
     @Operation(summary = "Create a Scenario",
             description = "Creates a new scenario including tasks and parameters")
-    @ApiResponse(responseCode = "200", description = "Scenario created successfully")
+    @ApiResponse(responseCode = "201", description = "Scenario created successfully")
     public ResponseEntity<ScenarioResponseDTO> createScenario(@RequestBody ScenarioRequestDTO request) {
-        return ResponseEntity.ok(scenarioService.createScenario(request));
+        ScenarioResponseDTO created = scenarioService.createScenario(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
@@ -111,12 +113,12 @@ public class ScenarioController {
         return pdfGenerationService.generatePdfFromScenarios(scenarios);
     }
 
-    @PatchMapping("/{id}/publish")
-    @Operation(summary = "Publish a Scenario",
-            description = "Publishes a scenario by its ID")
+    @PatchMapping("/{id}/changes-publish-status")
+    @Operation(summary = "Change publish status a Scenario",
+            description = "Change publish status a Scenario")
     @ApiResponse(responseCode = "200", description = "Scenario published successfully")
-    public ResponseEntity<ScenarioResponseDTO> publishScenario(@PathVariable UUID id) {
-        return ResponseEntity.ok(scenarioService.publishScenario(id));
+    public ResponseEntity<ScenarioResponseDTO> changePublishStatus(@PathVariable UUID id) {
+        return ResponseEntity.ok(scenarioService.changePublishStatus(id));
     }
     
 }

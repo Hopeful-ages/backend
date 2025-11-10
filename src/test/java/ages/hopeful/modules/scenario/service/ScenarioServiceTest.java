@@ -129,16 +129,13 @@ class ScenarioServiceTest {
     @Test
     @DisplayName("Should create a scenario successfully when data is valid")
     void shouldCreateScenarioSuccessfullyWhenDataIsValid() {
-        // Mock para cityService e cobradeService
         when(cityService.getCityById(cityId)).thenReturn(city);
         when(cobradeService.getCobradeEntityById(cobradeId)).thenReturn(cobrade);
         when(departmentService.getDepartmentById(serviceId)).thenReturn(department);
 
-        // Mock para verificar se o cenário não existe
         when(scenarioRepository.findByCobradeIdAndCityId(cobradeId, cityId))
                 .thenReturn(Optional.empty());
         
-        // Mock para salvar o cenário
         when(scenarioRepository.save(any(Scenario.class))).thenReturn(scenario);
 
         ScenarioResponseDTO response = scenarioService.createScenario(scenarioRequestDTO);

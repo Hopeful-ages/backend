@@ -41,4 +41,7 @@ public class UserUpdateDTO {
 
     @Nullable
     public UUID cityId;
+
+    @Nullable
+    public UUID roleId;
 }

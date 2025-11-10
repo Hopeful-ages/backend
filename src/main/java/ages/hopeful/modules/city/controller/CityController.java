@@ -26,8 +26,8 @@ public class CityController {
 
     
     @GetMapping
-    @Operation(summary = "Get All Services", 
-               description = "Returns a list of all services available in the system")
+    @Operation(summary = "Get All Cities", 
+               description = "Returns a list of all cities available in the system")
     @ApiResponse(responseCode = "200", description = "Cities retrieved successfully")
     public ResponseEntity<List<CityResponseDTO>> getAllCities() {
         List<CityResponseDTO> cities = cityService.getAllCities();
