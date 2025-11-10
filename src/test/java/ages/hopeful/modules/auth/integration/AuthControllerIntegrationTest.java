@@ -72,15 +72,15 @@ class AuthControllerIntegrationTest {
         var role = roleRepository.save(RoleFactory.createUserRole());
         roleId = role.getId();
 
-        var city = cityRepository.save(CityFactory.createFlorianopolis());
+        var city = cityRepository.save(CityFactory.createCity());
         cityId = city.getId();
 
         var department = departmentRepository.save(DepartmentFactory.createDefesaCivil());
         departmentId = department.getId();
 
-        testUser = UserFactory.createUser("test.user@example.com", "Test User", "ADMIN");
+        testUser = UserFactory.createUser("test.admin@example.com", "Test Admin", "ADMIN");
         testUser.setCity(city);
-        testUser.setPassword(passwordEncoder.encode("password")); // ✅ encode it here
+        testUser.setPassword(passwordEncoder.encode("password"));
         testUser.setDepartment(department);
         testUser.setRole(role);
         testUser = userRepository.save(testUser);
@@ -90,7 +90,7 @@ class AuthControllerIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("Should authenticate existing user and return valid JWT with user information")
     void shouldAuthenticateAndReturnValidJWT() throws Exception {
-        LoginRequest request = new LoginRequest("test.user@example.com", "password");
+        LoginRequest request = new LoginRequest("test.admin@example.com", "password");
 
         // perform login
         String responseBody = mockMvc.perform(post(LOGIN_URL)
@@ -106,11 +106,10 @@ class AuthControllerIntegrationTest {
         TokenResponse tokenResponse = objectMapper.readValue(responseBody, TokenResponse.class);
         String token = tokenResponse.getToken();
 
-        // Validate JWT
         jwtUtil.validateToken(token);
 
         String username = jwtUtil.getUsernameFromToken(token);
-        assertThat(username).isEqualTo("test.user@example.com");
+        assertThat(username).isEqualTo("test.admin@example.com");
         assertThat(jwtUtil.getRolesFromToken(token)).isNotEmpty();
         assertThat(jwtUtil.getUserIdFromToken(token)).isNotNull();
         assertThat(jwtUtil.getCityFromToken(token)).isNotNull();
