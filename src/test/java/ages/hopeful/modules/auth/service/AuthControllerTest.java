@@ -1,102 +1,234 @@
 package ages.hopeful.modules.auth.service;
 
-import ages.hopeful.modules.auth.controller.AuthController;
+import ages.hopeful.config.security.jwt.JwtUtil;
 import ages.hopeful.modules.auth.dto.LoginRequest;
 import ages.hopeful.modules.auth.dto.TokenResponse;
+import ages.hopeful.modules.user.model.Role;
+import ages.hopeful.modules.user.model.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
-import java.util.Objects;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Tests for Authorization Controller")
-class AuthControllerTest {
+@DisplayName("Tests for AuthService")
+class AuthServiceTest {
 
     @Mock
-    private AuthService authService;
+    private AuthenticationManager authenticationManager;
+
+    @Mock
+    private JwtUtil jwtUtil;
+
+    @Mock
+    private Authentication authentication;
 
     @InjectMocks
-    private AuthController authController;
+    private AuthService authService;
 
-    @Test
-    @DisplayName("Must return 200 with token and user information when credentials are valid")
-    void shouldReturn200WithTokenAndUserInfoWhenCredentialsValid() {
+    private LoginRequest loginRequest;
+    private User user;
+    private UUID userId;
 
-        LoginRequest request = new LoginRequest("john", "password123");
-        TokenResponse tokenResponse = new TokenResponse("fake-jwt-token");
-        when(authService.login(any(LoginRequest.class))).thenReturn(tokenResponse);
+    @BeforeEach
+    void setUp() {
+        userId = UUID.randomUUID();
+        
+        loginRequest = new LoginRequest("john@example.com", "password123");
 
-        ResponseEntity<?> response = authController.login(request);
+        Role role = new Role();
+        role.setId(UUID.randomUUID());
+        role.setName("USER");
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(((TokenResponse) Objects.requireNonNull(response.getBody())).getToken()).isEqualTo("fake-jwt-token");
-        verify(authService, times(1)).login(any(LoginRequest.class));
-    }
-
-
-    @Test
-    @DisplayName("Must return 400 when username is blank")
-    void shouldReturn400WhenUsernameEmpty() {
-        LoginRequest request = new LoginRequest("", "password123");
-
-        ResponseEntity<?> response = authController.login(request);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).isEqualTo("Usuário e senha são obrigatórios.");
-        verify(authService, never()).login(any());
+        user = new User();
+        user.setId(userId);
+        user.setEmail("john@example.com");
+        user.setName("John Doe");
+        user.setRole(role);
     }
 
     @Test
-    @DisplayName("Must return 400 when password is blank")
-    void shouldReturn400WhenPasswordEmpty() {
-        LoginRequest request = new LoginRequest("john", "");
+    @DisplayName("Should authenticate successfully and return token when credentials are valid")
+    void shouldAuthenticateSuccessfullyAndReturnToken() {
+        // Arrange
+        String expectedToken = "fake-jwt-token-123";
+        
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(user);
+        when(jwtUtil.generateToken(anyString(), anyList(), any(UUID.class)))
+                .thenReturn(expectedToken);
 
-        ResponseEntity<?> response = authController.login(request);
+        // Act
+        TokenResponse response = authService.login(loginRequest);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).isEqualTo("Usuário e senha são obrigatórios.");
-        verify(authService, never()).login(any());
+        // Assert
+        assertThat(response).isNotNull();
+        assertThat(response.getToken()).isEqualTo(expectedToken);
+
+        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(authentication, times(1)).getPrincipal();
+        verify(jwtUtil, times(1)).generateToken(
+                eq("john@example.com"),
+                anyList(),
+                eq(userId)
+        );
     }
 
     @Test
-    @DisplayName("Must return 400 when both are blank")
-    void shouldReturn400WhenBothEmpty() {
-        LoginRequest request = new LoginRequest("", "");
+    @DisplayName("Should throw BadCredentialsException when authentication fails")
+    void shouldThrowBadCredentialsExceptionWhenAuthenticationFails() {
+        // Arrange
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new BadCredentialsException("Invalid credentials"));
 
-        ResponseEntity<?> response = authController.login(request);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).isEqualTo("Usuário e senha são obrigatórios.");
-        verify(authService, never()).login(any());
-    }
-
-    @Test
-    @DisplayName("Must return 401 when credentials are invalid")
-    void shouldReturn401WhenInvalidCredentials() {
-
-        LoginRequest request = new LoginRequest("john", "wrongpass");
-        when(authService.login(any(LoginRequest.class)))
-                .thenThrow(new BadCredentialsException("username or password Invalid"));
-
-        BadCredentialsException exception =
-                org.junit.jupiter.api.Assertions.assertThrows(
-                        BadCredentialsException.class,
-                        () -> authController.login(request)
-                );
+        // Act & Assert
+        BadCredentialsException exception = assertThrows(
+                BadCredentialsException.class,
+                () -> authService.login(loginRequest)
+        );
 
         assertThat(exception.getMessage()).isEqualTo("username or password Invalid");
-        verify(authService, times(1)).login(any(LoginRequest.class));
+
+        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtUtil, never()).generateToken(anyString(), anyList(), any(UUID.class));
     }
 
+    @Test
+    @DisplayName("Should extract user details correctly from authentication")
+    void shouldExtractUserDetailsCorrectlyFromAuthentication() {
+        // Arrange
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(user);
+        when(jwtUtil.generateToken(anyString(), anyList(), any(UUID.class)))
+                .thenReturn("token");
+
+        // Act
+        authService.login(loginRequest);
+
+        // Assert
+        verify(authentication, times(1)).getPrincipal();
+        verify(jwtUtil, times(1)).generateToken(
+                eq(user.getUsername()),
+                anyList(),
+                eq(user.getId())
+        );
+    }
+
+    @Test
+    @DisplayName("Should add ROLE_ prefix to roles that don't have it")
+    void shouldAddRolePrefixToRolesThatDontHaveIt() {
+        // Arrange
+        Role roleWithoutPrefix = new Role();
+        roleWithoutPrefix.setName("ADMIN");
+        user.setRole(roleWithoutPrefix);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(user);
+        when(jwtUtil.generateToken(anyString(), anyList(), any(UUID.class)))
+                .thenReturn("token");
+
+        // Act
+        authService.login(loginRequest);
+
+        // Assert
+        verify(jwtUtil, times(1)).generateToken(
+                anyString(),
+                argThat(roles -> roles.stream().allMatch(role -> role.startsWith("ROLE_"))),
+                any(UUID.class)
+        );
+    }
+
+    @Test
+    @DisplayName("Should not duplicate ROLE_ prefix if already present")
+    void shouldNotDuplicateRolePrefixIfAlreadyPresent() {
+        // Arrange
+        Role roleWithPrefix = new Role();
+        roleWithPrefix.setName("ROLE_USER");
+        user.setRole(roleWithPrefix);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(user);
+        when(jwtUtil.generateToken(anyString(), anyList(), any(UUID.class)))
+                .thenReturn("token");
+
+        // Act
+        authService.login(loginRequest);
+
+        // Assert
+        verify(jwtUtil, times(1)).generateToken(
+                anyString(),
+                argThat(roles -> roles.stream().noneMatch(role -> role.equals("ROLE_ROLE_USER"))),
+                any(UUID.class)
+        );
+    }
+
+    @Test
+    @DisplayName("Should pass correct username and password to authentication manager")
+    void shouldPassCorrectUsernameAndPasswordToAuthenticationManager() {
+        // Arrange
+        LoginRequest customRequest = new LoginRequest("custom@example.com", "customPass456");
+        
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(user);
+        when(jwtUtil.generateToken(anyString(), anyList(), any(UUID.class)))
+                .thenReturn("token");
+
+        // Act
+        authService.login(customRequest);
+
+        // Assert
+        verify(authenticationManager, times(1)).authenticate(
+                argThat(auth -> 
+                    auth instanceof UsernamePasswordAuthenticationToken &&
+                    auth.getPrincipal().equals("custom@example.com") &&
+                    auth.getCredentials().equals("customPass456")
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("Should generate token with user ID from authenticated user")
+    void shouldGenerateTokenWithUserIdFromAuthenticatedUser() {
+        // Arrange
+        UUID specificUserId = UUID.randomUUID();
+        user.setId(specificUserId);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(user);
+        when(jwtUtil.generateToken(anyString(), anyList(), any(UUID.class)))
+                .thenReturn("token");
+
+        // Act
+        authService.login(loginRequest);
+
+        // Assert
+        verify(jwtUtil, times(1)).generateToken(
+                anyString(),
+                anyList(),
+                eq(specificUserId)
+        );
+    }
 }
