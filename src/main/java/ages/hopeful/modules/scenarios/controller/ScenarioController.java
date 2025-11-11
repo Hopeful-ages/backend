@@ -113,12 +113,12 @@ public class ScenarioController {
         return pdfGenerationService.generatePdfFromScenarios(scenarios);
     }
 
-    @PatchMapping("/{id}/publish")
-    @Operation(summary = "Publish a Scenario",
-            description = "Publishes a scenario by its ID")
+    @PatchMapping("/{id}/changes-publish-status")
+    @Operation(summary = "Change publish status a Scenario",
+            description = "Change publish status a Scenario")
     @ApiResponse(responseCode = "200", description = "Scenario published successfully")
-    public ResponseEntity<ScenarioResponseDTO> publishScenario(@PathVariable UUID id) {
-        return ResponseEntity.ok(scenarioService.publishScenario(id));
+    public ResponseEntity<ScenarioResponseDTO> changePublishStatus(@PathVariable UUID id) {
+        return ResponseEntity.ok(scenarioService.changePublishStatus(id));
     }
     
 }
