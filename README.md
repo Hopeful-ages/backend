@@ -16,6 +16,17 @@ Para executar este projeto em sua máquina, é necessário instalar as seguintes
 Para saber como baixar uma dessas tecnologias, acesse a [wiki do projeto](https://tools.ages.pucrs.br/gestao-de-planos-de-contingencia-em-desastres/hopeful-wiki/-/wikis/home) na parte de downloads.
 
 
+## 🧱 Criação da rede Docker (obrigatória antes de executar o Compose)
+
+Antes de iniciar os containers, é necessário garantir que a rede Docker **`hopeful-network`** exista.  
+Essa rede é utilizada para conectar os serviços da aplicação (Spring Boot, PostgreSQL e SonarQube) dentro do mesmo ambiente de execução.
+
+Crie a rede executando o comando abaixo **uma única vez**:
+
+```bash
+docker network create hopeful-network
+
+
 Recomendação de ferramentas para instalar: 
 ## Executando o projeto
 
