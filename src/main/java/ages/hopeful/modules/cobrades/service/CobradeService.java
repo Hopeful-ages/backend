@@ -1,6 +1,5 @@
 package ages.hopeful.modules.cobrades.service;
 
-import ages.hopeful.common.exception.NotFoundException;
 import ages.hopeful.modules.cobrades.dto.CobradeResponseDTO;
 import ages.hopeful.modules.cobrades.model.Cobrade;
 import ages.hopeful.modules.cobrades.repository.CobradeRepository;
@@ -23,16 +22,11 @@ public class CobradeService {
 
     @Transactional(readOnly=true)
     public List<CobradeResponseDTO> getAllCobrades() {
-        List<CobradeResponseDTO> cobradeResponseDTO = cobradeRepository
+        return cobradeRepository
             .findAll()
             .stream()
             .map(CobradeResponseDTO::fromModel)
             .toList();
-
-        if (cobradeResponseDTO.isEmpty()) {
-            throw new NotFoundException("Cobrade not found");
-        }
-        return cobradeResponseDTO;
     }
 
     @Transactional(readOnly=true)
@@ -40,7 +34,7 @@ public class CobradeService {
 
 
         if (type == null && subgroup == null && subtype == null && code == null) {
-            throw new NotFoundException("No filters provided");
+            return this.getAllCobrades();
         }
 
         Specification<Cobrade> spec = null;
@@ -70,9 +64,6 @@ public class CobradeService {
         }
 
         List<Cobrade> cobrades = cobradeRepository.findAll(spec);
-        if (cobrades.isEmpty()) {
-            throw new NotFoundException("No cobrades found with the given filters");
-        }
 
         return cobrades.stream()
                 .map(CobradeResponseDTO::fromModel)
