@@ -59,11 +59,6 @@ public class UserControllerIntegrationTest {
     @Autowired
     private CityRepository cityRepository;
 
-    @BeforeEach
-    void setUp() {
-        roleRepository.deleteAll();
-    }
-
     @Autowired
     private DepartmentRepository departmentRepository;
 
@@ -74,6 +69,13 @@ public class UserControllerIntegrationTest {
 
     @BeforeEach
     void setup() {
+        // Limpa todas as entidades antes de criar novas
+        userRepository.deleteAll();
+        departmentRepository.deleteAll();
+        cityRepository.deleteAll();
+        roleRepository.deleteAll();
+
+        // Cria as entidades necessárias
         var role = roleRepository.save(RoleFactory.createUserRole());
         roleId = role.getId();
 
@@ -92,9 +94,10 @@ public class UserControllerIntegrationTest {
 
     @AfterEach
     void tearDown() {
+        // Deleta na ordem correta respeitando as dependências
         userRepository.deleteAll();
-        cityRepository.deleteAll();
         departmentRepository.deleteAll();
+        cityRepository.deleteAll();
         roleRepository.deleteAll();
     }
 
