@@ -20,7 +20,6 @@ public class CobradeService {
 
     private final CobradeRepository cobradeRepository;
 
-    @Transactional(readOnly=true)
     public List<CobradeResponseDTO> getAllCobrades() {
         return cobradeRepository
             .findAll()
