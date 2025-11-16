@@ -6,7 +6,11 @@
         <style th:inline="css">
             @page {
                 size: A4;
-                margin: 20mm 15mm 20mm 15mm;
+                margin: 20mm 15mm 50mm 15mm;
+                @bottom-center {
+                    content: element(footer);
+                }
+
             }
 
             body {
@@ -18,17 +22,10 @@
                 padding: 0;
             }
             .footer {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                height: auto;
+                position: running(footer);
                 font-family: Arial, sans-serif;
                 font-size: 12px;
                 text-align: justify;
-                padding: 10px;
-                border: 1.5px solid #000;
-                box-sizing: border-box;
             }
             .footer .footer-title {
                 font-size: 18px;
@@ -37,6 +34,12 @@
                 margin: 0 0 5px 0;
                 display: block;
             }
+            .footer-inner {
+                border: 1.5px solid #000;
+                background: #fff;
+                box-sizing: border-box;
+            }
+
 
             .watermark {
                 position: fixed;
@@ -53,7 +56,6 @@
                 z-index: 0;
                 border: 1.5px solid #000;
                 box-sizing: border-box;
-                padding-bottom: 80px;
             }
 
             .content-section {
@@ -171,7 +173,7 @@
                 position: relative;
                 padding-left: 25px;
             }
-            
+
             .task-list li:last-child {
                 margin-bottom: 0px;
             }
@@ -204,15 +206,23 @@
                 padding: 0;
             }
 
-            .section-header,
-            .task-section,
-            .parameters-section {
-                page-break-inside: avoid;
+            .content-section {
+                page-break-inside: auto; /* Permite quebrar se maior que página */
             }
 
-            .document-container {
-                page-break-after: always;
+            .task-section {
+                page-break-inside: auto; /* Permite quebrar se maior que página */
             }
+
+            .task-list li {
+                page-break-inside: avoid; /* Cada item fica junto, mas se for maior que página, quebra */
+            }
+
+            .section-header,
+            .parameters-section {
+                page-break-inside: avoid; /* Cabeçalhos e parâmetros pequenos não quebram */
+            }
+
 
         </style>
     </head>
@@ -223,6 +233,16 @@
             alt="watermark"
             class="watermark"
         />
+        <div class="footer">
+            <div class="footer-inner">
+                <span class="footer-title">Hopeful</span>
+                <p>
+                    TECNOPUC | Prédio 96A | Sala 215 | Av.Ipiranga, 6681-Partenon, Porto Alegre-RS, 90619-900
+                    <br></br>
+                    &#169; Copyright 2025 Hopeful.
+                </p>
+            </div>
+        </div>
 
         <div class="document-container">
             <div class="header">
@@ -288,14 +308,6 @@
                         <li th:each="item : ${apos}" th:text="${item}"></li>
                     </ul>
                 </div>
-            </div>
-            <div class="footer">
-                <span class="footer-title">Hopeful</span>
-                <p>
-                    TECNOPUC | Prédio 96A | Sala 215 | Av.Ipiranga, 6681-Partenon, Porto Alegre-RS, 90619-900
-                    <br></br>
-                    &#169; Copyright 2025 Hopeful.
-                </p>
             </div>
 
         </div>
