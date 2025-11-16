@@ -36,7 +36,6 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional
     public UserResponseDTO getUserById(UUID id) {
         User user = userRepository
                 .findById(id)

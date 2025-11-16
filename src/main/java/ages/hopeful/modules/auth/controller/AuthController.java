@@ -6,7 +6,6 @@ import ages.hopeful.modules.auth.dto.ResetPasswordRequest;
 import ages.hopeful.modules.auth.dto.TokenResponse;
 import ages.hopeful.modules.auth.service.AuthService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,13 +38,7 @@ public class AuthController {
         }
 
         TokenResponse tokenResponse = authService.login(loginRequest);
-
-        if (tokenResponse != null) {
-            return ResponseEntity.ok(tokenResponse);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid Credentials");
-        }
+        return ResponseEntity.ok(tokenResponse);
     }
 
     @PostMapping("/forgot-password")

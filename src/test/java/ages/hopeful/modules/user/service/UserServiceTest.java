@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 
 import ages.hopeful.common.exception.ConflictException;
 import ages.hopeful.common.exception.NotFoundException;
+import ages.hopeful.config.security.jwt.JwtUtil;
 import ages.hopeful.modules.city.model.City;
 import ages.hopeful.modules.city.repository.CityRepository;
 import ages.hopeful.modules.departments.model.Department;
@@ -19,6 +20,7 @@ import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.RoleRepository;
 import ages.hopeful.modules.user.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +31,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,8 +55,12 @@ public class UserServiceTest {
 
     @Mock
     private CityRepository cityRepository;
+    
     @Mock
     private PasswordEncoder passwordEncoder;
+    
+    @Mock
+    private JwtUtil jwtUtil;
 
 
     private UserRequestDTO userRequestDTO;
@@ -375,6 +382,250 @@ public class UserServiceTest {
         userRequestDTO.setCpf("123.456.789-00");
         assertThrows(IllegalArgumentException.class, () -> userService.createUser(userRequestDTO));
         verify(userRepository, never()).save(any(User.class));
+    }
+
+    // ========== TESTES PARA IDs NULOS ==========
+    
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when departmentId is null")
+    void shouldThrowWhenDepartmentIdIsNull() {
+        userRequestDTO.setDepartmentId(null);
+        
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> userService.createUser(userRequestDTO)
+        );
+        
+        assertEquals("Department ID must not be null", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+    
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when cityId is null")
+    void shouldThrowWhenCityIdIsNull() {
+        userRequestDTO.setCityId(null);
+        
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> userService.createUser(userRequestDTO)
+        );
+        
+        assertEquals("City ID must not be null", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+    
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when roleId is null")
+    void shouldThrowWhenRoleIdIsNull() {
+        userRequestDTO.setRoleId(null);
+        
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> userService.createUser(userRequestDTO)
+        );
+        
+        assertEquals("Role ID must not be null", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    // ========== TESTES PARA getAllUsers COM FILTRO DE STATUS ==========
+    
+    @Test
+    @DisplayName("Should return all users when status is null")
+    void shouldReturnAllUsersWhenStatusIsNull() {
+        List<User> users = List.of(user);
+        when(userRepository.findAllByOrderByNameAsc()).thenReturn(users);
+        when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
+        
+        List<UserResponseDTO> result = userService.getAllUsers(null);
+        
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(userRepository, times(1)).findAllByOrderByNameAsc();
+        verify(userRepository, never()).findByAccountStatusOrderByNameAsc(any());
+    }
+    
+    @Test
+    @DisplayName("Should return all users when status is blank")
+    void shouldReturnAllUsersWhenStatusIsBlank() {
+        List<User> users = List.of(user);
+        when(userRepository.findAllByOrderByNameAsc()).thenReturn(users);
+        when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
+        
+        List<UserResponseDTO> result = userService.getAllUsers("   ");
+        
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(userRepository, times(1)).findAllByOrderByNameAsc();
+    }
+    
+    @Test
+    @DisplayName("Should return active users when status is 'active'")
+    void shouldReturnActiveUsersWhenStatusIsActive() {
+        List<User> users = List.of(user);
+        when(userRepository.findByAccountStatusOrderByNameAsc(true)).thenReturn(users);
+        when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
+        
+        List<UserResponseDTO> result = userService.getAllUsers("active");
+        
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(userRepository, times(1)).findByAccountStatusOrderByNameAsc(true);
+    }
+    
+    @Test
+    @DisplayName("Should return inactive users when status is 'inactive'")
+    void shouldReturnInactiveUsersWhenStatusIsInactive() {
+        List<User> users = List.of(user);
+        when(userRepository.findByAccountStatusOrderByNameAsc(false)).thenReturn(users);
+        when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
+        
+        List<UserResponseDTO> result = userService.getAllUsers("inactive");
+        
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(userRepository, times(1)).findByAccountStatusOrderByNameAsc(false);
+    }
+    
+    @Test
+    @DisplayName("Should return empty list when status is invalid")
+    void shouldReturnEmptyListWhenStatusIsInvalid() {
+        List<UserResponseDTO> result = userService.getAllUsers("invalid");
+        
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(userRepository, never()).findAllByOrderByNameAsc();
+        verify(userRepository, never()).findByAccountStatusOrderByNameAsc(any());
+    }
+    
+    @Test
+    @DisplayName("Should handle status case insensitive")
+    void shouldHandleStatusCaseInsensitive() {
+        List<User> users = List.of(user);
+        when(userRepository.findByAccountStatusOrderByNameAsc(true)).thenReturn(users);
+        when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
+        
+        List<UserResponseDTO> result = userService.getAllUsers("ACTIVE");
+        
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(userRepository, times(1)).findByAccountStatusOrderByNameAsc(true);
+    }
+
+    // ========== TESTES PARA getUserByToken ==========
+    
+    @Test
+    @DisplayName("Should get user by token successfully")
+    void shouldGetUserByTokenSuccessfully() {
+        UUID userId = UUID.randomUUID();
+        user.setId(userId);
+        
+        when(jwtUtil.getUserIdFromToken(anyString())).thenReturn(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
+        
+        UserResponseDTO result = userService.getUserByToken("valid.jwt.token");
+        
+        assertNotNull(result);
+        assertEquals(userResponseDTO.id, result.id);
+        verify(jwtUtil, times(1)).getUserIdFromToken("valid.jwt.token");
+        verify(userRepository, times(1)).findById(userId);
+    }
+    
+    @Test
+    @DisplayName("Should throw NotFoundException when user not found by token")
+    void shouldThrowNotFoundExceptionWhenUserNotFoundByToken() {
+        UUID userId = UUID.randomUUID();
+        
+        when(jwtUtil.getUserIdFromToken(anyString())).thenReturn(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        
+        assertThrows(NotFoundException.class, () -> userService.getUserByToken("valid.jwt.token"));
+        
+        verify(jwtUtil, times(1)).getUserIdFromToken("valid.jwt.token");
+        verify(userRepository, times(1)).findById(userId);
+    }
+
+    // ========== TESTES PARA disableUser (ADMIN não pode ser desabilitado) ==========
+    
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when trying to disable ADMIN user")
+    void shouldThrowWhenTryingToDisableAdminUser() {
+        UUID userId = UUID.randomUUID();
+        user.setId(userId);
+        user.setEmail("admin@example.com");
+        
+        Role adminRole = new Role();
+        adminRole.setName("ADMIN");
+        user.setRole(adminRole);
+        
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("admin@example.com");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> userService.disableUser(userId, authentication)
+        );
+        
+        assertEquals("Conta Admin não pode ser desabilitada", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+    
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when current user tries to disable themselves")
+    void shouldThrowWhenUserTriesToDisableThemselves() {
+        UUID userId = UUID.randomUUID();
+        user.setId(userId);
+        user.setEmail("user@example.com");
+        
+        Role userRole = new Role();
+        userRole.setName("USER");
+        user.setRole(userRole);
+        
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("user@example.com");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> userService.disableUser(userId, authentication)
+        );
+        
+        assertEquals("Conta Admin não pode ser desabilitada", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+    
+    @Test
+    @DisplayName("Should disable user successfully when not admin and not self")
+    void shouldDisableUserSuccessfullyWhenNotAdminAndNotSelf() {
+        UUID userId = UUID.randomUUID();
+        user.setId(userId);
+        user.setEmail("user@example.com");
+        user.setAccountStatus(true);
+        
+        Role userRole = new Role();
+        userRole.setName("USER");
+        user.setRole(userRole);
+        
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("admin@example.com");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        
+        userService.disableUser(userId, authentication);
+        
+        verify(userRepository, times(1)).save(user);
+        assertFalse(user.getAccountStatus());
     }
 
   

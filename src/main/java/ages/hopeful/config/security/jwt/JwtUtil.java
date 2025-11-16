@@ -2,6 +2,7 @@ package ages.hopeful.config.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+
 import org.springframework.stereotype.Component;
 
 import java.security.KeyPair;
@@ -18,6 +19,7 @@ public class JwtUtil {
     private static final PrivateKey PRIVATE_KEY = keyPair.getPrivate();
     private static final PublicKey PUBLIC_KEY = keyPair.getPublic();
     private static final long EXPIRATION = 86400000;
+
 
     public String generateToken(String username, List<String> roles, UUID userId) {
         return Jwts.builder()
@@ -58,6 +60,17 @@ public class JwtUtil {
                 .getSubject();
         return UUID.fromString(id);
     }
+    public UUID getCityFromToken(String token) {
+        String cityId = Jwts.parserBuilder()
+                .setSigningKey(PUBLIC_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+
+        return UUID.fromString(cityId);
+    }
+
 
     public void validateToken(String token) throws Exception {
         try {
