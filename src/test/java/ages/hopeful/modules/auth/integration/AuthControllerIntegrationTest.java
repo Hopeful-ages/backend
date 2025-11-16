@@ -69,6 +69,12 @@ class AuthControllerIntegrationTest {
 
     @BeforeEach
     void setup() {
+        // Limpar dados anteriores
+        userRepository.deleteAll();
+        departmentRepository.deleteAll();
+        cityRepository.deleteAll();
+        roleRepository.deleteAll();
+        
         var role = roleRepository.save(RoleFactory.createUserRole());
         roleId = role.getId();
 
@@ -114,4 +120,26 @@ class AuthControllerIntegrationTest {
         assertThat(jwtUtil.getUserIdFromToken(token)).isNotNull();
         assertThat(jwtUtil.getCityFromToken(token)).isNotNull();
     }
+
+    @Test
+    @DisplayName("Should authenticate existing user and return valid JWT with user information")
+    void shouldReturnBadRequestForInvalidCredentials() throws Exception {
+        LoginRequest request = new LoginRequest(null,null);
+        mockMvc.perform(post(LOGIN_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+     @Test
+    @DisplayName("Should authenticate existing user and return valid JWT with user information")
+    void shouldReturnBadRequestForEmptyCredentials() throws Exception {
+        LoginRequest request = new LoginRequest("","");
+        mockMvc.perform(post(LOGIN_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+    
+    
 }

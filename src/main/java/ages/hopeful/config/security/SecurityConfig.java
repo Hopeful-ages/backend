@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,6 +40,8 @@ public class SecurityConfig {
         "/swagger-resources",
         "/webjars/**",
         "/api/auth/login",
+        "/api/auth/forgot-password",
+        "/api/auth/reset-password",
         "/api/scenarios/search/by-city-cobrade",
         "/api/scenarios/pdf/*/scenarios-by-subgroup"
     };
@@ -59,6 +62,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth ->
                 auth
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(AUTH_WHITELIST)
                     .permitAll()
                     .anyRequest()
@@ -75,7 +79,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:3000",
+            "http://hopeful.vps-kinghost.net:3000"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

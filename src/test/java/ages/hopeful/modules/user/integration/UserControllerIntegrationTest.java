@@ -6,6 +6,7 @@ import ages.hopeful.factories.CityFactory;
 import ages.hopeful.factories.DepartmentFactory;
 import ages.hopeful.modules.user.dto.UserRequestDTO;
 import ages.hopeful.modules.user.dto.UserUpdateDTO;
+import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
 import ages.hopeful.modules.user.repository.UserRepository;
 import ages.hopeful.modules.user.repository.RoleRepository;
@@ -27,8 +28,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -66,6 +69,13 @@ public class UserControllerIntegrationTest {
 
     @BeforeEach
     void setup() {
+        // Limpa todas as entidades antes de criar novas
+        userRepository.deleteAll();
+        departmentRepository.deleteAll();
+        cityRepository.deleteAll();
+        roleRepository.deleteAll();
+
+        // Cria as entidades necessárias
         var role = roleRepository.save(RoleFactory.createUserRole());
         roleId = role.getId();
 
@@ -84,9 +94,10 @@ public class UserControllerIntegrationTest {
 
     @AfterEach
     void tearDown() {
+        // Deleta na ordem correta respeitando as dependências
         userRepository.deleteAll();
-        cityRepository.deleteAll();
         departmentRepository.deleteAll();
+        cityRepository.deleteAll();
         roleRepository.deleteAll();
     }
 
@@ -259,6 +270,19 @@ public class UserControllerIntegrationTest {
 
             User enabled = userRepository.findById(testUser.getId()).orElseThrow();
             assertTrue(enabled.getAccountStatus(), "User should be enabled");
+        }
+
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        void getAllRoles_ShouldReturnOkAndListOfRoles_WhenRolesExist() throws Exception {
+            Role adminRole = RoleFactory.createAdminRole();
+            Role userRole = RoleFactory.createUserRole();
+            roleRepository.saveAll(List.of(adminRole, userRole));
+
+            mockMvc.perform(get("/api/roles")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(2)));
         }
     }
 }
