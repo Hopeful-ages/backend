@@ -6,7 +6,9 @@ import ages.hopeful.factories.RoleFactory;
 import ages.hopeful.factories.UserFactory;
 import ages.hopeful.modules.city.repository.CityRepository;
 import ages.hopeful.modules.departments.repository.DepartmentRepository;
+import ages.hopeful.modules.user.model.PasswordResetToken;
 import ages.hopeful.modules.user.model.User;
+import ages.hopeful.modules.user.repository.PasswordResetTokenRepository;
 import ages.hopeful.modules.user.repository.RoleRepository;
 import ages.hopeful.modules.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +31,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ages.hopeful.modules.auth.dto.LoginRequest;
 import ages.hopeful.modules.auth.dto.TokenResponse;
 import ages.hopeful.config.security.jwt.JwtUtil;
+import ages.hopeful.modules.auth.dto.ForgotPasswordRequest;
+import ages.hopeful.modules.auth.dto.ResetPasswordRequest;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @SpringBootTest
@@ -48,6 +53,9 @@ class AuthControllerIntegrationTest {
     private JwtUtil jwtUtil;
 
     private final String LOGIN_URL = "/api/auth/login";
+    private final String FORGOT_PASSWORD_URL = "/api/auth/forgot-password";
+    private final String RESET_PASSWORD_URL = "/api/auth/reset-password";
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -61,6 +69,9 @@ class AuthControllerIntegrationTest {
 
     @Autowired
     private DepartmentRepository departmentRepository;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     private UUID cityId;
     private UUID departmentId;
@@ -141,5 +152,69 @@ class AuthControllerIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
     
-    
+    @Test
+    @DisplayName("Should send forgot password email when valid email is provided")
+    void shouldSendForgotPasswordEmail() throws Exception {
+        ForgotPasswordRequest request = new ForgotPasswordRequest();
+        request.setEmail("test.admin@example.com");
+
+        mockMvc.perform(post(FORGOT_PASSWORD_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Enviamos um link para redefinir sua senha"));
+    }
+
+    @Test
+    @DisplayName("Should return bad request when forgot password email is missing")
+    void shouldReturnBadRequestWhenForgotPasswordEmailMissing() throws Exception {
+        ForgotPasswordRequest request = new ForgotPasswordRequest();
+        request.setEmail("");
+
+        mockMvc.perform(post(FORGOT_PASSWORD_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.error").value("Email é obrigatório"));
+    }
+
+    @Test
+    @DisplayName("Should reset password when valid token and password are provided")
+    void shouldResetPasswordSuccessfully() throws Exception {
+        // Simula geração de token de recuperação (em produção seria enviado por email)
+        String token = UUID.randomUUID().toString();
+        PasswordResetToken passwordResetToken = new PasswordResetToken();
+        passwordResetToken.setUser(testUser);
+        passwordResetToken.setToken(token);
+        passwordResetToken.setExpiresAt(LocalDateTime.now().plusHours(1));
+        passwordResetToken.setCreatedAt(LocalDateTime.now());
+        passwordResetTokenRepository.save(passwordResetToken);
+
+        // Simula que o AuthService aceitará esse token (mock ou ajuste necessário no serviço real/teste)
+        ResetPasswordRequest request = new ResetPasswordRequest();
+        request.setToken(token);
+        request.setNewPassword("newStrongPassword");
+
+        // Dependendo da implementação, talvez precise mockar o AuthService para aceitar esse token.
+        // Aqui esperamos apenas o fluxo HTTP.
+        mockMvc.perform(post(RESET_PASSWORD_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Senha alterada com sucesso"));
+    }
+
+    @Test
+    @DisplayName("Should return bad request when reset password is too short")
+    void shouldReturnBadRequestWhenResetPasswordTooShort() throws Exception {
+        ResetPasswordRequest request = new ResetPasswordRequest();
+        request.setToken("dummy-reset-token");
+        request.setNewPassword("short");
+
+        mockMvc.perform(post(RESET_PASSWORD_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.error").value("Senha deve ter no mínimo 8 caracteres"));
+    }
 }
