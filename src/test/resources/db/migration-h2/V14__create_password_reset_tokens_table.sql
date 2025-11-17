@@ -1,5 +1,5 @@
 CREATE TABLE password_reset_tokens (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT RAMDOM_UUID(),
     user_id UUID NOT NULL,
     token VARCHAR(250) NOT NULL UNIQUE,
     expires_at TIMESTAMP NOT NULL,
