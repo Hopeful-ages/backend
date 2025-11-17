@@ -35,6 +35,7 @@
                 display: block;
             }
             .footer-inner {
+                padding: 3px;
                 border: 1.5px solid #000;
                 background: #fff;
                 box-sizing: border-box;
@@ -59,6 +60,7 @@
             }
 
             .content-section {
+                page-break-inside: auto;
                 margin: 0;
                 padding: 0;
             }
@@ -130,6 +132,7 @@
                 font-size: 18px;
                 margin: 0;
                 background-color: #ffffff;
+                page-break-inside: avoid;
             }
 
             .parameters-section {
@@ -159,12 +162,11 @@
             }
 
             .task-section {
-                border-bottom: 1.5px solid #000;
                 margin: 0;
                 padding: 0;
                 height: auto;
                 min-height: 0;
-                page-break-inside: avoid;
+                page-break-inside: auto;
             }
 
             .task-list li {
@@ -172,6 +174,7 @@
                 text-align: justify;
                 position: relative;
                 padding-left: 25px;
+                page-break-inside: avoid;
             }
 
             .task-list li:last-child {
@@ -190,38 +193,10 @@
                 box-sizing: border-box;
             }
 
-            .content-section {
-                page-break-inside: avoid;
-                height: auto;
-            }
-
             .content-section.break-before {
-                page-break-before: always;
+                page-break-before: auto;
             }
 
-            .content-section {
-                height: auto;
-                min-height: 0;
-                margin: 0;
-                padding: 0;
-            }
-
-            .content-section {
-                page-break-inside: auto; /* Permite quebrar se maior que página */
-            }
-
-            .task-section {
-                page-break-inside: auto; /* Permite quebrar se maior que página */
-            }
-
-            .task-list li {
-                page-break-inside: avoid; /* Cada item fica junto, mas se for maior que página, quebra */
-            }
-
-            .section-header,
-            .parameters-section {
-                page-break-inside: avoid; /* Cabeçalhos e parâmetros pequenos não quebram */
-            }
 
 
         </style>
@@ -267,12 +242,11 @@
 
             <!-- ANTES -->
             <div th:if="${antes != null and !antes.isEmpty()}" class="content-section">
-                <div class="section-header">1.0 FLUXO DE RESPOSTA</div>
+                <div class="section-header">1.0 O QUE FAZER ANTES</div>
                 <div class="parameters-section" th:if="${parametrosAntes != null and parametrosAntes != ''}">
                     <b>Parâmetros:</b> <span th:utext="${parametrosAntes}"></span><br/>
                     <b>Ação:</b> <span th:utext="${acaoAntes}"></span>
                 </div>
-                <div class="section-header">1.0 O QUE FAZER ANTES</div>
                 <div class="task-section">
                     <ul class="task-list">
                         <li th:each="item : ${antes}" th:text="${item}"></li>
@@ -282,12 +256,11 @@
 
             <!-- DURANTE -->
             <div th:if="${durante != null and !durante.isEmpty()}" class="content-section">
-                <div class="section-header">2.0 FLUXO DE RESPOSTA</div>
+                <div class="section-header">2.0 O QUE FAZER DURANTE</div>
                 <div class="parameters-section" th:if="${parametrosDurante != null and parametrosDurante != ''}">
                     <b>Parâmetros:</b> <span th:utext="${parametrosDurante}"></span><br/>
                     <b>Ação:</b> <span th:utext="${acaoDurante}"></span>
                 </div>
-                <div class="section-header">2.0 O QUE FAZER DURANTE</div>
                 <div class="task-section">
                     <ul class="task-list">
                         <li th:each="item : ${durante}" th:text="${item}"></li>
@@ -297,12 +270,11 @@
 
             <!-- APÓS -->
             <div th:if="${apos != null and !apos.isEmpty()}" class="content-section break-before">
-                <div class="section-header">3.0 FLUXO DE RESPOSTA</div>
+                <div class="section-header">3.0 O QUE FAZER DEPOIS</div>
                 <div class="parameters-section" th:if="${parametrosApos != null and parametrosApos != ''}">
                     <b>Parâmetros:</b> <span th:utext="${parametrosApos}"></span><br/>
                     <b>Ação:</b> <span th:utext="${acaoApos}"></span>
                 </div>
-                <div class="section-header">3.0 O QUE FAZER DEPOIS</div>
                 <div class="task-section">
                     <ul class="task-list">
                         <li th:each="item : ${apos}" th:text="${item}"></li>
