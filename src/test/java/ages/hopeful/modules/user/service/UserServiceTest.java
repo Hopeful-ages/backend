@@ -116,16 +116,19 @@ public class UserServiceTest {
     @Test
     @DisplayName("Should create a user successfully when data is valid")
     void shouldCreateUserSuccessfullyWhenDataIsValid() {
+        Role userRole = new Role();
+        userRole.setName("USER");
+        
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        when(roleRepository.findById(any(UUID.class))).thenReturn(
+            Optional.of(userRole)
+        );
         when(departmentRepository.findById(any(UUID.class))).thenReturn(
             Optional.of(new Department())
         );
         when(cityRepository.findById(any(UUID.class))).thenReturn(
             Optional.of(new City())
-        );
-        when(roleRepository.findById(any(UUID.class))).thenReturn(
-            Optional.of(new Role())
         );
         when(
             modelMapper.map(any(UserRequestDTO.class), eq(User.class))
@@ -145,11 +148,11 @@ public class UserServiceTest {
             userRequestDTO.getEmail()
         );
         verify(userRepository, times(1)).existsByCpf(userRequestDTO.getCpf());
+        verify(roleRepository, times(1)).findById(userRequestDTO.getRoleId());
         verify(departmentRepository, times(1)).findById(
             userRequestDTO.getDepartmentId()
         );
         verify(cityRepository, times(1)).findById(userRequestDTO.getCityId());
-        verify(roleRepository, times(1)).findById(userRequestDTO.getRoleId());
         verify(userRepository, times(1)).save(user);
     }
 
@@ -188,8 +191,15 @@ public class UserServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException when Service not found")
     void shouldThrowNotFoundExceptionWhenServiceNotFound() {
+        Role userRole = new Role();
+        userRole.setName("USER");
+        
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        when(roleRepository.findById(any(UUID.class))).thenReturn(
+            Optional.of(userRole)
+        );
+        when(modelMapper.map(any(UserRequestDTO.class), eq(User.class))).thenReturn(user);
         when(departmentRepository.findById(any(UUID.class))).thenReturn(
             Optional.empty()
         );
@@ -202,18 +212,25 @@ public class UserServiceTest {
             userRequestDTO.getEmail()
         );
         verify(userRepository, times(1)).existsByCpf(userRequestDTO.getCpf());
+        verify(roleRepository, times(1)).findById(userRequestDTO.getRoleId());
         verify(departmentRepository, times(1)).findById(
             userRequestDTO.getDepartmentId()
         );
         verify(cityRepository, never()).findById(any(UUID.class));
-        verify(roleRepository, never()).findById(any(UUID.class));
     }
 
     @Test
     @DisplayName("Should throw NotFoundException when City not found")
     void shouldThrowNotFoundExceptionWhenCityNotFound() {
+        Role userRole = new Role();
+        userRole.setName("USER");
+        
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        when(roleRepository.findById(any(UUID.class))).thenReturn(
+            Optional.of(userRole)
+        );
+        when(modelMapper.map(any(UserRequestDTO.class), eq(User.class))).thenReturn(user);
         when(departmentRepository.findById(any(UUID.class))).thenReturn(
             Optional.of(department)
         );
@@ -229,11 +246,11 @@ public class UserServiceTest {
             userRequestDTO.getEmail()
         );
         verify(userRepository, times(1)).existsByCpf(userRequestDTO.getCpf());
+        verify(roleRepository, times(1)).findById(userRequestDTO.getRoleId());
         verify(departmentRepository, times(1)).findById(
             userRequestDTO.getDepartmentId()
         );
         verify(cityRepository, times(1)).findById(userRequestDTO.getCityId());
-        verify(roleRepository, never()).findById(any(UUID.class));
     }
 
     @Test
@@ -354,14 +371,16 @@ public class UserServiceTest {
     @Test
     @DisplayName("Should create user when CPF is valid")
     void shouldCreateUserWhenCpfIsValid() {
+        Role userRole = new Role();
+        userRole.setName("USER");
         
         userRequestDTO.setCpf("529.982.247-25");
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        when(roleRepository.findById(any(UUID.class))).thenReturn(Optional.of(userRole));
         when(departmentRepository.findById(any(UUID.class))).thenReturn(Optional.of(new Department()));
         when(cityRepository.findById(any(UUID.class))).thenReturn(Optional.of(new City()));
-        when(roleRepository.findById(any(UUID.class))).thenReturn(Optional.of(new Role()));
         when(modelMapper.map(any(UserRequestDTO.class), eq(User.class))).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(modelMapper.map(any(User.class), eq(UserResponseDTO.class))).thenReturn(userResponseDTO);
@@ -389,10 +408,14 @@ public class UserServiceTest {
     @Test
     @DisplayName("Should throw IllegalArgumentException when departmentId is null")
     void shouldThrowWhenDepartmentIdIsNull() {
+        Role userRole = new Role();
+        userRole.setName("USER");
+        
         userRequestDTO.setDepartmentId(null);
         
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        when(roleRepository.findById(any(UUID.class))).thenReturn(Optional.of(userRole));
         
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
@@ -406,10 +429,14 @@ public class UserServiceTest {
     @Test
     @DisplayName("Should throw IllegalArgumentException when cityId is null")
     void shouldThrowWhenCityIdIsNull() {
+        Role userRole = new Role();
+        userRole.setName("USER");
+        
         userRequestDTO.setCityId(null);
         
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        when(roleRepository.findById(any(UUID.class))).thenReturn(Optional.of(userRole));
         
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
@@ -421,19 +448,20 @@ public class UserServiceTest {
     }
     
     @Test
-    @DisplayName("Should throw IllegalArgumentException when roleId is null")
+    @DisplayName("Should throw NotFoundException when roleId is null")
     void shouldThrowWhenRoleIdIsNull() {
         userRequestDTO.setRoleId(null);
         
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
+        when(roleRepository.findById(null)).thenReturn(Optional.empty());
         
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
+        NotFoundException exception = assertThrows(
+            NotFoundException.class,
             () -> userService.createUser(userRequestDTO)
         );
         
-        assertEquals("Role ID must not be null", exception.getMessage());
+        assertEquals("Role not found", exception.getMessage());
         verify(userRepository, never()).save(any(User.class));
     }
 

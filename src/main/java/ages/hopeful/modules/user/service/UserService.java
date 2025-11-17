@@ -91,30 +91,33 @@ public class UserService {
             throw new ConflictException("CPF already exists");
         }
 
-        if (dto.getDepartmentId() == null) {
-            throw new IllegalArgumentException("Department ID must not be null");
-        }
-        if (dto.getCityId() == null) {
-            throw new IllegalArgumentException("City ID must not be null");
-        }
-        if (dto.getRoleId() == null) {
-            throw new IllegalArgumentException("Role ID must not be null");
-        }
-
-        var department = departmentRepository.findById(dto.getDepartmentId())
-                .orElseThrow(() -> new NotFoundException("Service not found"));
-
-        var city = cityRepository.findById(dto.getCityId())
-                .orElseThrow(() -> new NotFoundException("City not found"));
-
         var role = roleRepository.findById(dto.getRoleId())
                 .orElseThrow(() -> new NotFoundException("Role not found"));
+
+
+        if (!role.getName().equals("ADMIN")) {
+            if (dto.getDepartmentId() == null) {
+                throw new IllegalArgumentException("Department ID must not be null");
+            }
+            if (dto.getCityId() == null) {
+                throw new IllegalArgumentException("City ID must not be null");
+            }
+        }
 
         User user = modelMapper.map(dto, User.class);
         user.setAccountStatus(true);
         user.setRole(role);
-        user.setDepartment(department);
-        user.setCity(city);
+
+        if (!role.getName().equals("ADMIN")) {
+            var department = departmentRepository.findById(dto.getDepartmentId())
+                    .orElseThrow(() -> new NotFoundException("Service not found"));
+            var city = cityRepository.findById(dto.getCityId())
+                    .orElseThrow(() -> new NotFoundException("City not found"));
+            
+            user.setDepartment(department);
+            user.setCity(city);
+        }
+
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         User savedUser = userRepository.save(user);
