@@ -22,7 +22,8 @@
         <sonar.projectKey>hopeful</sonar.projectKey>
         <sonar.host.url>http://localhost:9000</sonar.host.url>
         <sonar.exclusions>**/dto/**/*.java,**/*DTO.java,**/*Request*.java,**/*Response*.java,**/model/**/*.java</sonar.exclusions>
-        <sonar.coverage.exclusions>**/dto/**/*.java,**/*DTO.java,**/*Request*.java,**/*Response*.java,**/config/**/*.java,**/exception/**/*.java,**/model/**/*.java</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>**/dto/**/*.java,**/*DTO.java,**/*Request*.java,**/*Response*.java,**/config/**/*.java,**/exception/**/*.java,**/model/**/*.java,src/main/java/ages/hopeful/HopefulApplication.java,src/main/java/db/migration/V7__populate_cidade_from_ibge.java</sonar.coverage.exclusions>
+
     </properties>
 
     <repositories>
@@ -164,6 +165,12 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Mail -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
     </dependencies>
 

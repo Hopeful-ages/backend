@@ -58,3 +58,8 @@ volumes:
   sonarqube_extensions:
   sonarqube_logs:
   sonarqube_db_data:
+
+networks:
+  default:
+    external:
+      name: hopeful-network
