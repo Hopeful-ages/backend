@@ -1,10 +1,15 @@
 package ages.hopeful.modules.auth.service;
 
 import ages.hopeful.config.security.jwt.JwtUtil;
+import ages.hopeful.modules.auth.dto.ForgotPasswordRequest;
 import ages.hopeful.modules.auth.dto.LoginRequest;
+import ages.hopeful.modules.auth.dto.ResetPasswordRequest;
 import ages.hopeful.modules.auth.dto.TokenResponse;
+import ages.hopeful.modules.user.model.PasswordResetToken;
 import ages.hopeful.modules.user.model.Role;
 import ages.hopeful.modules.user.model.User;
+import ages.hopeful.modules.user.repository.PasswordResetTokenRepository;
+import ages.hopeful.modules.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +21,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +47,18 @@ class AuthServiceTest {
 
     @Mock
     private Authentication authentication;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private EmailService emailService;
 
     @InjectMocks
     private AuthService authService;
@@ -230,5 +250,247 @@ class AuthServiceTest {
                 anyList(),
                 eq(specificUserId)
         );
+    }
+
+    @Test
+    @DisplayName("Should send password reset email when email is valid")
+    void shouldSendPasswordResetEmailWhenEmailIsValid() {
+        // Arrange
+        ForgotPasswordRequest request = new ForgotPasswordRequest();
+        request.setEmail("john@example.com");
+
+        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
+        when(passwordResetTokenRepository.save(any(PasswordResetToken.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        authService.forgotPassword(request);
+
+        // Assert
+        verify(userRepository, times(1)).findByEmail("john@example.com");
+        verify(passwordResetTokenRepository, times(1)).save(any(PasswordResetToken.class));
+        verify(emailService, times(1)).sendPasswordResetEmail(eq("john@example.com"), anyString());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when email is null in forgot password")
+    void shouldThrowExceptionWhenEmailIsNullInForgotPassword() {
+        // Arrange
+        ForgotPasswordRequest request = new ForgotPasswordRequest();
+        request.setEmail(null);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> authService.forgotPassword(request)
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("Digite seu e-mail.");
+        verify(userRepository, never()).findByEmail(anyString());
+        verify(emailService, never()).sendPasswordResetEmail(anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when email is empty in forgot password")
+    void shouldThrowExceptionWhenEmailIsEmptyInForgotPassword() {
+        // Arrange
+        ForgotPasswordRequest request = new ForgotPasswordRequest();
+        request.setEmail("");
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> authService.forgotPassword(request)
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("Digite seu e-mail.");
+        verify(userRepository, never()).findByEmail(anyString());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when email is not registered")
+    void shouldThrowExceptionWhenEmailIsNotRegistered() {
+        // Arrange
+        ForgotPasswordRequest request = new ForgotPasswordRequest();
+        request.setEmail("notfound@example.com");
+
+        when(userRepository.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> authService.forgotPassword(request)
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("E-mail não cadastrado.");
+        verify(emailService, never()).sendPasswordResetEmail(anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("Should reset password successfully with valid token")
+    void shouldResetPasswordSuccessfullyWithValidToken() {
+        // Arrange
+        String token = "valid-token";
+        String newPassword = "newPassword123";
+        String encodedPassword = "encoded-password";
+
+        ResetPasswordRequest request = new ResetPasswordRequest();
+        request.setToken(token);
+        request.setNewPassword(newPassword);
+
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setToken(token);
+        resetToken.setUser(user);
+        resetToken.setUsed(false);
+        resetToken.setExpiresAt(LocalDateTime.now().plusHours(1));
+
+        when(passwordResetTokenRepository.findByToken(token)).thenReturn(Optional.of(resetToken));
+        when(passwordEncoder.encode(newPassword)).thenReturn(encodedPassword);
+
+        // Act
+        authService.resetPassword(request);
+
+        // Assert
+        verify(passwordResetTokenRepository, times(1)).findByToken(token);
+        verify(passwordEncoder, times(1)).encode(newPassword);
+        verify(userRepository, times(1)).save(user);
+        verify(passwordResetTokenRepository, times(1)).save(resetToken);
+        assertThat(resetToken.isUsed()).isTrue();
+        assertThat(user.getPassword()).isEqualTo(encodedPassword);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when new password is null")
+    void shouldThrowExceptionWhenNewPasswordIsNull() {
+        // Arrange
+        ResetPasswordRequest request = new ResetPasswordRequest();
+        request.setToken("some-token");
+        request.setNewPassword(null);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> authService.resetPassword(request)
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("A nova senha é obrigatória.");
+        verify(passwordResetTokenRepository, never()).findByToken(anyString());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when new password is empty")
+    void shouldThrowExceptionWhenNewPasswordIsEmpty() {
+        // Arrange
+        ResetPasswordRequest request = new ResetPasswordRequest();
+        request.setToken("some-token");
+        request.setNewPassword("");
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> authService.resetPassword(request)
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("A nova senha é obrigatória.");
+    }
+
+    @Test
+    @DisplayName("Should throw exception when reset token is invalid")
+    void shouldThrowExceptionWhenResetTokenIsInvalid() {
+        // Arrange
+        ResetPasswordRequest request = new ResetPasswordRequest();
+        request.setToken("invalid-token");
+        request.setNewPassword("newPassword123");
+
+        when(passwordResetTokenRepository.findByToken("invalid-token")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        BadCredentialsException exception = assertThrows(
+                BadCredentialsException.class,
+                () -> authService.resetPassword(request)
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("Link de recuperação inválido ou expirado");
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Should throw exception when reset token is already used")
+    void shouldThrowExceptionWhenResetTokenIsAlreadyUsed() {
+        // Arrange
+        String token = "used-token";
+        ResetPasswordRequest request = new ResetPasswordRequest();
+        request.setToken(token);
+        request.setNewPassword("newPassword123");
+
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setToken(token);
+        resetToken.setUsed(true);
+        resetToken.setExpiresAt(LocalDateTime.now().plusHours(1));
+
+        when(passwordResetTokenRepository.findByToken(token)).thenReturn(Optional.of(resetToken));
+
+        // Act & Assert
+        BadCredentialsException exception = assertThrows(
+                BadCredentialsException.class,
+                () -> authService.resetPassword(request)
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("Link de recuperação inválido ou expirado");
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Should throw exception when reset token is expired")
+    void shouldThrowExceptionWhenResetTokenIsExpired() {
+        // Arrange
+        String token = "expired-token";
+        ResetPasswordRequest request = new ResetPasswordRequest();
+        request.setToken(token);
+        request.setNewPassword("newPassword123");
+
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setToken(token);
+        resetToken.setUsed(false);
+        resetToken.setExpiresAt(LocalDateTime.now().minusHours(1));
+
+        when(passwordResetTokenRepository.findByToken(token)).thenReturn(Optional.of(resetToken));
+
+        // Act & Assert
+        BadCredentialsException exception = assertThrows(
+                BadCredentialsException.class,
+                () -> authService.resetPassword(request)
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("Link de recuperação inválido ou expirado");
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Should throw exception when password is less than 8 characters")
+    void shouldThrowExceptionWhenPasswordIsLessThan8Characters() {
+        // Arrange
+        String token = "valid-token";
+        ResetPasswordRequest request = new ResetPasswordRequest();
+        request.setToken(token);
+        request.setNewPassword("short");
+
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setToken(token);
+        resetToken.setUser(user);
+        resetToken.setUsed(false);
+        resetToken.setExpiresAt(LocalDateTime.now().plusHours(1));
+
+        when(passwordResetTokenRepository.findByToken(token)).thenReturn(Optional.of(resetToken));
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> authService.resetPassword(request)
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("A senha deve ter pelo menos 8 caracteres.");
+        verify(userRepository, never()).save(any(User.class));
+        verify(passwordResetTokenRepository, never()).save(resetToken);
     }
 }
