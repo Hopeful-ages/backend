@@ -1,0 +1,6 @@
+
+ALTER TABLE cobrade ALTER COLUMN description TYPE TEXT;
+
+ALTER TABLE tasks ALTER COLUMN description TYPE TEXT;
+ALTER TABLE parameters ALTER COLUMN description TYPE TEXT;
+ALTER TABLE parameters ALTER COLUMN action TYPE TEXT;
