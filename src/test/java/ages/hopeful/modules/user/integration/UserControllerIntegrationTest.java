@@ -10,6 +10,7 @@ import ages.hopeful.modules.user.repository.UserRepository;
 import ages.hopeful.modules.user.repository.RoleRepository;
 import ages.hopeful.modules.city.repository.CityRepository;
 import ages.hopeful.modules.departments.repository.DepartmentRepository;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.AfterEach;
