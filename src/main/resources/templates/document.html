@@ -6,10 +6,8 @@
         <style th:inline="css">
             @page {
                 size: A4;
-                margin: 20mm 15mm 50mm 15mm;
-                @bottom-center {
-                    content: element(footer);
-                }
+                margin: 20mm 15mm 20mm 15mm;
+
 
             }
 
@@ -22,10 +20,11 @@
                 padding: 0;
             }
             .footer {
-                position: running(footer);
+                position: relative;
                 font-family: Arial, sans-serif;
                 font-size: 12px;
                 text-align: justify;
+                border-top: 1.5px solid #000;
             }
             .footer .footer-title {
                 font-size: 18px;
@@ -36,7 +35,6 @@
             }
             .footer-inner {
                 padding: 3px;
-                border: 1.5px solid #000;
                 background: #fff;
                 box-sizing: border-box;
             }
@@ -208,16 +206,6 @@
             alt="watermark"
             class="watermark"
         />
-        <div class="footer">
-            <div class="footer-inner">
-                <span class="footer-title">Hopeful</span>
-                <p>
-                    TECNOPUC | Prédio 96A | Sala 215 | Av.Ipiranga, 6681-Partenon, Porto Alegre-RS, 90619-900
-                    <br></br>
-                    &#169; Copyright 2025 Hopeful.
-                </p>
-            </div>
-        </div>
 
         <div class="document-container">
             <div class="header">
@@ -279,6 +267,16 @@
                     <ul class="task-list">
                         <li th:each="item : ${apos}" th:text="${item}"></li>
                     </ul>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="footer-inner">
+                    <span class="footer-title">Hopeful</span>
+                    <p>
+                        TECNOPUC | Prédio 96A | Sala 215 | Av.Ipiranga, 6681-Partenon, Porto Alegre-RS, 90619-900
+                        <br></br>
+                        &#169; Copyright 2025 Hopeful.
+                    </p>
                 </div>
             </div>
 
