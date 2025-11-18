@@ -47,7 +47,7 @@ public class EmailServiceTest {
         SimpleMailMessage sentMessage = captor.getValue();
         assertEquals(to, sentMessage.getTo()[0]);
         assertEquals("Redefinição de senha", sentMessage.getSubject());
-        assertTrue(sentMessage.getText().contains("http://localhost:3000/reset-password?token=" + token));
+        assertTrue(sentMessage.getText().contains("https://hopeful.vps-kinghost.net/reset-password?token=" + token));
         assertEquals("hopeful.suporte@gmail.com", sentMessage.getFrom());
     }
 }
