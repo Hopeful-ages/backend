@@ -18,7 +18,7 @@ public class CityService {
     public List<CityResponseDTO> getAllCities() {
         List<City> cities = cityRepository.findAll();
         return cities.stream()
-                .map(city -> new CityResponseDTO(city.getId(), city.getName(), city.getState()))
+                 .map(city -> new CityResponseDTO(city.getId(), city.getName(), city.getState()))
                 .toList();
     }
 
