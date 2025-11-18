@@ -14,7 +14,7 @@ public class EmailService {
     public void sendPasswordResetEmail(String to, String token) {
         String subject = "Redefinição de senha";
         String body = "Clique no link abaixo para redefinir sua senha:\n\n"
-                + "http://localhost:3000/reset-password?token=" + token;
+                + "https://hopeful.vps-kinghost.net/reset-password?token=" + token;
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
