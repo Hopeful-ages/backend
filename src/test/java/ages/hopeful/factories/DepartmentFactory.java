@@ -1,8 +1,8 @@
 package ages.hopeful.factories;
 
-import ages.hopeful.modules.departments.model.Department;
-
 import java.util.UUID;
+
+import ages.hopeful.modules.departments.model.Department;
 
 /**
  * Factory para criar instâncias de Department (Service) para testes.
